@@ -45,9 +45,14 @@ export function stripQueryParams(url: string, keys: string[]) {
   return result;
 }
 
-/** Neon HTTP uses fetch, not SCRAM. `channel_binding=require` on pooled URLs breaks it. */
+/** Neon HTTP uses fetch, not SCRAM. `channel_binding=require` on pooled URLs breaks it. Keep sslmode=require. */
 export function sanitizeNeonHttpUrl(url: string) {
-  return stripQueryParams(url.trim(), NEON_HTTP_STRIP_PARAMS);
+  const next = stripQueryParams(url.trim(), NEON_HTTP_STRIP_PARAMS);
+  if (!isPostgresUrl(next)) return next;
+  if (/[?&]sslmode=/i.test(next)) {
+    return next.replace(/([?&]sslmode=)[^&]*/i, "$1require");
+  }
+  return `${next}${next.includes("?") ? "&" : "?"}sslmode=require`;
 }
 
 export function prismaAdapterKind(url = readDatabaseUrl()): PrismaAdapterKind {

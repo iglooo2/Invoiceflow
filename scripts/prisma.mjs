@@ -39,6 +39,14 @@ if (requirePostgres && !urlLooksPostgres) {
   process.exit(1);
 }
 
+const generating = prismaArgs[0] === "generate";
+if (postgres && generating && !urlLooksPostgres) {
+  // prisma generate reads env("DATABASE_URL") but does not connect. A placeholder
+  // lets Cloudflare builds emit the rust-free Postgres client when the real
+  // Neon URL is only a *runtime* secret.
+  env.DATABASE_URL = "postgresql://prisma:prisma@127.0.0.1:5432/prisma?sslmode=require";
+}
+
 const provider = postgres ? "postgresql" : "sqlite";
 const source = readFileSync(sourcePath, "utf8");
 const runtime = buildRuntimeSchema(source, provider);
