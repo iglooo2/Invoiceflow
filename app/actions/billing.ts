@@ -1,6 +1,7 @@
 "use server";
 
 import { addDays } from "date-fns";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/session";
@@ -71,6 +72,7 @@ export async function demoUnlockPro() {
       stripeCurrentPeriodEnd: addDays(new Date(), 30),
     },
   });
+  revalidatePath("/dashboard", "layout");
   redirect("/dashboard/billing?status=demo");
 }
 
@@ -88,5 +90,6 @@ export async function demoDowngrade() {
       stripeCurrentPeriodEnd: null,
     },
   });
+  revalidatePath("/dashboard", "layout");
   redirect("/dashboard/billing");
 }

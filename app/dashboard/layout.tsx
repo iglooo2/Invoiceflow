@@ -2,8 +2,9 @@ import Link from "next/link";
 import { logout } from "@/app/actions/auth";
 import { Wordmark } from "@/components/brand";
 import { Button } from "@/components/ui/button";
-import { requireUser, studioName } from "@/lib/session";
-import { planFromUser } from "@/lib/session";
+import { requireUser, studioName, planFromUser } from "@/lib/session";
+
+export const dynamic = "force-dynamic";
 
 const links = [
   ["Overview", "/dashboard"],
