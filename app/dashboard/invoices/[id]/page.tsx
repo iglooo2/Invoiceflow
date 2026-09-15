@@ -1,0 +1,68 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { prisma } from "@/lib/db";
+import { publicInvoiceUrl } from "@/lib/email";
+import { currentPlanId } from "@/lib/plans";
+import { requireUser } from "@/lib/session";
+import { Button } from "@/components/ui/button";
+import { CopyLinkButton } from "@/components/copy-link-button";
+import { InvoicePreview } from "@/components/document-preview";
+import { deleteInvoice, emailInvoice, markInvoiceStatus } from "@/app/actions/invoices";
+
+export default async function InvoiceDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const user = await requireUser();
+  const { id } = await params;
+  const invoice = await prisma.invoice.findFirst({
+    where: { id, userId: user.id },
+    include: { items: { orderBy: { sortOrder: "asc" } } },
+  });
+  if (!invoice) notFound();
+  const share = publicInvoiceUrl(invoice.publicToken);
+
+  return (
+    <div className="grid gap-6">
+      <div className="flex flex-col justify-between gap-3 lg:flex-row lg:items-center">
+        <div>
+          <p className="text-sm text-muted-foreground">{invoice.number}</p>
+          <h1 className="font-display text-4xl">{invoice.clientName}</h1>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <CopyLinkButton value={share} />
+          <Button asChild variant="outline">
+            <a href={`/api/invoices/${invoice.id}/pdf`}>Download PDF</a>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href={`/share/i/${invoice.publicToken}`}>Public view</Link>
+          </Button>
+          <Button asChild>
+            <Link href={`/dashboard/invoices/${invoice.id}/edit`}>Edit</Link>
+          </Button>
+        </div>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        <form action={emailInvoice.bind(null, invoice.id)}>
+          <Button type="submit" variant="secondary">
+            Email share link
+          </Button>
+        </form>
+        {invoice.status !== "paid" ? (
+          <form action={markInvoiceStatus.bind(null, invoice.id, "paid")}>
+            <Button type="submit" variant="outline">
+              Mark paid
+            </Button>
+          </form>
+        ) : null}
+        <form action={deleteInvoice.bind(null, invoice.id)}>
+          <Button type="submit" variant="ghost">
+            Delete
+          </Button>
+        </form>
+      </div>
+      <InvoicePreview studio={user} invoice={invoice} branded={currentPlanId(user) !== "pro"} />
+    </div>
+  );
+}

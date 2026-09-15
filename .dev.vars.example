@@ -1,0 +1,12 @@
+# Used by `wrangler dev` / `opennextjs-cloudflare preview`.
+# Copy to `.dev.vars` — never commit real secrets.
+#
+# Worker preview cannot use SQLite. Point DATABASE_URL at Neon/Supabase.
+# For the local Next.js demo, keep `.env` as `file:./dev.db` and use `npm run dev`.
+
+NEXTJS_ENV=development
+DATABASE_URL="postgresql://USER:PASSWORD@HOST/DB?sslmode=require"
+AUTH_SECRET="replace-with-a-long-random-string"
+AUTH_URL="http://localhost:8787"
+NEXT_PUBLIC_APP_URL="http://localhost:8787"
+AUTH_DEV_MODE="false"
