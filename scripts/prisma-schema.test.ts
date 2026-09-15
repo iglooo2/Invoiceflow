@@ -2,9 +2,11 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import { spawnSync } from "node:child_process";
 import { buildRuntimeSchema } from "./prisma-schema.mjs";
 
-const source = readFileSync(path.join(import.meta.dirname, "../prisma/schema.prisma"), "utf8");
+const root = path.join(import.meta.dirname, "..");
+const source = readFileSync(path.join(root, "prisma/schema.prisma"), "utf8");
 
 test("sqlite runtime schema keeps default client engine", () => {
   const runtime = buildRuntimeSchema(source, "sqlite");
@@ -17,4 +19,25 @@ test("postgres runtime schema uses rust-free client engine", () => {
   const runtime = buildRuntimeSchema(source, "postgresql");
   assert.match(runtime, /provider\s*=\s*"postgresql"/);
   assert.match(runtime, /engineType\s*=\s*"client"/);
+});
+
+test("prisma generate with PRISMA_PROVIDER=postgresql works without a postgres DATABASE_URL", () => {
+  const gen = spawnSync("node", ["scripts/prisma.mjs", "generate"], {
+    cwd: root,
+    encoding: "utf8",
+    env: { ...process.env, PRISMA_PROVIDER: "postgresql", DATABASE_URL: "file:./dev.db" },
+  });
+  try {
+    assert.equal(gen.status, 0, gen.stderr || gen.stdout);
+    const runtime = readFileSync(path.join(root, "prisma/schema.runtime.prisma"), "utf8");
+    assert.match(runtime, /provider\s*=\s*"postgresql"/);
+    assert.match(runtime, /engineType\s*=\s*"client"/);
+  } finally {
+    const restore = { ...process.env, DATABASE_URL: process.env.DATABASE_URL || "file:./dev.db" };
+    delete restore.PRISMA_PROVIDER;
+    spawnSync("node", ["scripts/prisma.mjs", "generate"], {
+      cwd: root,
+      env: restore,
+    });
+  }
 });

@@ -39,9 +39,16 @@ test("strips channel_binding from pooled Neon URLs and keeps sslmode", () => {
   );
 });
 
+test("adds sslmode=require when Neon URL has no sslmode", () => {
+  assert.equal(
+    sanitizeNeonHttpUrl("postgresql://u:p@ep-foo-pooler.us-east-1.aws.neon.tech/db"),
+    "postgresql://u:p@ep-foo-pooler.us-east-1.aws.neon.tech/db?sslmode=require",
+  );
+});
+
 test("strips Prisma/pgbouncer leftovers without touching userinfo", () => {
   const raw = "postgresql://u:p%40ss@host/db?pgbouncer=true&connection_limit=1";
-  assert.equal(sanitizeNeonHttpUrl(raw), "postgresql://u:p%40ss@host/db");
+  assert.equal(sanitizeNeonHttpUrl(raw), "postgresql://u:p%40ss@host/db?sslmode=require");
   assert.equal(stripQueryParams("postgresql://u:p@h/db", ["sslmode"]), "postgresql://u:p@h/db");
 });
 
@@ -82,6 +89,18 @@ test("registerFailureMessage maps missing tables and unique conflicts", () => {
     assert.match(
       registerFailureMessage({ name: "PrismaClientKnownRequestError", code: "P2002", message: "unique" }),
       /already exists/,
+    );
+    assert.match(
+      registerFailureMessage({
+        name: "PrismaClientInitializationError",
+        code: "P1001",
+        message: "Can't reach database server",
+      }),
+      /P1001/,
+    );
+    assert.match(
+      registerFailureMessage({ name: "Error", message: "engine is not yet compatible with sqlite" }),
+      /PRISMA_PROVIDER=postgresql/,
     );
   } finally {
     if (previous === undefined) delete process.env.DATABASE_URL;
