@@ -9,7 +9,7 @@ function getResend() {
 }
 
 export async function sendMagicLinkEmail(identifier: string, url: string) {
-  const from = process.env.EMAIL_FROM || "InvoiceFlow <noreply@localhost>";
+  const from = process.env.EMAIL_FROM || "InvoiceFlow Studio <noreply@invoiceflowstudio.com>";
   const resend = getResend();
   if (!resend) {
     console.info(`[InvoiceFlow] Magic link for ${identifier}: ${url}`);
@@ -31,7 +31,7 @@ export async function sendDocumentEmail(options: {
   link: string;
 }) {
   const resend = getResend();
-  const from = process.env.EMAIL_FROM || "InvoiceFlow <noreply@localhost>";
+  const from = process.env.EMAIL_FROM || "InvoiceFlow Studio <noreply@invoiceflowstudio.com>";
   if (!resend) {
     console.info(
       `[InvoiceFlow] Email skipped (no Resend key). Would send to ${options.to}: ${options.subject} ${options.link}`,

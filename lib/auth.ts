@@ -49,7 +49,7 @@ if (resendEnabled()) {
   providers.push(
     Resend({
       apiKey: process.env.AUTH_RESEND_KEY || process.env.RESEND_API_KEY,
-      from: process.env.EMAIL_FROM || "InvoiceFlow <noreply@localhost>",
+      from: process.env.EMAIL_FROM || "InvoiceFlow Studio <noreply@invoiceflowstudio.com>",
       sendVerificationRequest: async ({ identifier, url }) => {
         await sendMagicLinkEmail(identifier, url);
       },
@@ -60,6 +60,9 @@ if (resendEnabled()) {
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
+  // Required behind Cloudflare (and any reverse proxy). AUTH_URL should still
+  // be https://invoiceflowstudio.com in production.
+  trustHost: true,
   secret: process.env.AUTH_SECRET || "dev-insecure-secret-change-me",
   pages: {
     signIn: "/login",

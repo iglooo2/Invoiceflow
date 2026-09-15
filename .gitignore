@@ -47,3 +47,9 @@ next-env.d.ts
 /prisma/dev.db-journal
 /dev.db
 /dev.db-journal
+/prisma/schema.runtime.prisma
+
+# cloudflare / opennext
+.open-next
+.wrangler
+.dev.vars

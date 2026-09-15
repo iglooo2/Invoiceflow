@@ -2,6 +2,9 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// Default provider is SQLite for `npm run setup`.
+// `scripts/prisma.mjs` rewrites this to postgresql when DATABASE_URL is
+// postgres://, PRISMA_PROVIDER=postgresql, or Cloudflare CI (WORKERS_CI=1).
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")

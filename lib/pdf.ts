@@ -165,7 +165,7 @@ export async function buildInvoicePdf(options: {
   }
 
   if (branded) {
-    page.drawText("Made with InvoiceFlow — invoiceflow.dev", {
+    page.drawText("Made with InvoiceFlow Studio — invoiceflowstudio.com", {
       x: 48,
       y: 36,
       size: 8,
@@ -261,7 +261,7 @@ export async function buildProposalPdf(options: {
   }
 
   if (branded) {
-    page.drawText("Made with InvoiceFlow — invoiceflow.dev", {
+    page.drawText("Made with InvoiceFlow Studio — invoiceflowstudio.com", {
       x: 48,
       y: 36,
       size: 8,

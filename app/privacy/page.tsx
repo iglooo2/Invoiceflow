@@ -16,7 +16,7 @@ export default async function PrivacyPage() {
           <p>We collect account email, studio profile details, invoices, proposals, and billing metadata needed to run the product.</p>
           <p>Auth may use email/password, GitHub OAuth, and optional Resend magic links. Payments go through Stripe; we store customer and subscription IDs, not full card numbers.</p>
           <p>Public share links are unguessable tokens. Anyone with the link can view the document. Don’t send tokens you want to keep private.</p>
-          <p>Contact the operator of this deployment to request export or deletion of your account data.</p>
+          <p>Contact the operator at invoiceflowstudio.com to request export or deletion of your account data.</p>
         </div>
       </main>
       <MarketingFooter />

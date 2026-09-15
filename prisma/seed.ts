@@ -1,10 +1,8 @@
 import bcrypt from "bcryptjs";
 import { addDays, subDays } from "date-fns";
-import { PrismaClient } from "@prisma/client";
 import { SEED_TEMPLATES } from "../lib/templates";
 import { nanoid } from "nanoid";
-
-const prisma = new PrismaClient();
+import { prisma } from "../lib/db";
 
 async function main() {
   for (const template of SEED_TEMPLATES) {

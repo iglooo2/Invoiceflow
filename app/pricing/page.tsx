@@ -15,8 +15,8 @@ export default async function PricingPage() {
       <main className="mx-auto w-full max-w-5xl px-4 py-16">
         <h1 className="font-display text-5xl">Simple pricing for a simple job.</h1>
         <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
-          InvoiceFlow is not an accounting suite. It’s the fastest way to send a beautiful invoice or
-          proposal and know whether it got paid.
+          InvoiceFlow Studio is not an accounting suite. It’s the fastest way to send a beautiful invoice or
+          proposal and know whether it got paid — at invoiceflowstudio.com.
         </p>
         <div className="mt-10 grid gap-6 md:grid-cols-2">
           {Object.values(PLANS).map((plan) => (

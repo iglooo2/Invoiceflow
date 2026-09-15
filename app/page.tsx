@@ -19,9 +19,9 @@ export default async function HomePage() {
               Invoices that look like your work. Sent before the coffee cools.
             </h1>
             <p className="mt-5 max-w-xl text-lg leading-8 text-muted-foreground">
-              InvoiceFlow is the focused studio tool for designers, editors, and writers who would rather
+              InvoiceFlow Studio is the focused tool for designers, editors, and writers who would rather
               ship work than wrestle Word docs. Pick a template, send a gorgeous PDF or link, and see
-              what’s paid.
+              what’s paid — at invoiceflowstudio.com.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild size="lg">

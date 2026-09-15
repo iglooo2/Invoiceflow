@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Wordmark } from "@/components/brand";
 import { Button } from "@/components/ui/button";
+import { SITE_DOMAIN, SITE_STUDIO } from "@/lib/site";
 
 export function MarketingHeader({ signedIn }: { signedIn: boolean }) {
   return (
@@ -42,6 +43,7 @@ export function MarketingFooter() {
     <footer className="mt-20 border-t border-border/80">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-8 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
         <Wordmark />
+        <p className="text-xs">{SITE_STUDIO} · {SITE_DOMAIN}</p>
         <div className="flex flex-wrap gap-4">
           <Link href="/pricing">Pricing</Link>
           <Link href="/terms">Terms</Link>

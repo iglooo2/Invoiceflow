@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces, Outfit } from "next/font/google";
 import "./globals.css";
+import { SITE_DESCRIPTION, SITE_STUDIO, SITE_URL } from "@/lib/site";
 
 const outfit = Outfit({
   variable: "--font-sans",
@@ -13,12 +14,12 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || SITE_URL),
   title: {
-    default: "InvoiceFlow",
-    template: "%s · InvoiceFlow",
+    default: SITE_STUDIO,
+    template: `%s · ${SITE_STUDIO}`,
   },
-  description:
-    "Fast, beautiful invoices and proposals for designers, video editors, and writers who hate making them by hand.",
+  description: SITE_DESCRIPTION,
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

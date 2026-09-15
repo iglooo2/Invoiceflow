@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { SITE_URL } from "@/lib/site";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -9,12 +10,14 @@ export function getAppUrl() {
   return (
     process.env.NEXT_PUBLIC_APP_URL ||
     process.env.AUTH_URL ||
-    "http://localhost:3000"
+    (process.env.NODE_ENV === "production" ? SITE_URL : "http://localhost:3000")
   );
 }
 
 export function isDevMode() {
-  return process.env.AUTH_DEV_MODE !== "false";
+  if (process.env.AUTH_DEV_MODE === "true") return true;
+  if (process.env.AUTH_DEV_MODE === "false") return false;
+  return process.env.NODE_ENV !== "production";
 }
 
 export function githubAuthEnabled() {
