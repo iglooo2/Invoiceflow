@@ -4,6 +4,7 @@ import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 const nextConfig: NextConfig = {
   serverExternalPackages: [
     "@prisma/client",
+    ".prisma/client",
     "@prisma/adapter-neon",
     "@prisma/adapter-pg",
     "@neondatabase/serverless",

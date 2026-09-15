@@ -6,6 +6,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import path from "node:path";
+import { buildRuntimeSchema } from "./prisma-schema.mjs";
 
 const root = path.join(import.meta.dirname, "..");
 const sourcePath = path.join(root, "prisma/schema.prisma");
@@ -40,10 +41,7 @@ if (requirePostgres && !urlLooksPostgres) {
 
 const provider = postgres ? "postgresql" : "sqlite";
 const source = readFileSync(sourcePath, "utf8");
-const runtime = source.replace(
-  /(datasource db \{[\s\S]*?provider\s*=\s*)"(sqlite|postgresql)"/,
-  `$1"${provider}"`,
-);
+const runtime = buildRuntimeSchema(source, provider);
 
 writeFileSync(runtimePath, runtime);
 

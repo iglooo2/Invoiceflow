@@ -44,19 +44,24 @@ export async function registerWithPassword(formData: FormData) {
     return { error: "Name, a valid email, and an 8+ character password are required." };
   }
   const email = parsed.data.email.toLowerCase();
-  const existing = await prisma.user.findUnique({ where: { email } });
-  if (existing) {
-    return { error: "An account with that email already exists. Sign in instead." };
+  try {
+    const existing = await prisma.user.findUnique({ where: { email } });
+    if (existing) {
+      return { error: "An account with that email already exists. Sign in instead." };
+    }
+    await prisma.user.create({
+      data: {
+        email,
+        name: parsed.data.name,
+        passwordHash: await bcrypt.hash(parsed.data.password, 10),
+        businessName: parsed.data.name,
+        businessEmail: email,
+      },
+    });
+  } catch (error) {
+    console.error("registerWithPassword failed", error);
+    return { error: "Couldn’t create that account right now. Please try again." };
   }
-  await prisma.user.create({
-    data: {
-      email,
-      name: parsed.data.name,
-      passwordHash: await bcrypt.hash(parsed.data.password, 10),
-      businessName: parsed.data.name,
-      businessEmail: email,
-    },
-  });
   try {
     await signIn("credentials", {
       email,

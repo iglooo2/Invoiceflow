@@ -5,6 +5,7 @@ generator client {
 // Default provider is SQLite for `npm run setup`.
 // `scripts/prisma.mjs` rewrites this to postgresql when DATABASE_URL is
 // postgres://, PRISMA_PROVIDER=postgresql, or Cloudflare CI (WORKERS_CI=1).
+// Postgres generate also sets engineType to the rust-free client (Workers / Neon HTTP).
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
