@@ -152,7 +152,7 @@ Do this in the Cloudflare dashboard — the agent cannot click it for you:
 8. GitHub OAuth app (if used): Homepage `https://invoiceflowstudio.com`, callback `https://invoiceflowstudio.com/api/auth/callback/github`.
 9. Stripe webhook endpoint: `https://invoiceflowstudio.com/api/stripe/webhook` (events: `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`).
 
-Worker name in `wrangler.jsonc` is `invoiceflow-studio`.
+Worker name in `wrangler.jsonc` is `invoiceflow` (must match the Cloudflare Git-connected Worker).
 
 ### What you must click (no CLI equivalent)
 
