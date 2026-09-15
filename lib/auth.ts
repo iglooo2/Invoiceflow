@@ -22,16 +22,21 @@ const providers: Provider[] = [
         .toLowerCase();
       const password = String(credentials?.password ?? "");
       if (!email || !password) return null;
-      const user = await prisma.user.findUnique({ where: { email } });
-      if (!user?.passwordHash) return null;
-      const valid = await bcrypt.compare(password, user.passwordHash);
-      if (!valid) return null;
-      return {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        image: user.image,
-      };
+      try {
+        const user = await prisma.user.findUnique({ where: { email } });
+        if (!user?.passwordHash) return null;
+        const valid = await bcrypt.compare(password, user.passwordHash);
+        if (!valid) return null;
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          image: user.image,
+        };
+      } catch (error) {
+        console.error("credentials authorize failed", error);
+        throw error;
+      }
     },
   }),
 ];
