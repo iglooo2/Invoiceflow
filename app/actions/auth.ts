@@ -4,7 +4,12 @@ import { AuthError } from "next-auth";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { signIn, signOut } from "@/lib/auth";
-import { prisma } from "@/lib/db";
+import { databaseRuntimeStatus, isMissingRuntimeDatabaseUrl, prisma } from "@/lib/db";
+import {
+  missingRuntimeDatabaseUrlMessage,
+  registerFailureMessage,
+  safeErrorLog,
+} from "@/lib/db-errors";
 
 const credentialsSchema = z.object({
   email: z.string().email(),
@@ -27,6 +32,10 @@ export async function loginWithPassword(formData: FormData) {
       redirectTo: String(formData.get("callbackUrl") || "/dashboard"),
     });
   } catch (error) {
+    if (isMissingRuntimeDatabaseUrl()) {
+      console.error("loginWithPassword", safeErrorLog(error), databaseRuntimeStatus());
+      return { error: missingRuntimeDatabaseUrlMessage() };
+    }
     if (error instanceof AuthError) {
       return { error: "Those credentials didn’t match. Try the demo login or create an account." };
     }
@@ -44,23 +53,40 @@ export async function registerWithPassword(formData: FormData) {
     return { error: "Name, a valid email, and an 8+ character password are required." };
   }
   const email = parsed.data.email.toLowerCase();
+  const name = parsed.data.name;
+  if (isMissingRuntimeDatabaseUrl()) {
+    console.error("registerWithPassword missing DATABASE_URL", databaseRuntimeStatus());
+    return { error: missingRuntimeDatabaseUrlMessage() };
+  }
+  let passwordHash: string;
+  try {
+    passwordHash = await bcrypt.hash(parsed.data.password, 10);
+  } catch (error) {
+    console.error("registerWithPassword hash failed", safeErrorLog(error));
+    return { error: "Couldn’t hash that password on this server. Check Worker logs (bcryptjs / crypto)." };
+  }
   try {
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) {
       return { error: "An account with that email already exists. Sign in instead." };
     }
+    const now = new Date();
     await prisma.user.create({
       data: {
+        id: crypto.randomUUID(),
         email,
-        name: parsed.data.name,
-        passwordHash: await bcrypt.hash(parsed.data.password, 10),
-        businessName: parsed.data.name,
+        name,
+        passwordHash,
+        businessName: name,
         businessEmail: email,
+        plan: "free",
+        createdAt: now,
+        updatedAt: now,
       },
     });
   } catch (error) {
-    console.error("registerWithPassword failed", error);
-    return { error: "Couldn’t create that account right now. Please try again." };
+    console.error("registerWithPassword failed", safeErrorLog(error), databaseRuntimeStatus());
+    return { error: registerFailureMessage(error) };
   }
   try {
     await signIn("credentials", {
