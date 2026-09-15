@@ -1,0 +1,92 @@
+import Link from "next/link";
+import { prisma } from "@/lib/db";
+import { formatCents, invoiceTotals } from "@/lib/money";
+import { requireUser } from "@/lib/session";
+import { Button } from "@/components/ui/button";
+import { Input, Select } from "@/components/ui/input";
+import { StatusBadge } from "@/components/status-badge";
+
+export default async function InvoicesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string; q?: string }>;
+}) {
+  const user = await requireUser();
+  const { status, q } = await searchParams;
+  const invoices = await prisma.invoice.findMany({
+    where: {
+      userId: user.id,
+      status: status || undefined,
+      OR: q
+        ? [
+            { number: { contains: q } },
+            { clientName: { contains: q } },
+            { clientCompany: { contains: q } },
+          ]
+        : undefined,
+    },
+    include: { items: true },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return (
+    <div className="grid gap-6">
+      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+        <div>
+          <h1 className="font-display text-4xl">Invoices</h1>
+          <p className="text-muted-foreground">Filter by status or search client and number.</p>
+        </div>
+        <Button asChild>
+          <Link href="/dashboard/invoices/new">New invoice</Link>
+        </Button>
+      </div>
+      <form className="flex flex-col gap-2 sm:flex-row">
+        <Input name="q" placeholder="Search" defaultValue={q} />
+        <Select name="status" defaultValue={status || ""}>
+          <option value="">All statuses</option>
+          <option value="draft">Draft</option>
+          <option value="sent">Sent</option>
+          <option value="paid">Paid</option>
+          <option value="overdue">Overdue</option>
+          <option value="void">Void</option>
+        </Select>
+        <Button type="submit" variant="outline">
+          Filter
+        </Button>
+      </form>
+      <div className="overflow-x-auto rounded-3xl border border-border bg-card">
+        <table className="w-full min-w-[640px] text-sm">
+          <thead className="text-left text-muted-foreground">
+            <tr className="border-b border-border">
+              <th className="px-4 py-3 font-medium">Number</th>
+              <th className="px-4 py-3 font-medium">Client</th>
+              <th className="px-4 py-3 font-medium">Status</th>
+              <th className="px-4 py-3 font-medium">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {invoices.map((invoice) => (
+              <tr key={invoice.id} className="border-b border-border/70">
+                <td className="px-4 py-3">
+                  <Link href={`/dashboard/invoices/${invoice.id}`} className="font-medium">
+                    {invoice.number}
+                  </Link>
+                </td>
+                <td className="px-4 py-3">{invoice.clientName}</td>
+                <td className="px-4 py-3">
+                  <StatusBadge status={invoice.status} />
+                </td>
+                <td className="px-4 py-3">
+                  {formatCents(invoiceTotals(invoice.items, invoice.taxRate).totalCents, invoice.currency)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {invoices.length === 0 ? (
+          <p className="px-4 py-10 text-sm text-muted-foreground">No invoices match those filters.</p>
+        ) : null}
+      </div>
+    </div>
+  );
+}

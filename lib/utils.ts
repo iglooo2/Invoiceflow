@@ -1,0 +1,34 @@
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
+export function getAppUrl() {
+  return (
+    process.env.NEXT_PUBLIC_APP_URL ||
+    process.env.AUTH_URL ||
+    "http://localhost:3000"
+  );
+}
+
+export function isDevMode() {
+  return process.env.AUTH_DEV_MODE !== "false";
+}
+
+export function githubAuthEnabled() {
+  return Boolean(process.env.AUTH_GITHUB_ID && process.env.AUTH_GITHUB_SECRET);
+}
+
+export function resendEnabled() {
+  return Boolean(process.env.AUTH_RESEND_KEY || process.env.RESEND_API_KEY);
+}
+
+export function stripeEnabled() {
+  return Boolean(
+    process.env.STRIPE_SECRET_KEY &&
+      process.env.STRIPE_PRO_PRICE_ID &&
+      !process.env.STRIPE_SECRET_KEY.includes("sk_test_..."),
+  );
+}
