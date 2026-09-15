@@ -1,7 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import { PrismaNeonHTTP } from "@prisma/adapter-neon";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { isNeonUrl, isPostgresUrl, postgresPrismaEnabled } from "./site";
+import { postgresPrismaEnabled } from "./site";
+import { prismaAdapterKind, readDatabaseUrl, sanitizeNeonHttpUrl } from "./db-url";
 
 const globalForPrisma = globalThis as unknown as {
   prisma?: PrismaClient;
@@ -12,32 +13,29 @@ const log: Array<"error" | "warn"> =
   process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"];
 
 /**
- * Neon HTTP requires arrayMode + fullResults on each query (the adapter sets
- * those). Passing `arrayMode: false` on the client constructor can make Prisma
- * mis-parse rows. Empty options are the documented Workers/Neon pattern.
+ * Prisma's Neon HTTP adapter forces arrayMode + fullResults per query. Setting
+ * the same on the neon() client avoids pooled-URL result parsing failures.
  */
-export const NEON_HTTP_ADAPTER_OPTIONS = {};
+export const NEON_HTTP_ADAPTER_OPTIONS = {
+  arrayMode: true,
+  fullResults: true,
+};
 
-export type PrismaAdapterKind = "neon-http" | "pg" | "native";
-
-export function readDatabaseUrl() {
-  // Bracket access so bundlers cannot inline a build-time empty value.
-  return process.env["DATABASE_URL"] ?? "";
-}
-
-export function prismaAdapterKind(url = readDatabaseUrl()): PrismaAdapterKind {
-  if (isPostgresUrl(url)) {
-    return isNeonUrl(url) ? "neon-http" : "pg";
-  }
-  return "native";
-}
+export type { PrismaAdapterKind } from "./db-url";
+export {
+  databaseRuntimeStatus,
+  isMissingRuntimeDatabaseUrl,
+  prismaAdapterKind,
+  readDatabaseUrl,
+  sanitizeNeonHttpUrl,
+} from "./db-url";
 
 export function createPrismaClient(url = readDatabaseUrl()) {
   const kind = prismaAdapterKind(url);
 
   if (kind === "neon-http") {
     return new PrismaClient({
-      adapter: new PrismaNeonHTTP(url, NEON_HTTP_ADAPTER_OPTIONS),
+      adapter: new PrismaNeonHTTP(sanitizeNeonHttpUrl(url), NEON_HTTP_ADAPTER_OPTIONS),
       log,
     });
   }
@@ -71,8 +69,7 @@ function getPrismaClient() {
 
 /**
  * Lazy proxy so the first query runs after OpenNext copies Worker secrets onto
- * `process.env`. A module-level `new PrismaClient()` runs too early and skips
- * the Neon HTTP adapter, which is what broke production signup.
+ * `process.env` / Cloudflare request env.
  */
 export const prisma: PrismaClient = new Proxy({} as PrismaClient, {
   get(_target, prop) {
@@ -82,5 +79,8 @@ export const prisma: PrismaClient = new Proxy({} as PrismaClient, {
       return value.bind(client);
     }
     return value;
+  },
+  has(_target, prop) {
+    return Reflect.has(getPrismaClient(), prop);
   },
 });
