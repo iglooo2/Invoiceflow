@@ -117,6 +117,8 @@ npm run deploy                   # build + wrangler deploy
 
 ### B. Connect GitHub in the Cloudflare dashboard (recommended)
 
+**MUST set Build variable `PRISMA_PROVIDER=postgresql`.** Without it, `npm install` / `prisma generate` can emit a SQLite client that is then bundled into the Worker. Runtime `DATABASE_URL` pointing at Neon cannot fix a SQLite client. `npm run cf:build` also forces Postgres generate (even if Build `DATABASE_URL` is missing or `file:./dev.db`). The real Neon pooled URL still belongs on **runtime** secrets.
+
 Do this in the Cloudflare dashboard — the agent cannot click it for you:
 
 1. Open [Workers & Pages](https://dash.cloudflare.com/?to=/:account/workers-and-pages).

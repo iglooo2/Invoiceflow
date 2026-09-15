@@ -41,3 +41,13 @@ test("prisma generate with PRISMA_PROVIDER=postgresql works without a postgres D
     });
   }
 });
+
+test("cf:build generates the Postgres client before OpenNext", () => {
+  const script = readFileSync(path.join(root, "scripts/cf-build.mjs"), "utf8");
+  const generateAt = script.indexOf('["scripts/prisma.mjs", "generate"]');
+  const openNextAt = script.indexOf("opennextjs-cloudflare");
+  assert.notEqual(generateAt, -1);
+  assert.notEqual(openNextAt, -1);
+  assert.equal(generateAt < openNextAt, true);
+  assert.match(script, /PRISMA_PROVIDER:\s*"postgresql"/);
+});
