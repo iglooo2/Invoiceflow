@@ -5,7 +5,8 @@ import GitHub from "next-auth/providers/github";
 import Resend from "next-auth/providers/resend";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
-import { prisma } from "@/lib/db";
+import { databaseRuntimeStatus, prisma } from "@/lib/db";
+import { safeErrorLog } from "@/lib/db-errors";
 import { sendMagicLinkEmail } from "@/lib/email";
 import { githubAuthEnabled, resendEnabled } from "@/lib/utils";
 
@@ -34,7 +35,7 @@ const providers: Provider[] = [
           image: user.image,
         };
       } catch (error) {
-        console.error("credentials authorize failed", error);
+        console.error("credentials authorize failed", safeErrorLog(error), databaseRuntimeStatus());
         throw error;
       }
     },

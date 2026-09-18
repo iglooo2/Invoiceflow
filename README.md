@@ -98,7 +98,7 @@ The app uses Prisma **driver adapters** at runtime so Postgres works on Cloudfla
 - **Supabase / generic Postgres** → `@prisma/adapter-pg` + `pg` over Workers `nodejs_compat`
 - Cloudflare `prisma generate` sets `engineType = "client"` (rust-free). Local SQLite `npm run setup` does not — it still uses the default Prisma client with no adapter
 
-`DATABASE_URL` must be a **runtime** Worker secret (not only a build variable). Signup is the first path that queries Postgres; marketing pages do not.
+`DATABASE_URL` must be a **runtime** Worker secret (not only a build variable). Signup is the first path that queries Postgres; marketing pages do not. If the secret is missing at runtime, `/login` now says so instead of a generic create failure. Neon pooled URLs that include `channel_binding=require` are sanitized for the HTTP adapter (`sslmode=require` is kept).
 
 ## Deploy to Cloudflare (invoiceflowstudio.com)
 
@@ -116,6 +116,8 @@ npm run deploy                   # build + wrangler deploy
 `npm run preview` serves the Worker locally via Wrangler. Copy `.dev.vars.example` → `.dev.vars` with a **Postgres** URL — SQLite `file:./dev.db` cannot run inside the Worker. Use `npm run dev` for the local SQLite demo.
 
 ### B. Connect GitHub in the Cloudflare dashboard (recommended)
+
+**MUST set Build variable `PRISMA_PROVIDER=postgresql`.** Without it, `npm install` / `prisma generate` can emit a SQLite client that is then bundled into the Worker. Runtime `DATABASE_URL` pointing at Neon cannot fix a SQLite client. `npm run cf:build` also forces Postgres generate (even if Build `DATABASE_URL` is missing or `file:./dev.db`). The real Neon pooled URL still belongs on **runtime** secrets.
 
 Do this in the Cloudflare dashboard — the agent cannot click it for you:
 
@@ -146,7 +148,7 @@ Do this in the Cloudflare dashboard — the agent cannot click it for you:
    | `AUTH_RESEND_KEY` | Secret | if using magic links |
    | `EMAIL_FROM` | Variable | `InvoiceFlow Studio <noreply@invoiceflowstudio.com>` |
 
-   Also add `DATABASE_URL` and `PRISMA_PROVIDER=postgresql` under **Build** variables so `prisma generate` emits a Postgres client during the OpenNext build.
+   Also add **`PRISMA_PROVIDER=postgresql` as a Build variable** (required). `npm run cf:build` now runs `prisma generate` in Postgres mode even if Build `DATABASE_URL` is missing or still `file:./dev.db`. The real Neon URL must still be a **runtime** secret. Optionally set Build `DATABASE_URL` to any `postgresql://…` placeholder; do not rely on SQLite at build time.
 
 6. Save, then **Retry build** / push to `main`.
 7. **Custom domain:** Worker → **Settings → Domains & Routes → Add** → `invoiceflowstudio.com`. Because the zone is already on Cloudflare, accept the proxied record it offers. Optionally add `www` and redirect it to apex in the zone.
@@ -204,7 +206,7 @@ Without Stripe keys locally, keep `AUTH_DEV_MODE=true` and use **Unlock Pro for 
 
 - **OpenNext vs vinext:** Cloudflare’s newest Next.js path is [vinext](https://developers.cloudflare.com/workers/frameworks/framework-guides/nextjs/). This repo uses **`@opennextjs/cloudflare`** (still a documented Workers path) so we keep the App Router + `next build` toolchain.
 - **Prisma:** production uses the rust-free client engine + driver adapters (no query-engine binary on Workers). The Prisma client is a lazy proxy so `DATABASE_URL` is read after OpenNext copies Worker secrets onto `process.env`. Local SQLite does not use an adapter.
-- **Signup / login check after deploy:** open `/login` → Create account with a new email and 8+ character password. You should land on `/dashboard`. Sign out, sign back in with the same credentials. A 500 (“This page couldn’t load”) on register, followed by “Those credentials didn’t match” on login, means Prisma never created the user (adapter/env/engine). `npm test` covers adapter selection and the Postgres `engineType = "client"` schema rewrite.
+- **Signup / login check after deploy:** open `/login` → Create account with a new email and 8+ character password. You should land on `/dashboard`. Sign out, sign back in with the same credentials. If the form says **DATABASE_URL is missing at runtime**, add the Neon pooled URL under Worker **runtime** Variables and Secrets (not only build vars) and redeploy. If it mentions missing tables, run `npm run db:push:prod` from a laptop. If it mentions a SQLite Prisma client, set **Build** `PRISMA_PROVIDER=postgresql` and rebuild with `npm run cf:build`. `npm test` covers adapter selection, Neon URL sanitization (`channel_binding` / `sslmode`), Prisma error hints, and postgres generate without a real DATABASE_URL.
 - **`pg-cloudflare`:** OpenNext’s package copy does not include `pg-cloudflare`’s `workerd` build. `open-next.config.ts` sets `useWorkerdCondition: false` so `pg` uses `nodejs_compat` sockets. Prefer **Neon HTTP** in production to avoid that path.
 - **Node.js middleware:** Next.js 16 `proxy.ts` (dashboard cookie gate) is **experimental** on Cloudflare OpenNext. Do not set `export const runtime = "edge"` — OpenNext expects the Node.js runtime. If a future OpenNext release rejects Node middleware, the app still authenticates in layouts; only the early `/dashboard` redirect would need a rewrite.
 - **bcryptjs / pdf-lib / Stripe / Resend:** JS libraries; they rely on Workers `nodejs_compat`.
