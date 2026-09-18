@@ -14,7 +14,7 @@ export function isNeonUrl(url = process.env["DATABASE_URL"] ?? "") {
 }
 
 export function postgresPrismaEnabled() {
-  const explicit = process.env["PRISMA_PROVIDER"]?.toLowerCase();
+  const explicit = process.env.PRISMA_PROVIDER?.toLowerCase();
   if (explicit === "postgresql" || explicit === "postgres") return true;
   if (explicit === "sqlite") return false;
   if (process.env["WORKERS_CI"] === "1" || process.env["CF_PAGES"] === "1") return true;

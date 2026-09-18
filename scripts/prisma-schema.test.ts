@@ -21,6 +21,12 @@ test("postgres runtime schema uses rust-free client engine", () => {
   assert.match(runtime, /engineType\s*=\s*"client"/);
 });
 
+test("PRISMA_PROVIDER is a typed process.env key after env spread", () => {
+  const restore = { ...process.env, DATABASE_URL: process.env.DATABASE_URL || "file:./dev.db" };
+  delete restore.PRISMA_PROVIDER;
+  assert.equal(restore.PRISMA_PROVIDER, undefined);
+});
+
 test("prisma generate with PRISMA_PROVIDER=postgresql works without a postgres DATABASE_URL", () => {
   const gen = spawnSync("node", ["scripts/prisma.mjs", "generate"], {
     cwd: root,
