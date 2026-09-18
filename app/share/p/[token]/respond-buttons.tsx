@@ -13,10 +13,14 @@ export function ProposalResponse({ token, status }: { token: string; status: str
   }
   return (
     <div className="flex gap-2">
-      <form action={respondToProposal.bind(null, token, "accepted")}>
+      <form action={respondToProposal}>
+        <input type="hidden" name="token" value={token} />
+        <input type="hidden" name="decision" value="accepted" />
         <Button type="submit">Accept</Button>
       </form>
-      <form action={respondToProposal.bind(null, token, "declined")}>
+      <form action={respondToProposal}>
+        <input type="hidden" name="token" value={token} />
+        <input type="hidden" name="decision" value="declined" />
         <Button type="submit" variant="outline">
           Decline
         </Button>

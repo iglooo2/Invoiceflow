@@ -6,7 +6,7 @@ import { addDays } from "date-fns";
 import { databaseRuntimeStatus, prisma } from "@/lib/db";
 import { documentWriteFailureMessage, errorRedirect, safeErrorLog } from "@/lib/db-errors";
 import { insertInvoiceWithItems, replaceInvoiceItems } from "@/lib/document-writes";
-import { parseInvoiceForm } from "@/lib/invoice-input";
+import { parseInvoiceForm, parseInvoiceIdForm, parseInvoiceStatusForm } from "@/lib/invoice-input";
 import { planFromUser, requireUser } from "@/lib/session";
 import { assertCanCreate, newPublicToken, nextInvoiceNumber, redirectIfLimitReached } from "@/lib/documents";
 import { SEED_TEMPLATES, type InvoiceTemplatePayload } from "@/lib/templates";
@@ -102,21 +102,57 @@ export async function updateInvoice(
   redirect(`/dashboard/invoices/${invoiceId}`);
 }
 
-export async function deleteInvoice(invoiceId: string) {
+export async function deleteInvoice(formData: FormData) {
   const user = await requireUser();
-  await prisma.invoice.deleteMany({ where: { id: invoiceId, userId: user.id } });
-  revalidatePath("/dashboard/invoices");
+  const parsed = parseInvoiceIdForm(formData);
+  if (!parsed.success) {
+    redirect(errorRedirect("/dashboard/invoices", parsed.error));
+  }
+  const invoiceId = parsed.data.invoiceId;
+  try {
+    await prisma.invoice.deleteMany({ where: { id: invoiceId, userId: user.id } });
+  } catch (error) {
+    unstable_rethrow(error);
+    console.error("deleteInvoice failed", safeErrorLog(error), databaseRuntimeStatus());
+    redirect(errorRedirect(`/dashboard/invoices/${invoiceId}`, documentWriteFailureMessage(error)));
+  }
+  await revalidateInvoicePaths();
   redirect("/dashboard/invoices");
 }
 
-export async function markInvoiceStatus(invoiceId: string, status: string) {
+/**
+ * FormData-only (no `.bind` args). OpenNext on Workers has crashed when a
+ * server action was invoked with two bound arguments plus the implicit
+ * FormData, and the previous implementation then called `revalidatePath`
+ * without a redirect — any throw became Cloudflare's generic Worker page.
+ */
+export async function markInvoiceStatus(formData: FormData) {
   const user = await requireUser();
-  await prisma.invoice.updateMany({
-    where: { id: invoiceId, userId: user.id },
-    data: { status },
-  });
-  revalidatePath(`/dashboard/invoices/${invoiceId}`);
-  revalidatePath("/dashboard/invoices");
+  const parsed = parseInvoiceStatusForm(formData);
+  const invoiceId = parsed.success ? parsed.data.invoiceId : String(formData.get("invoiceId") || "");
+  const detailPath = invoiceId ? `/dashboard/invoices/${invoiceId}` : "/dashboard/invoices";
+  if (!parsed.success) {
+    redirect(errorRedirect(detailPath, parsed.error));
+  }
+  try {
+    const existing = await prisma.invoice.findFirst({
+      where: { id: parsed.data.invoiceId, userId: user.id },
+      select: { id: true },
+    });
+    if (!existing) {
+      redirect(errorRedirect("/dashboard/invoices", "Invoice not found."));
+    }
+    await prisma.invoice.update({
+      where: { id: existing.id },
+      data: { status: parsed.data.status },
+    });
+  } catch (error) {
+    unstable_rethrow(error);
+    console.error("markInvoiceStatus failed", safeErrorLog(error), databaseRuntimeStatus());
+    redirect(errorRedirect(detailPath, documentWriteFailureMessage(error)));
+  }
+  await revalidateInvoicePaths(parsed.data.invoiceId);
+  redirect(`/dashboard/invoices/${parsed.data.invoiceId}`);
 }
 
 export async function createInvoiceFromTemplate(slug: string) {
@@ -158,23 +194,39 @@ export async function createInvoiceFromTemplate(slug: string) {
   }
 }
 
-export async function emailInvoice(invoiceId: string) {
+export async function emailInvoice(formData: FormData) {
   const user = await requireUser();
-  const invoice = await prisma.invoice.findFirst({
-    where: { id: invoiceId, userId: user.id },
-  });
-  if (!invoice?.clientEmail) {
-    return;
+  const parsed = parseInvoiceIdForm(formData);
+  if (!parsed.success) {
+    redirect(errorRedirect("/dashboard/invoices", parsed.error));
   }
-  await sendDocumentEmail({
-    to: invoice.clientEmail,
-    subject: `Invoice ${invoice.number} from ${user.businessName || user.name || "your freelancer"}`,
-    heading: `Invoice ${invoice.number}`,
-    body: "Here’s a link to view and download the invoice.",
-    link: publicInvoiceUrl(invoice.publicToken),
-  });
-  if (invoice.status === "draft") {
-    await prisma.invoice.update({ where: { id: invoice.id }, data: { status: "sent" } });
+  const invoiceId = parsed.data.invoiceId;
+  const detailPath = `/dashboard/invoices/${invoiceId}`;
+  try {
+    const invoice = await prisma.invoice.findFirst({
+      where: { id: invoiceId, userId: user.id },
+    });
+    if (!invoice) {
+      redirect(errorRedirect("/dashboard/invoices", "Invoice not found."));
+    }
+    if (!invoice.clientEmail) {
+      redirect(errorRedirect(detailPath, "Add a client email before sending the share link."));
+    }
+    await sendDocumentEmail({
+      to: invoice.clientEmail,
+      subject: `Invoice ${invoice.number} from ${user.businessName || user.name || "your freelancer"}`,
+      heading: `Invoice ${invoice.number}`,
+      body: "Here’s a link to view and download the invoice.",
+      link: publicInvoiceUrl(invoice.publicToken),
+    });
+    if (invoice.status === "draft") {
+      await prisma.invoice.update({ where: { id: invoice.id }, data: { status: "sent" } });
+    }
+  } catch (error) {
+    unstable_rethrow(error);
+    console.error("emailInvoice failed", safeErrorLog(error), databaseRuntimeStatus());
+    redirect(errorRedirect(detailPath, documentWriteFailureMessage(error)));
   }
-  revalidatePath(`/dashboard/invoices/${invoiceId}`);
+  await revalidateInvoicePaths(invoiceId);
+  redirect(detailPath);
 }

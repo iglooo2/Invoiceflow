@@ -38,6 +38,22 @@ function parseJsonField(raw: FormDataEntryValue | null, label: string): ParseRes
   }
 }
 
+export function parseInvoiceIdForm(formData: FormData): ParseResult<{ invoiceId: string }> {
+  const invoiceId = String(formData.get("invoiceId") || "").trim();
+  if (!invoiceId) return { success: false, error: "Invoice is missing." };
+  return { success: true, data: { invoiceId } };
+}
+
+export function parseInvoiceStatusForm(
+  formData: FormData,
+): ParseResult<{ invoiceId: string; status: ParsedInvoiceForm["status"] }> {
+  const id = parseInvoiceIdForm(formData);
+  if (!id.success) return id;
+  const parsed = invoiceSchema.shape.status.safeParse(String(formData.get("status") || "").trim());
+  if (!parsed.success) return { success: false, error: "That invoice status is not valid." };
+  return { success: true, data: { invoiceId: id.data.invoiceId, status: parsed.data } };
+}
+
 export function parseInvoiceForm(formData: FormData): ParseResult<ParsedInvoiceForm> {
   const json = parseJsonField(formData.get("itemsJson"), "Line items");
   if (!json.success) return json;
