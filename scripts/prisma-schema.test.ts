@@ -18,3 +18,9 @@ test("postgres runtime schema uses rust-free client engine", () => {
   assert.match(runtime, /provider\s*=\s*"postgresql"/);
   assert.match(runtime, /engineType\s*=\s*"client"/);
 });
+
+test("PRISMA_PROVIDER is a typed process.env key after env spread", () => {
+  const restore = { ...process.env, DATABASE_URL: process.env.DATABASE_URL || "file:./dev.db" };
+  delete restore.PRISMA_PROVIDER;
+  assert.equal(restore.PRISMA_PROVIDER, undefined);
+});
