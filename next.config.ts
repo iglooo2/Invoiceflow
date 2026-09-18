@@ -12,6 +12,14 @@ const nextConfig: NextConfig = {
     "pdf-lib",
     "pg",
   ],
+  // NFT does not follow Prisma's fs.readFileSync of the query compiler WASM.
+  outputFileTracingIncludes: {
+    "/*": [
+      "./node_modules/.prisma/client/query_compiler_bg.wasm",
+      "./node_modules/.prisma/client/query_compiler_bg.js",
+      "./node_modules/.prisma/client/wasm-worker-loader.mjs",
+    ],
+  },
   experimental: {
     serverActions: {
       allowedOrigins: [

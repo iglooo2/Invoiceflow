@@ -65,9 +65,15 @@ test("prisma generate with PRISMA_PROVIDER=postgresql works without a postgres D
 test("cf:build generates the Postgres client before OpenNext", () => {
   const script = readFileSync(path.join(root, "scripts/cf-build.mjs"), "utf8");
   const generateAt = script.indexOf('["scripts/prisma.mjs", "generate"]');
+  const patchAt = script.indexOf('["scripts/prisma-cf-wasm.mjs", "patch"]');
   const openNextAt = script.indexOf("opennextjs-cloudflare");
+  const wireAt = script.indexOf('["scripts/prisma-cf-wasm.mjs", "wire"]');
   assert.notEqual(generateAt, -1);
+  assert.notEqual(patchAt, -1);
   assert.notEqual(openNextAt, -1);
-  assert.equal(generateAt < openNextAt, true);
+  assert.notEqual(wireAt, -1);
+  assert.equal(generateAt < patchAt, true);
+  assert.equal(patchAt < openNextAt, true);
+  assert.equal(openNextAt < wireAt, true);
   assert.match(script, /PRISMA_PROVIDER:\s*"postgresql"/);
 });
