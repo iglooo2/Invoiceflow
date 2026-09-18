@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input, Label, Select, Textarea } from "@/components/ui/input";
 import { formatCents, proposalTotalCents } from "@/lib/money";
 
+export type ProposalFormAction = (formData: FormData) => Promise<{ error?: string } | void>;
+
 type Section = { heading: string; body: string; amount: string };
 type ClientOption = { id: string; name: string; email: string | null; company: string | null };
 
@@ -12,9 +14,11 @@ export function ProposalForm({
   action,
   clients,
   initial,
+  formError,
 }: {
-  action: (formData: FormData) => Promise<void>;
+  action: ProposalFormAction;
   clients: ClientOption[];
+  formError?: string | null;
   initial?: {
     clientId?: string | null;
     title: string;
@@ -31,6 +35,7 @@ export function ProposalForm({
   const [clientName, setClientName] = useState(initial?.clientName ?? "");
   const [clientEmail, setClientEmail] = useState(initial?.clientEmail ?? "");
   const [clientCompany, setClientCompany] = useState(initial?.clientCompany ?? "");
+  const [error, setError] = useState(formError ?? null);
   const [sections, setSections] = useState<Section[]>(
     initial?.sections?.map((section) => ({
       heading: section.heading,
@@ -53,7 +58,19 @@ export function ProposalForm({
   );
 
   return (
-    <form action={action} className="grid gap-6">
+    <form
+      action={async (formData) => {
+        setError(null);
+        const result = await action(formData);
+        if (result?.error) setError(result.error);
+      }}
+      className="grid gap-6"
+    >
+      {error ? (
+        <p role="alert" className="rounded-2xl bg-destructive/10 px-4 py-3 text-sm text-destructive">
+          {error}
+        </p>
+      ) : null}
       <input type="hidden" name="sectionsJson" value={JSON.stringify(sections)} />
       <div className="grid gap-4 md:grid-cols-2">
         <div className="grid gap-2">
@@ -115,6 +132,7 @@ export function ProposalForm({
             <Input
               placeholder="Heading"
               value={section.heading}
+              required
               onChange={(e) => {
                 const next = [...sections];
                 next[index] = { ...section, heading: e.target.value };
@@ -124,6 +142,7 @@ export function ProposalForm({
             <Textarea
               placeholder="What you’ll make, how you’ll work, what’s included…"
               value={section.body}
+              required
               onChange={(e) => {
                 const next = [...sections];
                 next[index] = { ...section, body: e.target.value };

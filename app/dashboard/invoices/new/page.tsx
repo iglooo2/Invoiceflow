@@ -4,8 +4,13 @@ import { requireUser } from "@/lib/session";
 import { InvoiceForm } from "@/components/invoice-form";
 import { createInvoice } from "@/app/actions/invoices";
 
-export default async function NewInvoicePage() {
+export default async function NewInvoicePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
   const user = await requireUser();
+  const { error } = await searchParams;
   const clients = await prisma.client.findMany({
     where: { userId: user.id },
     orderBy: { name: "asc" },
@@ -19,6 +24,7 @@ export default async function NewInvoicePage() {
       </div>
       <InvoiceForm
         action={createInvoice}
+        formError={error}
         clients={clients}
         initial={{
           clientName: "",

@@ -1,117 +1,99 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { redirect, unstable_rethrow } from "next/navigation";
 import { addDays } from "date-fns";
-import { z } from "zod";
-import { prisma } from "@/lib/db";
+import { databaseRuntimeStatus, prisma } from "@/lib/db";
+import { documentWriteFailureMessage, errorRedirect, safeErrorLog } from "@/lib/db-errors";
+import { insertProposalWithSections, replaceProposalSections } from "@/lib/document-writes";
+import { parseProposalForm } from "@/lib/proposal-input";
 import { planFromUser, requireUser } from "@/lib/session";
 import { assertCanCreate, newPublicToken, redirectIfLimitReached } from "@/lib/documents";
-import { dollarsFromInput } from "@/lib/money";
 import { SEED_TEMPLATES, type ProposalTemplatePayload } from "@/lib/templates";
 import { publicProposalUrl, sendDocumentEmail } from "@/lib/email";
 
-const sectionSchema = z.object({
-  heading: z.string().min(1),
-  body: z.string().min(1),
-  amount: z.number().nullable(),
-});
+export type ProposalActionResult = { error: string };
 
-const proposalSchema = z.object({
-  clientId: z.string().optional(),
-  title: z.string().min(1),
-  clientName: z.string().min(1),
-  clientEmail: z.string().optional(),
-  clientCompany: z.string().optional(),
-  validUntil: z.string().optional(),
-  notes: z.string().optional(),
-  status: z.enum(["draft", "sent", "accepted", "declined"]),
-  sections: z.array(sectionSchema).min(1),
-});
-
-function parseProposalForm(formData: FormData) {
-  const raw = formData.get("sectionsJson");
-  const sections = raw ? JSON.parse(String(raw)) : [];
-  return proposalSchema.parse({
-    clientId: String(formData.get("clientId") || "") || undefined,
-    title: String(formData.get("title") || ""),
-    clientName: String(formData.get("clientName") || ""),
-    clientEmail: String(formData.get("clientEmail") || "") || undefined,
-    clientCompany: String(formData.get("clientCompany") || "") || undefined,
-    validUntil: String(formData.get("validUntil") || "") || undefined,
-    notes: String(formData.get("notes") || "") || undefined,
-    status: String(formData.get("status") || "draft"),
-    sections: (sections as { heading: string; body: string; amount: string }[]).map((section) => ({
-      heading: section.heading,
-      body: section.body,
-      amount: section.amount === "" || section.amount == null ? null : dollarsFromInput(section.amount),
-    })),
-  });
+async function revalidateProposalPaths(proposalId?: string) {
+  try {
+    revalidatePath("/dashboard");
+    revalidatePath("/dashboard/proposals");
+    if (proposalId) revalidatePath(`/dashboard/proposals/${proposalId}`);
+  } catch (error) {
+    console.error("proposal revalidatePath", safeErrorLog(error));
+  }
 }
 
-export async function createProposal(formData: FormData) {
+export async function createProposal(formData: FormData): Promise<ProposalActionResult | void> {
+  const user = await requireUser();
+  let proposalId: string;
+  try {
+    try {
+      await assertCanCreate(user.id, planFromUser(user), "proposal");
+    } catch (error) {
+      redirectIfLimitReached(error);
+    }
+    const parsed = parseProposalForm(formData);
+    if (!parsed.success) return { error: parsed.error };
+    const proposal = await insertProposalWithSections(
+      prisma,
+      {
+        userId: user.id,
+        clientId: parsed.data.clientId,
+        title: parsed.data.title,
+        status: parsed.data.status,
+        validUntil: parsed.data.validUntil ? new Date(parsed.data.validUntil) : null,
+        notes: parsed.data.notes,
+        publicToken: newPublicToken(),
+        clientName: parsed.data.clientName,
+        clientEmail: parsed.data.clientEmail,
+        clientCompany: parsed.data.clientCompany,
+      },
+      parsed.data.sections,
+    );
+    proposalId = proposal.id;
+  } catch (error) {
+    unstable_rethrow(error);
+    console.error("createProposal failed", safeErrorLog(error), databaseRuntimeStatus());
+    return { error: documentWriteFailureMessage(error) };
+  }
+  await revalidateProposalPaths();
+  redirect(`/dashboard/proposals/${proposalId}`);
+}
+
+export async function updateProposal(
+  proposalId: string,
+  formData: FormData,
+): Promise<ProposalActionResult | void> {
   const user = await requireUser();
   try {
-    await assertCanCreate(user.id, planFromUser(user), "proposal");
+    const existing = await prisma.proposal.findFirst({
+      where: { id: proposalId, userId: user.id },
+    });
+    if (!existing) return { error: "Proposal not found." };
+    const parsed = parseProposalForm(formData);
+    if (!parsed.success) return { error: parsed.error };
+    await replaceProposalSections(
+      prisma,
+      proposalId,
+      {
+        clientId: parsed.data.clientId,
+        title: parsed.data.title,
+        status: parsed.data.status,
+        validUntil: parsed.data.validUntil ? new Date(parsed.data.validUntil) : null,
+        notes: parsed.data.notes,
+        clientName: parsed.data.clientName,
+        clientEmail: parsed.data.clientEmail,
+        clientCompany: parsed.data.clientCompany,
+      },
+      parsed.data.sections,
+    );
   } catch (error) {
-    redirectIfLimitReached(error);
+    unstable_rethrow(error);
+    console.error("updateProposal failed", safeErrorLog(error), databaseRuntimeStatus());
+    return { error: documentWriteFailureMessage(error) };
   }
-  const data = parseProposalForm(formData);
-  const proposal = await prisma.proposal.create({
-    data: {
-      userId: user.id,
-      clientId: data.clientId,
-      title: data.title,
-      status: data.status,
-      validUntil: data.validUntil ? new Date(data.validUntil) : null,
-      notes: data.notes,
-      publicToken: newPublicToken(),
-      clientName: data.clientName,
-      clientEmail: data.clientEmail,
-      clientCompany: data.clientCompany,
-      sections: {
-        create: data.sections.map((section, index) => ({
-          ...section,
-          sortOrder: index,
-        })),
-      },
-    },
-  });
-  revalidatePath("/dashboard");
-  revalidatePath("/dashboard/proposals");
-  redirect(`/dashboard/proposals/${proposal.id}`);
-}
-
-export async function updateProposal(proposalId: string, formData: FormData) {
-  const user = await requireUser();
-  const existing = await prisma.proposal.findFirst({
-    where: { id: proposalId, userId: user.id },
-  });
-  if (!existing) throw new Error("Proposal not found");
-  const data = parseProposalForm(formData);
-  await prisma.$transaction([
-    prisma.proposalSection.deleteMany({ where: { proposalId } }),
-    prisma.proposal.update({
-      where: { id: proposalId },
-      data: {
-        clientId: data.clientId,
-        title: data.title,
-        status: data.status,
-        validUntil: data.validUntil ? new Date(data.validUntil) : null,
-        notes: data.notes,
-        clientName: data.clientName,
-        clientEmail: data.clientEmail,
-        clientCompany: data.clientCompany,
-        sections: {
-          create: data.sections.map((section, index) => ({
-            ...section,
-            sortOrder: index,
-          })),
-        },
-      },
-    }),
-  ]);
-  revalidatePath(`/dashboard/proposals/${proposalId}`);
+  await revalidateProposalPaths(proposalId);
   redirect(`/dashboard/proposals/${proposalId}`);
 }
 
@@ -125,37 +107,42 @@ export async function deleteProposal(proposalId: string) {
 export async function createProposalFromTemplate(slug: string) {
   const user = await requireUser();
   try {
-    await assertCanCreate(user.id, planFromUser(user), "proposal");
-  } catch (error) {
-    redirectIfLimitReached(error);
-  }
-  const template =
-    (await prisma.documentTemplate.findUnique({ where: { slug } })) ??
-    SEED_TEMPLATES.find((item) => item.slug === slug);
-  if (!template || template.kind !== "proposal") {
-    throw new Error("Template not found");
-  }
-  const payload = template.payload as ProposalTemplatePayload;
-  const proposal = await prisma.proposal.create({
-    data: {
-      userId: user.id,
-      title: payload.title,
-      status: "draft",
-      validUntil: payload.validForDays ? addDays(new Date(), payload.validForDays) : null,
-      notes: payload.notes,
-      publicToken: newPublicToken(),
-      clientName: "New client",
-      sections: {
-        create: payload.sections.map((section, index) => ({
-          heading: section.heading,
-          body: section.body,
-          amount: section.amount ?? null,
-          sortOrder: index,
-        })),
+    try {
+      await assertCanCreate(user.id, planFromUser(user), "proposal");
+    } catch (error) {
+      redirectIfLimitReached(error);
+    }
+    const template =
+      (await prisma.documentTemplate.findUnique({ where: { slug } })) ??
+      SEED_TEMPLATES.find((item) => item.slug === slug);
+    if (!template || template.kind !== "proposal") {
+      throw new Error("Template not found");
+    }
+    const payload = template.payload as ProposalTemplatePayload;
+    const proposal = await insertProposalWithSections(
+      prisma,
+      {
+        userId: user.id,
+        title: payload.title,
+        status: "draft",
+        validUntil: payload.validForDays ? addDays(new Date(), payload.validForDays) : null,
+        notes: payload.notes,
+        publicToken: newPublicToken(),
+        clientName: "New client",
       },
-    },
-  });
-  redirect(`/dashboard/proposals/${proposal.id}/edit`);
+      payload.sections.map((section) => ({
+        heading: section.heading,
+        body: section.body,
+        amount: section.amount ?? null,
+      })),
+    );
+    await revalidateProposalPaths();
+    redirect(`/dashboard/proposals/${proposal.id}/edit`);
+  } catch (error) {
+    unstable_rethrow(error);
+    console.error("createProposalFromTemplate failed", safeErrorLog(error), databaseRuntimeStatus());
+    redirect(errorRedirect("/dashboard/proposals/new", documentWriteFailureMessage(error)));
+  }
 }
 
 export async function emailProposal(proposalId: string) {
