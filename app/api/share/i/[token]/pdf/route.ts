@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { buildInvoicePdf } from "@/lib/pdf";
+import { buildInvoicePdf, pdfDownloadHeaders } from "@/lib/pdf";
 import { currentPlanId } from "@/lib/plans";
 
 export async function GET(
@@ -20,10 +20,7 @@ export async function GET(
     invoice,
     branded: currentPlanId(invoice.user) !== "pro",
   });
-  return new NextResponse(Buffer.from(bytes), {
-    headers: {
-      "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="${invoice.number}.pdf"`,
-    },
+  return new NextResponse(bytes, {
+    headers: pdfDownloadHeaders(`${invoice.number}.pdf`),
   });
 }

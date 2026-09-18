@@ -70,3 +70,24 @@ body {
   background: linear-gradient(90deg, transparent, var(--border), transparent);
   height: 1px;
 }
+
+@media print {
+  html,
+  body {
+    background: #fff;
+    background-image: none;
+    color: #1c1917;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .paper-card {
+    box-shadow: none;
+    border: none;
+    max-width: none;
+    border-radius: 0;
+    padding: 0;
+  }
+}

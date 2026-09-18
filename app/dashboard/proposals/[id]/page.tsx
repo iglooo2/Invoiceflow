@@ -30,7 +30,7 @@ export default async function ProposalDetailPage({
           <h1 className="font-display text-4xl">{proposal.title}</h1>
           <p className="text-muted-foreground">{proposal.clientName}</p>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="no-print flex flex-wrap gap-2">
           <CopyLinkButton value={share} />
           <Button asChild variant="outline">
             <a href={`/api/proposals/${proposal.id}/pdf`}>Download PDF</a>
@@ -43,7 +43,7 @@ export default async function ProposalDetailPage({
           </Button>
         </div>
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div className="no-print flex flex-wrap gap-2">
         <form action={emailProposal.bind(null, proposal.id)}>
           <Button type="submit" variant="secondary">
             Email share link
