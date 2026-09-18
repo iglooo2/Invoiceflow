@@ -1,14 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { prisma } from "@/lib/db";
-import { getStripe } from "@/lib/stripe";
+import { getStripe, getStripeWebhookSecret, stripeWebhookCryptoProvider } from "@/lib/stripe";
 
-export const runtime = "nodejs";
+// OpenNext on Workers uses the default Node-compat runtime. Do not pin
+// `runtime = "nodejs"` or the deprecated `"edge"` value — both can break
+// this route on workerd. Signature checks must be async SubtleCrypto.
 
 export async function POST(request: NextRequest) {
   const stripe = getStripe();
-  const secret = process.env.STRIPE_WEBHOOK_SECRET;
-  if (!stripe || !secret || secret === "whsec_...") {
+  const secret = getStripeWebhookSecret();
+  if (!stripe || !secret) {
     return NextResponse.json({ error: "Stripe webhook is not configured" }, { status: 501 });
   }
 
@@ -20,7 +22,13 @@ export async function POST(request: NextRequest) {
 
   let event: Stripe.Event;
   try {
-    event = stripe.webhooks.constructEvent(body, signature, secret);
+    event = await stripe.webhooks.constructEventAsync(
+      body,
+      signature,
+      secret,
+      undefined,
+      stripeWebhookCryptoProvider(),
+    );
   } catch (error) {
     return NextResponse.json({ error: `Invalid signature: ${(error as Error).message}` }, { status: 400 });
   }

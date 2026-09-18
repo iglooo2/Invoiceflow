@@ -1,0 +1,151 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import path from "node:path";
+import Stripe from "stripe";
+import { readCloudflareString } from "./runtime-env";
+import {
+  createStripeClient,
+  stripeSdkOptions,
+  stripeWebhookCryptoProvider,
+  STRIPE_REQUEST_TIMEOUT_MS,
+} from "./stripe-client";
+import {
+  isPlaceholderStripePriceId,
+  isPlaceholderStripeSecret,
+  isPlaceholderStripeWebhookSecret,
+  pickConfiguredSecret,
+  readStripeProPriceId,
+  readStripeSecretKey,
+  stripeEnabled,
+  stripeFailureMessage,
+  stripeMisconfiguredMessage,
+} from "./stripe-env";
+
+test("treats .env.example Stripe placeholders as missing", () => {
+  assert.equal(isPlaceholderStripeSecret(""), true);
+  assert.equal(isPlaceholderStripeSecret("sk_test_..."), true);
+  assert.equal(isPlaceholderStripeSecret("sk_live_..."), true);
+  assert.equal(isPlaceholderStripeSecret("sk_test_51RealKey"), false);
+  assert.equal(isPlaceholderStripePriceId("price_..."), true);
+  assert.equal(isPlaceholderStripePriceId("price_123"), false);
+  assert.equal(isPlaceholderStripeWebhookSecret("whsec_..."), true);
+  assert.equal(isPlaceholderStripeWebhookSecret("whsec_abc"), false);
+});
+
+test("prefers a real Cloudflare secret over an empty or placeholder process.env", () => {
+  assert.equal(
+    pickConfiguredSecret("", "sk_live_from_worker", isPlaceholderStripeSecret),
+    "sk_live_from_worker",
+  );
+  assert.equal(
+    pickConfiguredSecret("sk_test_...", "sk_live_from_worker", isPlaceholderStripeSecret),
+    "sk_live_from_worker",
+  );
+  assert.equal(
+    pickConfiguredSecret("sk_test_local", "", isPlaceholderStripeSecret),
+    "sk_test_local",
+  );
+  assert.equal(pickConfiguredSecret("sk_test_...", "", isPlaceholderStripeSecret), "");
+  assert.equal(pickConfiguredSecret("", "", isPlaceholderStripeSecret), "");
+});
+
+test("stripeEnabled reads process.env when Cloudflare context is absent", () => {
+  const previousKey = process.env.STRIPE_SECRET_KEY;
+  const previousPrice = process.env.STRIPE_PRO_PRICE_ID;
+  try {
+    delete process.env.STRIPE_SECRET_KEY;
+    delete process.env.STRIPE_PRO_PRICE_ID;
+    assert.equal(stripeEnabled(), false);
+
+    process.env.STRIPE_SECRET_KEY = "sk_test_...";
+    process.env.STRIPE_PRO_PRICE_ID = "price_...";
+    assert.equal(stripeEnabled(), false);
+    assert.equal(readStripeSecretKey(), "");
+    assert.equal(readStripeProPriceId(), "");
+
+    process.env.STRIPE_SECRET_KEY = "sk_test_51abc";
+    process.env.STRIPE_PRO_PRICE_ID = "price_abc";
+    assert.equal(stripeEnabled(), true);
+    assert.equal(readStripeSecretKey(), "sk_test_51abc");
+    assert.equal(readStripeProPriceId(), "price_abc");
+  } finally {
+    if (previousKey === undefined) delete process.env.STRIPE_SECRET_KEY;
+    else process.env.STRIPE_SECRET_KEY = previousKey;
+    if (previousPrice === undefined) delete process.env.STRIPE_PRO_PRICE_ID;
+    else process.env.STRIPE_PRO_PRICE_ID = previousPrice;
+  }
+});
+
+test("stripe SDK options use the fetch HTTP client and a Workers-safe timeout", () => {
+  const options = stripeSdkOptions();
+  assert.equal(options.timeout, STRIPE_REQUEST_TIMEOUT_MS);
+  assert.equal(options.maxNetworkRetries, 1);
+  assert.equal(options.httpClient?.getClientName(), "fetch");
+  assert.equal(Stripe.createFetchHttpClient().getClientName(), "fetch");
+});
+
+test("createStripeClient talks to Stripe over fetch, not node:https", async () => {
+  const originalFetch = globalThis.fetch;
+  let fetchUrl = "";
+  globalThis.fetch = async (input, init) => {
+    fetchUrl = String(input);
+    assert.equal(typeof init?.method, "string");
+    return new Response(JSON.stringify({ id: "cus_test", object: "customer", email: "ada@example.com" }), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Request-Id": "req_test",
+      },
+    });
+  };
+  try {
+    const stripe = createStripeClient("sk_test_fetch_client");
+    const customer = await stripe.customers.create({ email: "ada@example.com" });
+    assert.equal(customer.id, "cus_test");
+    assert.match(fetchUrl, /api\.stripe\.com/);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("stripeFailureMessage maps misconfig and API failures without leaking secrets", () => {
+  assert.equal(stripeFailureMessage(new Error("Stripe is not configured")), stripeMisconfiguredMessage());
+  assert.match(stripeFailureMessage(new Error("Invalid API Key provided")), /API key/);
+  assert.match(stripeFailureMessage(new Error("No such price: price_missing")), /price id/);
+  assert.match(stripeFailureMessage(new Error("An error occurred with our connection to Stripe")), /reach Stripe/);
+  const leaked = stripeFailureMessage(new Error("postgresql://invoice:s3cret@ep-foo.neon.tech/db"));
+  assert.equal(leaked.includes("s3cret"), false);
+});
+
+test("webhook signatures verify with SubtleCrypto instead of Node crypto", async () => {
+  const payload = JSON.stringify({
+    id: "evt_test",
+    object: "event",
+    type: "ping",
+    data: { object: {} },
+  });
+  const secret = "whsec_test_secret";
+  const stripe = createStripeClient("sk_test_fetch_client");
+  const header = stripe.webhooks.generateTestHeaderString({ payload, secret });
+  const event = await stripe.webhooks.constructEventAsync(
+    payload,
+    header,
+    secret,
+    undefined,
+    stripeWebhookCryptoProvider(),
+  );
+  assert.equal(event.id, "evt_test");
+});
+
+test("webhook route stays on the default Worker runtime and verifies async", () => {
+  const webhook = readFileSync(path.join(import.meta.dirname, "../app/api/stripe/webhook/route.ts"), "utf8");
+  assert.doesNotMatch(webhook, /export const runtime/);
+  assert.match(webhook, /constructEventAsync/);
+  assert.match(webhook, /stripeWebhookCryptoProvider/);
+});
+
+test("readCloudflareString is empty outside a Worker request", () => {
+  assert.equal(readCloudflareString("STRIPE_SECRET_KEY"), "");
+  assert.equal(readCloudflareString("DATABASE_URL"), "");
+});

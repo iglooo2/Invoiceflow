@@ -2,7 +2,8 @@ import { demoDowngrade, demoUnlockPro, openBillingPortal, startProCheckout } fro
 import { Button } from "@/components/ui/button";
 import { PLANS } from "@/lib/plans";
 import { planFromUser, requireUser } from "@/lib/session";
-import { isDevMode, stripeEnabled } from "@/lib/utils";
+import { stripeEnabled } from "@/lib/stripe";
+import { isDevMode } from "@/lib/utils";
 
 export default async function BillingPage({
   searchParams,
@@ -34,6 +35,8 @@ export default async function BillingPage({
         <p className="rounded-2xl bg-primary/10 px-4 py-3 text-sm">
           Starter includes 3 invoices and 3 proposals per month. Upgrade to Pro for unlimited.
         </p>
+      ) : error ? (
+        <p className="rounded-2xl bg-primary/10 px-4 py-3 text-sm">{error}</p>
       ) : null}
 
       <div className="grid gap-4 md:grid-cols-2">

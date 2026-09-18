@@ -1,19 +1,34 @@
 import "server-only";
-import Stripe from "stripe";
+import { createStripeClient } from "./stripe-client";
+import { readStripeProPriceId, readStripeSecretKey, readStripeWebhookSecret } from "./stripe-env";
 
-let stripeClient: Stripe | null = null;
+export {
+  stripeEnabled,
+  stripeFailureMessage,
+  stripeMisconfiguredMessage,
+  readStripeProPriceId,
+  readStripeSecretKey,
+  readStripeWebhookSecret,
+} from "./stripe-env";
+export { createStripeClient, stripeWebhookCryptoProvider } from "./stripe-client";
+
+let stripeClient: ReturnType<typeof createStripeClient> | null = null;
+let stripeClientKey: string | null = null;
 
 export function getStripe() {
-  const key = process.env.STRIPE_SECRET_KEY;
-  if (!key || key.includes("sk_test_...")) return null;
-  if (!stripeClient) {
-    stripeClient = new Stripe(key);
+  const key = readStripeSecretKey();
+  if (!key) return null;
+  if (!stripeClient || stripeClientKey !== key) {
+    stripeClient = createStripeClient(key);
+    stripeClientKey = key;
   }
   return stripeClient;
 }
 
 export function getStripeProPriceId() {
-  const id = process.env.STRIPE_PRO_PRICE_ID;
-  if (!id || id === "price_...") return null;
-  return id;
+  return readStripeProPriceId() || null;
+}
+
+export function getStripeWebhookSecret() {
+  return readStripeWebhookSecret() || null;
 }

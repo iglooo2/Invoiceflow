@@ -1,5 +1,5 @@
-import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { isNeonUrl, isPostgresUrl, postgresPrismaEnabled } from "./site";
+import { readCloudflareString } from "./runtime-env";
 
 export type PrismaAdapterKind = "neon-http" | "pg" | "native";
 
@@ -10,16 +10,6 @@ const NEON_HTTP_STRIP_PARAMS = [
   "pool_timeout",
   "connect_timeout",
 ];
-
-function readCloudflareString(name: string): string {
-  try {
-    const ctx = getCloudflareContext();
-    const value = (ctx.env as Record<string, unknown> | undefined)?.[name];
-    return typeof value === "string" ? value.trim() : "";
-  } catch {
-    return "";
-  }
-}
 
 /**
  * Worker secrets live on the Cloudflare env. Next.js may inline an empty
