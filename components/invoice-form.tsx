@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input, Label, Select, Textarea } from "@/components/ui/input";
 import { formatCents, invoiceTotals } from "@/lib/money";
 
+export type InvoiceFormAction = (formData: FormData) => Promise<{ error?: string } | void>;
+
 type Item = { description: string; quantity: string; rate: string };
 type ClientOption = { id: string; name: string; email: string | null; company: string | null; address: string | null };
 
@@ -12,9 +14,11 @@ export function InvoiceForm({
   action,
   clients,
   initial,
+  formError,
 }: {
-  action: (formData: FormData) => Promise<void>;
+  action: InvoiceFormAction;
   clients: ClientOption[];
+  formError?: string | null;
   initial?: {
     clientId?: string | null;
     clientName: string;
@@ -34,6 +38,7 @@ export function InvoiceForm({
   const [clientEmail, setClientEmail] = useState(initial?.clientEmail ?? "");
   const [clientCompany, setClientCompany] = useState(initial?.clientCompany ?? "");
   const [clientAddress, setClientAddress] = useState(initial?.clientAddress ?? "");
+  const [error, setError] = useState(formError ?? null);
   const [items, setItems] = useState<Item[]>(
     initial?.items?.map((item) => ({
       description: item.description,
@@ -65,7 +70,19 @@ export function InvoiceForm({
   }
 
   return (
-    <form action={action} className="grid gap-6">
+    <form
+      action={async (formData) => {
+        setError(null);
+        const result = await action(formData);
+        if (result?.error) setError(result.error);
+      }}
+      className="grid gap-6"
+    >
+      {error ? (
+        <p role="alert" className="rounded-2xl bg-destructive/10 px-4 py-3 text-sm text-destructive">
+          {error}
+        </p>
+      ) : null}
       <input type="hidden" name="itemsJson" value={JSON.stringify(items)} />
       <div className="grid gap-4 md:grid-cols-2">
         <div className="grid gap-2">
@@ -127,6 +144,7 @@ export function InvoiceForm({
             <Input
               placeholder="Brand workshop, 4K color pass, article draft…"
               value={item.description}
+              required
               onChange={(e) => {
                 const next = [...items];
                 next[index] = { ...item, description: e.target.value };

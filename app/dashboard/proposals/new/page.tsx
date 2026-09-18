@@ -3,8 +3,13 @@ import { requireUser } from "@/lib/session";
 import { ProposalForm } from "@/components/proposal-form";
 import { createProposal } from "@/app/actions/proposals";
 
-export default async function NewProposalPage() {
+export default async function NewProposalPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
   const user = await requireUser();
+  const { error } = await searchParams;
   const clients = await prisma.client.findMany({
     where: { userId: user.id },
     orderBy: { name: "asc" },
@@ -17,6 +22,7 @@ export default async function NewProposalPage() {
       </div>
       <ProposalForm
         action={createProposal}
+        formError={error}
         clients={clients}
         initial={{
           title: "",

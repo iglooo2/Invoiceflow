@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { NEON_HTTP_ADAPTER_OPTIONS } from "./db";
-import { registerFailureMessage, safeErrorLog } from "./db-errors";
+import { documentWriteFailureMessage, errorRedirect, registerFailureMessage, safeErrorLog } from "./db-errors";
 import {
   prismaAdapterKind,
   sanitizeNeonHttpUrl,
@@ -102,6 +102,37 @@ test("registerFailureMessage maps missing tables and unique conflicts", () => {
       registerFailureMessage({ name: "Error", message: "engine is not yet compatible with sqlite" }),
       /PRISMA_PROVIDER=postgresql/,
     );
+  } finally {
+    if (previous === undefined) delete process.env.DATABASE_URL;
+    else process.env.DATABASE_URL = previous;
+  }
+});
+
+test("documentWriteFailureMessage maps schema drift, unique numbers, and Neon HTTP transactions", () => {
+  const previous = process.env.DATABASE_URL;
+  process.env.DATABASE_URL = "postgresql://u:p@ep-foo.neon.tech/db";
+  try {
+    assert.match(
+      documentWriteFailureMessage({ name: "PrismaClientKnownRequestError", code: "P2021", message: "table" }),
+      /db:push:prod/,
+    );
+    assert.match(
+      documentWriteFailureMessage({ name: "PrismaClientKnownRequestError", code: "P2002", message: "unique" }),
+      /share link/,
+    );
+    assert.match(
+      documentWriteFailureMessage({ name: "Error", message: "Transactions are not supported in HTTP mode" }),
+      /separate statements/,
+    );
+    assert.match(
+      documentWriteFailureMessage({
+        name: "ZodError",
+        message: "validation",
+        issues: [{ message: "Each line item needs a description." }],
+      }),
+      /description/,
+    );
+    assert.match(errorRedirect("/dashboard/invoices/new", "boom"), /\?error=boom/);
   } finally {
     if (previous === undefined) delete process.env.DATABASE_URL;
     else process.env.DATABASE_URL = previous;

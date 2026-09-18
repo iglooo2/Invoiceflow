@@ -1,0 +1,42 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { parseProposalForm } from "./proposal-input";
+
+function proposalForm(overrides: Record<string, string> = {}, sections?: unknown) {
+  const form = new FormData();
+  form.set("title", "Picture edit");
+  form.set("clientName", "Studio North");
+  form.set("status", "draft");
+  form.set(
+    "sectionsJson",
+    JSON.stringify(
+      sections ?? [{ heading: "The cut", body: "Picture lock and selects.", amount: "" }],
+    ),
+  );
+  for (const [key, value] of Object.entries(overrides)) {
+    form.set(key, value);
+  }
+  return form;
+}
+
+test("parseProposalForm accepts a complete proposal", () => {
+  const parsed = parseProposalForm(proposalForm());
+  assert.equal(parsed.success, true);
+  if (!parsed.success) return;
+  assert.equal(parsed.data.sections[0].heading, "The cut");
+  assert.equal(parsed.data.sections[0].amount, null);
+});
+
+test("parseProposalForm returns a readable error for a blank title", () => {
+  const parsed = parseProposalForm(proposalForm({ title: "" }));
+  assert.equal(parsed.success, false);
+  if (parsed.success) return;
+  assert.match(parsed.error, /Title/);
+});
+
+test("parseProposalForm does not throw on invalid sections JSON", () => {
+  const parsed = parseProposalForm(proposalForm({ sectionsJson: "not-json" }));
+  assert.equal(parsed.success, false);
+  if (parsed.success) return;
+  assert.match(parsed.error, /invalid/i);
+});

@@ -1,127 +1,104 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { redirect, unstable_rethrow } from "next/navigation";
 import { addDays } from "date-fns";
-import { z } from "zod";
-import { prisma } from "@/lib/db";
+import { databaseRuntimeStatus, prisma } from "@/lib/db";
+import { documentWriteFailureMessage, errorRedirect, safeErrorLog } from "@/lib/db-errors";
+import { insertInvoiceWithItems, replaceInvoiceItems } from "@/lib/document-writes";
+import { parseInvoiceForm } from "@/lib/invoice-input";
 import { planFromUser, requireUser } from "@/lib/session";
 import { assertCanCreate, newPublicToken, nextInvoiceNumber, redirectIfLimitReached } from "@/lib/documents";
-import { dollarsFromInput } from "@/lib/money";
 import { SEED_TEMPLATES, type InvoiceTemplatePayload } from "@/lib/templates";
 import { sendDocumentEmail, publicInvoiceUrl } from "@/lib/email";
 
-const itemSchema = z.object({
-  description: z.string().min(1),
-  quantity: z.number().positive(),
-  rate: z.number(),
-});
+export type InvoiceActionResult = { error: string };
 
-const invoiceSchema = z.object({
-  clientId: z.string().optional(),
-  clientName: z.string().min(1, "Client name is required"),
-  clientEmail: z.string().optional(),
-  clientCompany: z.string().optional(),
-  clientAddress: z.string().optional(),
-  issueDate: z.string().min(1),
-  dueDate: z.string().optional(),
-  taxRate: z.number().min(0).max(100),
-  notes: z.string().optional(),
-  status: z.enum(["draft", "sent", "paid", "overdue", "void"]),
-  items: z.array(itemSchema).min(1, "Add at least one line item"),
-});
-
-function parseInvoiceForm(formData: FormData) {
-  const rawItems = formData.get("itemsJson");
-  const items = rawItems ? JSON.parse(String(rawItems)) : [];
-  return invoiceSchema.parse({
-    clientId: String(formData.get("clientId") || "") || undefined,
-    clientName: String(formData.get("clientName") || ""),
-    clientEmail: String(formData.get("clientEmail") || "") || undefined,
-    clientCompany: String(formData.get("clientCompany") || "") || undefined,
-    clientAddress: String(formData.get("clientAddress") || "") || undefined,
-    issueDate: String(formData.get("issueDate") || ""),
-    dueDate: String(formData.get("dueDate") || "") || undefined,
-    taxRate: dollarsFromInput(formData.get("taxRate") as string),
-    notes: String(formData.get("notes") || "") || undefined,
-    status: String(formData.get("status") || "draft"),
-    items: (items as { description: string; quantity: string; rate: string }[]).map((item) => ({
-      description: item.description,
-      quantity: dollarsFromInput(item.quantity),
-      rate: dollarsFromInput(item.rate),
-    })),
-  });
+async function revalidateInvoicePaths(invoiceId?: string) {
+  try {
+    revalidatePath("/dashboard");
+    revalidatePath("/dashboard/invoices");
+    if (invoiceId) revalidatePath(`/dashboard/invoices/${invoiceId}`);
+  } catch (error) {
+    console.error("invoice revalidatePath", safeErrorLog(error));
+  }
 }
 
-export async function createInvoice(formData: FormData) {
+export async function createInvoice(formData: FormData): Promise<InvoiceActionResult | void> {
+  const user = await requireUser();
+  let invoiceId: string;
+  try {
+    try {
+      await assertCanCreate(user.id, planFromUser(user), "invoice");
+    } catch (error) {
+      redirectIfLimitReached(error);
+    }
+    const parsed = parseInvoiceForm(formData);
+    if (!parsed.success) return { error: parsed.error };
+    const invoice = await insertInvoiceWithItems(
+      prisma,
+      {
+        userId: user.id,
+        clientId: parsed.data.clientId,
+        number: await nextInvoiceNumber(user.id),
+        status: parsed.data.status,
+        issueDate: new Date(parsed.data.issueDate),
+        dueDate: parsed.data.dueDate ? new Date(parsed.data.dueDate) : null,
+        taxRate: parsed.data.taxRate,
+        notes: parsed.data.notes,
+        publicToken: newPublicToken(),
+        clientName: parsed.data.clientName,
+        clientEmail: parsed.data.clientEmail,
+        clientCompany: parsed.data.clientCompany,
+        clientAddress: parsed.data.clientAddress,
+      },
+      parsed.data.items,
+    );
+    invoiceId = invoice.id;
+  } catch (error) {
+    unstable_rethrow(error);
+    console.error("createInvoice failed", safeErrorLog(error), databaseRuntimeStatus());
+    return { error: documentWriteFailureMessage(error) };
+  }
+  await revalidateInvoicePaths();
+  redirect(`/dashboard/invoices/${invoiceId}`);
+}
+
+export async function updateInvoice(
+  invoiceId: string,
+  formData: FormData,
+): Promise<InvoiceActionResult | void> {
   const user = await requireUser();
   try {
-    await assertCanCreate(user.id, planFromUser(user), "invoice");
+    const existing = await prisma.invoice.findFirst({
+      where: { id: invoiceId, userId: user.id },
+    });
+    if (!existing) return { error: "Invoice not found." };
+    const parsed = parseInvoiceForm(formData);
+    if (!parsed.success) return { error: parsed.error };
+    await replaceInvoiceItems(
+      prisma,
+      invoiceId,
+      {
+        clientId: parsed.data.clientId,
+        status: parsed.data.status,
+        issueDate: new Date(parsed.data.issueDate),
+        dueDate: parsed.data.dueDate ? new Date(parsed.data.dueDate) : null,
+        taxRate: parsed.data.taxRate,
+        notes: parsed.data.notes,
+        clientName: parsed.data.clientName,
+        clientEmail: parsed.data.clientEmail,
+        clientCompany: parsed.data.clientCompany,
+        clientAddress: parsed.data.clientAddress,
+      },
+      parsed.data.items,
+    );
   } catch (error) {
-    redirectIfLimitReached(error);
+    unstable_rethrow(error);
+    console.error("updateInvoice failed", safeErrorLog(error), databaseRuntimeStatus());
+    return { error: documentWriteFailureMessage(error) };
   }
-  const data = parseInvoiceForm(formData);
-  const invoice = await prisma.invoice.create({
-    data: {
-      userId: user.id,
-      clientId: data.clientId,
-      number: await nextInvoiceNumber(user.id),
-      status: data.status,
-      issueDate: new Date(data.issueDate),
-      dueDate: data.dueDate ? new Date(data.dueDate) : null,
-      taxRate: data.taxRate,
-      notes: data.notes,
-      publicToken: newPublicToken(),
-      clientName: data.clientName,
-      clientEmail: data.clientEmail,
-      clientCompany: data.clientCompany,
-      clientAddress: data.clientAddress,
-      items: {
-        create: data.items.map((item, index) => ({
-          ...item,
-          sortOrder: index,
-        })),
-      },
-    },
-  });
-  revalidatePath("/dashboard");
-  revalidatePath("/dashboard/invoices");
-  redirect(`/dashboard/invoices/${invoice.id}`);
-}
-
-export async function updateInvoice(invoiceId: string, formData: FormData) {
-  const user = await requireUser();
-  const existing = await prisma.invoice.findFirst({
-    where: { id: invoiceId, userId: user.id },
-  });
-  if (!existing) throw new Error("Invoice not found");
-  const data = parseInvoiceForm(formData);
-  await prisma.$transaction([
-    prisma.invoiceItem.deleteMany({ where: { invoiceId } }),
-    prisma.invoice.update({
-      where: { id: invoiceId },
-      data: {
-        clientId: data.clientId,
-        status: data.status,
-        issueDate: new Date(data.issueDate),
-        dueDate: data.dueDate ? new Date(data.dueDate) : null,
-        taxRate: data.taxRate,
-        notes: data.notes,
-        clientName: data.clientName,
-        clientEmail: data.clientEmail,
-        clientCompany: data.clientCompany,
-        clientAddress: data.clientAddress,
-        items: {
-          create: data.items.map((item, index) => ({
-            ...item,
-            sortOrder: index,
-          })),
-        },
-      },
-    }),
-  ]);
-  revalidatePath("/dashboard");
-  revalidatePath(`/dashboard/invoices/${invoiceId}`);
+  await revalidateInvoicePaths(invoiceId);
   redirect(`/dashboard/invoices/${invoiceId}`);
 }
 
@@ -145,40 +122,40 @@ export async function markInvoiceStatus(invoiceId: string, status: string) {
 export async function createInvoiceFromTemplate(slug: string) {
   const user = await requireUser();
   try {
-    await assertCanCreate(user.id, planFromUser(user), "invoice");
-  } catch (error) {
-    redirectIfLimitReached(error);
-  }
-  const template =
-    (await prisma.documentTemplate.findUnique({ where: { slug } })) ??
-    SEED_TEMPLATES.find((item) => item.slug === slug);
-  if (!template || template.kind !== "invoice") {
-    throw new Error("Template not found");
-  }
-  const payload = template.payload as InvoiceTemplatePayload;
-  const invoice = await prisma.invoice.create({
-    data: {
-      userId: user.id,
-      number: await nextInvoiceNumber(user.id),
-      status: "draft",
-      issueDate: new Date(),
-      dueDate: payload.dueInDays ? addDays(new Date(), payload.dueInDays) : addDays(new Date(), 14),
-      taxRate: payload.taxRate ?? 0,
-      notes: payload.notes,
-      publicToken: newPublicToken(),
-      clientName: "New client",
-      items: {
-        create: payload.items.map((item, index) => ({
-          description: item.description,
-          quantity: item.quantity,
-          rate: item.rate,
-          sortOrder: index,
-        })),
+    try {
+      await assertCanCreate(user.id, planFromUser(user), "invoice");
+    } catch (error) {
+      redirectIfLimitReached(error);
+    }
+    const template =
+      (await prisma.documentTemplate.findUnique({ where: { slug } })) ??
+      SEED_TEMPLATES.find((item) => item.slug === slug);
+    if (!template || template.kind !== "invoice") {
+      throw new Error("Template not found");
+    }
+    const payload = template.payload as InvoiceTemplatePayload;
+    const invoice = await insertInvoiceWithItems(
+      prisma,
+      {
+        userId: user.id,
+        number: await nextInvoiceNumber(user.id),
+        status: "draft",
+        issueDate: new Date(),
+        dueDate: payload.dueInDays ? addDays(new Date(), payload.dueInDays) : addDays(new Date(), 14),
+        taxRate: payload.taxRate ?? 0,
+        notes: payload.notes,
+        publicToken: newPublicToken(),
+        clientName: "New client",
       },
-    },
-  });
-  revalidatePath("/dashboard/invoices");
-  redirect(`/dashboard/invoices/${invoice.id}/edit`);
+      payload.items,
+    );
+    await revalidateInvoicePaths();
+    redirect(`/dashboard/invoices/${invoice.id}/edit`);
+  } catch (error) {
+    unstable_rethrow(error);
+    console.error("createInvoiceFromTemplate failed", safeErrorLog(error), databaseRuntimeStatus());
+    redirect(errorRedirect("/dashboard/invoices/new", documentWriteFailureMessage(error)));
+  }
 }
 
 export async function emailInvoice(invoiceId: string) {

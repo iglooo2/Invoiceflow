@@ -2,6 +2,7 @@ import { nanoid } from "nanoid";
 import { startOfMonth } from "date-fns";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
+import { nextInvoiceNumberFromExisting } from "@/lib/invoice-number";
 import { canCreateDocument, type PlanId } from "@/lib/plans";
 
 export function newPublicToken() {
@@ -9,16 +10,11 @@ export function newPublicToken() {
 }
 
 export async function nextInvoiceNumber(userId: string) {
-  const year = new Date().getFullYear();
-  const prefix = `INV-${year}-`;
-  const latest = await prisma.invoice.findFirst({
-    where: { userId, number: { startsWith: prefix } },
-    orderBy: { number: "desc" },
+  const rows = await prisma.invoice.findMany({
+    where: { userId },
     select: { number: true },
   });
-  const last = latest?.number ? Number.parseInt(latest.number.replace(prefix, ""), 10) : 0;
-  const next = Number.isFinite(last) ? last + 1 : 1;
-  return `${prefix}${String(next).padStart(4, "0")}`;
+  return nextInvoiceNumberFromExisting(rows.map((row) => row.number));
 }
 
 export async function countCreatedThisMonth(
