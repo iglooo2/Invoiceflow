@@ -63,7 +63,7 @@ See `.env.example`. Placeholders only — never commit real secrets.
 | `STRIPE_PRO_PRICE_ID` | optional | `price_…` for Pro | Same |
 | `STRIPE_WEBHOOK_SECRET` | from Stripe CLI | from Dashboard endpoint | Webhook route returns 501 |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | optional | optional | Not required for server Checkout |
-| `AUTH_DEV_MODE` | `true` | **`false`** | Production hides “Unlock Pro for local demo” |
+| `AUTH_DEV_MODE` | `true` | **`false`** | Production hides login demo credentials and “Unlock Pro for local demo” |
 
 Auth.js is configured with `trustHost: true` so it trusts the `Host` header Cloudflare sends.
 
