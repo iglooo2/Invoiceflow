@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 process.env.PRISMA_PROVIDER = "postgresql";
+process.env.PRISMA_CF_WASM = "1";
 
 function run(command, args, extraEnv = {}) {
   const result = spawnSync(command, args, {
@@ -21,8 +22,10 @@ function run(command, args, extraEnv = {}) {
 // Emit the Postgres rust-free client before OpenNext bundles. Do not put a
 // placeholder DATABASE_URL on `process.env` for `next build` — it could be
 // inlined. prisma.mjs generate uses its own env copy when the URL is sqlite.
-run("node", ["scripts/prisma.mjs", "generate"], { PRISMA_PROVIDER: "postgresql" });
-run("node", ["scripts/prisma-cf-wasm.mjs", "patch"]);
+run("node", ["scripts/prisma.mjs", "generate"], {
+  PRISMA_PROVIDER: "postgresql",
+  PRISMA_CF_WASM: "1",
+});
 
 const extra = process.argv.slice(2);
 run("npx", ["opennextjs-cloudflare", ...extra]);
@@ -35,6 +38,7 @@ run("node", ["scripts/prisma-cf-wasm.mjs", "wire"]);
 // points at so local `npm run setup` / `npm run dev` keep using SQLite.
 const restoreEnv = { ...process.env };
 delete restoreEnv.PRISMA_PROVIDER;
+delete restoreEnv.PRISMA_CF_WASM;
 spawnSync("node", ["scripts/prisma.mjs", "generate"], {
   stdio: "inherit",
   cwd: root,

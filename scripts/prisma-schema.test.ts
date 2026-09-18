@@ -62,18 +62,42 @@ test("prisma generate with PRISMA_PROVIDER=postgresql works without a postgres D
   }
 });
 
+test("prisma generate with PRISMA_CF_WASM patches the Node WASM loader", () => {
+  const gen = spawnSync("node", ["scripts/prisma.mjs", "generate"], {
+    cwd: root,
+    encoding: "utf8",
+    env: spawnEnv({
+      PRISMA_PROVIDER: "postgresql",
+      PRISMA_CF_WASM: "1",
+      DATABASE_URL: "file:./dev.db",
+    }),
+  });
+  try {
+    assert.equal(gen.status, 0, gen.stderr || gen.stdout);
+    const client = readFileSync(path.join(root, "node_modules/.prisma/client/index.js"), "utf8");
+    assert.match(client, /__PRISMA_QUERY_COMPILER_WASM/);
+    assert.doesNotMatch(client, /new WebAssembly\.Module\(queryCompilerWasmFileBytes\)/);
+  } finally {
+    spawnSync("node", ["scripts/prisma.mjs", "generate"], {
+      cwd: root,
+      env: spawnEnv(
+        { DATABASE_URL: process.env.DATABASE_URL || "file:./dev.db" },
+        ["PRISMA_PROVIDER", "PRISMA_CF_WASM"],
+      ),
+    });
+  }
+});
+
 test("cf:build generates the Postgres client before OpenNext", () => {
   const script = readFileSync(path.join(root, "scripts/cf-build.mjs"), "utf8");
   const generateAt = script.indexOf('["scripts/prisma.mjs", "generate"]');
-  const patchAt = script.indexOf('["scripts/prisma-cf-wasm.mjs", "patch"]');
   const openNextAt = script.indexOf("opennextjs-cloudflare");
   const wireAt = script.indexOf('["scripts/prisma-cf-wasm.mjs", "wire"]');
   assert.notEqual(generateAt, -1);
-  assert.notEqual(patchAt, -1);
   assert.notEqual(openNextAt, -1);
   assert.notEqual(wireAt, -1);
-  assert.equal(generateAt < patchAt, true);
-  assert.equal(patchAt < openNextAt, true);
+  assert.equal(generateAt < openNextAt, true);
   assert.equal(openNextAt < wireAt, true);
   assert.match(script, /PRISMA_PROVIDER:\s*"postgresql"/);
+  assert.match(script, /PRISMA_CF_WASM:\s*"1"/);
 });

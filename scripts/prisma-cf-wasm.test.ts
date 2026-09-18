@@ -38,7 +38,7 @@ const HASH_LOADER = `config.compilerWasm = {
 
 test("replaces fs.readFileSync WASM loader with a module import", () => {
   const patched = patchPrismaWasmLoader(FS_LOADER);
-  assert.match(patched, new RegExp(`import\\('./${WASM_FILE}'\\)`));
+  assert.match(patched, /import\("\.\/query_compiler_bg\.wasm"\)/);
   assert.match(patched, new RegExp(GLOBAL_WASM));
   assert.doesNotMatch(patched, /readFileSync/);
   assert.doesNotMatch(patched, /new WebAssembly\.Module/);
@@ -47,7 +47,7 @@ test("replaces fs.readFileSync WASM loader with a module import", () => {
 
 test("replaces #wasm-compiler-loader with a direct wasm import", () => {
   const patched = patchPrismaWasmLoader(HASH_LOADER);
-  assert.match(patched, new RegExp(`import\\('./${WASM_FILE}'\\)`));
+  assert.match(patched, /import\("\.\/query_compiler_bg\.wasm"\)/);
   assert.doesNotMatch(patched, /#wasm-compiler-loader/);
 });
 
@@ -72,7 +72,9 @@ test("copies wasm next to the OpenNext worker and rewrites handler imports", () 
   );
   writeFileSync(
     path.join(handlerDir, "handler.mjs"),
-    `const wasm = await import("/bundle/node_modules/.prisma/client/${WASM_FILE}");\nexport const handler = wasm;\n`,
+    `getQueryCompilerWasmModule:async()=>{let queryCompilerWasmFilePath=require("path").join(config2.dirname,"query_compiler_bg.wasm"),queryCompilerWasmFileBytes=require("fs").readFileSync(queryCompilerWasmFilePath);return new WebAssembly.Module(queryCompilerWasmFileBytes)};\n` +
+      `outputFileTracingIncludes:{"/*":["./node_modules/.prisma/client/${WASM_FILE}"]};\n` +
+      `const wasm = await import("/bundle/node_modules/.prisma/client/${WASM_FILE}");\nexport const handler = wasm;\n`,
   );
 
   const dest = wireOpenNextPrismaWasm(root, openNextDir);
@@ -81,5 +83,8 @@ test("copies wasm next to the OpenNext worker and rewrites handler imports", () 
   assert.equal(dest, path.join(openNextDir, "prisma-wasm", WASM_FILE));
   const handler = readFileSync(path.join(handlerDir, "handler.mjs"), "utf8");
   assert.match(handler, /\.\.\/\.\.\/prisma-wasm\/query_compiler_bg\.wasm/);
+  assert.match(handler, new RegExp(GLOBAL_WASM));
   assert.doesNotMatch(handler, /\/bundle\/node_modules/);
+  assert.doesNotMatch(handler, /new WebAssembly\.Module\(queryCompilerWasmFileBytes\)/);
+  assert.match(handler, new RegExp(`outputFileTracingIncludes:\\{"/\\*":\\["\\./node_modules/\\.prisma/client/${WASM_FILE}"\\]\\}`));
 });

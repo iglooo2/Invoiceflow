@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 /**
- * Package Prisma’s rust-free query-compiler WASM for Cloudflare Workers.
+ * Package Prisma's rust-free query-compiler WASM for Cloudflare Workers.
  *
  * prisma-client-js with engineType=client loads WASM via fs.readFileSync +
  * `new WebAssembly.Module(bytes)`. OpenNext/wrangler never copies that file
- * into the Worker FS (`/bundle/node_modules/.prisma/client/…`), and workerd
+ * into the Worker FS (`/bundle/node_modules/.prisma/client/...`), and workerd
  * also forbids compiling WASM from bytes. The Worker entry must import the
  * `.wasm` as a CompiledWasm module and Prisma must reuse that module.
  */
@@ -27,28 +27,25 @@ const WORKER_IMPORT = `import ${GLOBAL_WASM} from "./${WASM_DIR_NAME}/${WASM_FIL
 globalThis.${GLOBAL_WASM} = ${GLOBAL_WASM};
 `;
 
-const IMPORT_LOADER = `getQueryCompilerWasmModule: async () => {
-        if (globalThis.${GLOBAL_WASM}) {
-          return globalThis.${GLOBAL_WASM};
-        }
-        const queryCompilerWasm = await import('./${WASM_FILE}')
-        return queryCompilerWasm.default ?? queryCompilerWasm
-      }`;
-
 const FS_LOADER =
   /getQueryCompilerWasmModule:\s*async\s*\(\)\s*=>\s*\{[\s\S]*?return new WebAssembly\.Module\(queryCompilerWasmFileBytes\)\s*\}/;
 
 const HASH_LOADER =
   /getQueryCompilerWasmModule:\s*async\s*\(\)\s*=>\s*\{[\s\S]*?await import\(['"]#wasm-compiler-loader['"]\)[\s\S]*?return compiler\s*\}/;
 
-export function patchPrismaWasmLoader(source) {
-  let out = source;
-  if (FS_LOADER.test(out)) {
-    out = out.replace(FS_LOADER, IMPORT_LOADER);
-  }
-  if (HASH_LOADER.test(out)) {
-    out = out.replace(HASH_LOADER, IMPORT_LOADER);
-  }
+export function wasmLoaderReplacement(specifier = `./${WASM_FILE}`) {
+  return `getQueryCompilerWasmModule: async () => {
+        if (globalThis.${GLOBAL_WASM}) {
+          return globalThis.${GLOBAL_WASM};
+        }
+        const queryCompilerWasm = await import(${JSON.stringify(specifier)})
+        return queryCompilerWasm.default ?? queryCompilerWasm
+      }`;
+}
+
+export function patchPrismaWasmLoader(source, specifier = `./${WASM_FILE}`) {
+  const replacement = wasmLoaderReplacement(specifier);
+  let out = source.replace(FS_LOADER, replacement).replace(HASH_LOADER, replacement);
   if (
     out.includes('path.join(__dirname, "schema.prisma")') &&
     !out.includes(`path.join(__dirname, "${WASM_FILE}")`)
@@ -104,13 +101,23 @@ export function injectWorkerWasmImport(workerSource) {
   return `${WORKER_IMPORT}${workerSource}`;
 }
 
-function rewriteWasmImports(source, fromFile, wasmDest) {
+function wasmSpecifierFrom(fromFile, wasmDest) {
   const rel = path.relative(path.dirname(fromFile), wasmDest).split(path.sep).join("/");
-  const spec = rel.startsWith(".") ? rel : `./${rel}`;
-  return source.replace(
-    /(["'`])([^"'`]*query_compiler_bg\.wasm(?:\?module)?)\1/g,
-    (_, quote) => `${quote}${spec}${quote}`,
-  );
+  return rel.startsWith(".") ? rel : `./${rel}`;
+}
+
+/** Rewrite only ESM import specifiers, not random strings (e.g. next.config traces). */
+export function rewriteWasmImports(source, fromFile, wasmDest) {
+  const spec = wasmSpecifierFrom(fromFile, wasmDest);
+  return source
+    .replace(
+      /\bfrom\s+(["'`])([^"'`]*query_compiler_bg\.wasm(?:\?module)?)\1/g,
+      `from "${spec}"`,
+    )
+    .replace(
+      /\bimport\s*\(\s*(["'`])([^"'`]*query_compiler_bg\.wasm(?:\?module)?)\1\s*\)/g,
+      `import("${spec}")`,
+    );
 }
 
 export function wireOpenNextPrismaWasm(root, openNextDir = path.join(root, ".open-next")) {
@@ -123,10 +130,11 @@ export function wireOpenNextPrismaWasm(root, openNextDir = path.join(root, ".ope
 
   const handlerFile = path.join(openNextDir, "server-functions/default/handler.mjs");
   if (existsSync(handlerFile)) {
-    writeFileSync(
-      handlerFile,
-      rewriteWasmImports(readFileSync(handlerFile, "utf8"), handlerFile, dest),
-    );
+    const spec = wasmSpecifierFrom(handlerFile, dest);
+    let handler = readFileSync(handlerFile, "utf8");
+    handler = patchPrismaWasmLoader(handler, spec);
+    handler = rewriteWasmImports(handler, handlerFile, dest);
+    writeFileSync(handlerFile, handler);
   }
   return dest;
 }
@@ -147,8 +155,11 @@ export function assertOpenNextHasPrismaWasm(openNextDir) {
   const handlerFile = path.join(openNextDir, "server-functions/default/handler.mjs");
   if (existsSync(handlerFile)) {
     const handler = readFileSync(handlerFile, "utf8");
-    if (/readFileSync\([^)]*query_compiler_bg\.wasm/.test(handler)) {
-      throw new Error("handler.mjs still loads Prisma WASM with fs.readFileSync");
+    if (/new WebAssembly\.Module\(queryCompilerWasmFileBytes\)/.test(handler)) {
+      throw new Error("handler.mjs still compiles Prisma WASM from fs.readFileSync bytes");
+    }
+    if (!handler.includes(GLOBAL_WASM) && !handler.includes(`${WASM_DIR_NAME}/${WASM_FILE}`)) {
+      throw new Error("handler.mjs does not load Prisma WASM from the Worker module import");
     }
   }
   return { path: dest, bytes: size };
