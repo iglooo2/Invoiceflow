@@ -21,7 +21,7 @@ This is a focused Micro-SaaS MVP, not an accounting suite. Create from studio te
 
 ## Stack
 
-Next.js 16 (App Router) · TypeScript · Tailwind v4 · shadcn-style UI · Prisma · Auth.js v5 · Stripe · Resend (optional) · pdf-lib · OpenNext on Cloudflare Workers
+Next.js 16 (App Router) · TypeScript · Tailwind v4 · shadcn-style UI · Prisma · Auth.js v5 · Stripe · Resend (optional) · OpenNext on Cloudflare Workers
 
 - **Local:** SQLite (`DATABASE_URL=file:./dev.db`) so `npm run setup && npm run dev` works without Docker
 - **Production:** Postgres (Neon or Supabase) + Cloudflare Workers. SQLite file DBs cannot run on Workers
@@ -192,7 +192,7 @@ Without Stripe keys locally, keep `AUTH_DEV_MODE=true` and use **Unlock Pro for 
 | `npm run preview` | Worker runtime locally (Wrangler) |
 | `npm run deploy` | OpenNext build + `wrangler deploy` |
 | `npm run db:push:prod` | `prisma db push` against Postgres only |
-| `npm test` | Money, plan limits, DB URL/adapter helpers, invoice/proposal form parsing, sequential Neon HTTP writes, Prisma postgres engine rewrite |
+| `npm test` | Money, plan limits, DB URL/adapter helpers, invoice/proposal form parsing, sequential Neon HTTP writes, Prisma postgres engine rewrite, Workers-safe PDF writer |
 
 ## Demo path (no paid keys)
 
@@ -210,7 +210,8 @@ Without Stripe keys locally, keep `AUTH_DEV_MODE=true` and use **Unlock Pro for 
 - **Save invoice check after deploy:** `/dashboard/invoices/new` → client name + line description → **Save invoice**. You should land on `/dashboard/invoices/[id]`, not Cloudflare’s generic “This page couldn’t load”. Validation and Prisma errors (including missing `Invoice` / `InvoiceItem` tables) render on the form. If the form says tables are missing or out of date, from a laptop run `npm run db:push:prod` against the Neon **direct/unpooled** URL (`DATABASE_URL_UNPOOLED` or `DATABASE_URL`), then retry save. `npm test` also covers invoice form parsing and sequential (non-transaction) writes.
 - **`pg-cloudflare`:** OpenNext’s package copy does not include `pg-cloudflare`’s `workerd` build. `open-next.config.ts` sets `useWorkerdCondition: false` so `pg` uses `nodejs_compat` sockets. Prefer **Neon HTTP** in production to avoid that path.
 - **Node.js middleware:** Next.js 16 `proxy.ts` (dashboard cookie gate) is **experimental** on Cloudflare OpenNext. Do not set `export const runtime = "edge"` — OpenNext expects the Node.js runtime. If a future OpenNext release rejects Node middleware, the app still authenticates in layouts; only the early `/dashboard` redirect would need a rewrite.
-- **bcryptjs / pdf-lib / Stripe / Resend:** JS libraries; they rely on Workers `nodejs_compat`.
+- **bcryptjs / Stripe / Resend:** JS libraries; they rely on Workers `nodejs_compat`.
+- **PDF download:** invoices and proposals are written as PDF 1.4 in `lib/pdf.ts` using the 14 standard Type1 fonts (no embedding, no `pdf-lib`, no `Buffer` copies). That keeps Download PDF inside Workers CPU/memory limits (Error 1102). Public share pages also print cleanly if a client uses the browser “Save as PDF” dialog. Very large documents still have the 128 MB isolate cap; typical freelance invoices stay tiny.
 - **Incremental cache:** default OpenNext in-memory cache. Optional R2 binding documented above.
 - **`next/image` optimization:** not used on the marketing pages. Cloudflare Images binding is not required.
 - **Server Actions:** `next.config.ts` allows CSRF origins for `invoiceflowstudio.com` and `*.workers.dev` (Cloudflare preview URLs).

@@ -20,7 +20,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const plan = planFromUser(user);
   return (
     <div className="min-h-screen">
-      <header className="border-b border-border bg-card/80 backdrop-blur">
+      <header className="no-print border-b border-border bg-card/80 backdrop-blur">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-4">
           <div className="flex items-center justify-between gap-4">
             <Wordmark href="/dashboard" />

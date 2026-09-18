@@ -9,7 +9,6 @@ const nextConfig: NextConfig = {
     "@prisma/adapter-pg",
     "@neondatabase/serverless",
     "bcryptjs",
-    "pdf-lib",
     "pg",
   ],
   // NFT does not follow Prisma's fs.readFileSync of the query compiler WASM.

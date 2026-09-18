@@ -21,7 +21,7 @@ export default async function PublicProposalPage({
 
   return (
     <div className="px-4 py-10">
-      <div className="mx-auto mb-6 flex w-full max-w-3xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="no-print mx-auto mb-6 flex w-full max-w-3xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         {branded ? <Wordmark /> : <span className="font-display text-xl">{proposal.user.businessName || proposal.user.name}</span>}
         <div className="flex flex-wrap gap-2">
           <Button asChild variant="outline">

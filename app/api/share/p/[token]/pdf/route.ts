@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { buildProposalPdf } from "@/lib/pdf";
+import { buildProposalPdf, pdfDownloadHeaders } from "@/lib/pdf";
 import { currentPlanId } from "@/lib/plans";
 
 export async function GET(
@@ -20,10 +20,7 @@ export async function GET(
     proposal,
     branded: currentPlanId(proposal.user) !== "pro",
   });
-  return new NextResponse(Buffer.from(bytes), {
-    headers: {
-      "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="${proposal.title.replace(/\s+/g, "-").toLowerCase()}.pdf"`,
-    },
+  return new NextResponse(bytes, {
+    headers: pdfDownloadHeaders(`${proposal.title.replace(/\s+/g, "-").toLowerCase()}.pdf`),
   });
 }

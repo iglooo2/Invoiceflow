@@ -30,7 +30,7 @@ export default async function InvoiceDetailPage({
           <p className="text-sm text-muted-foreground">{invoice.number}</p>
           <h1 className="font-display text-4xl">{invoice.clientName}</h1>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="no-print flex flex-wrap gap-2">
           <CopyLinkButton value={share} />
           <Button asChild variant="outline">
             <a href={`/api/invoices/${invoice.id}/pdf`}>Download PDF</a>
@@ -43,7 +43,7 @@ export default async function InvoiceDetailPage({
           </Button>
         </div>
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div className="no-print flex flex-wrap gap-2">
         <form action={emailInvoice.bind(null, invoice.id)}>
           <Button type="submit" variant="secondary">
             Email share link
