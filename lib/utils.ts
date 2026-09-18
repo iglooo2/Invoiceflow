@@ -27,11 +27,3 @@ export function githubAuthEnabled() {
 export function resendEnabled() {
   return Boolean(process.env.AUTH_RESEND_KEY || process.env.RESEND_API_KEY);
 }
-
-export function stripeEnabled() {
-  return Boolean(
-    process.env.STRIPE_SECRET_KEY &&
-      process.env.STRIPE_PRO_PRICE_ID &&
-      !process.env.STRIPE_SECRET_KEY.includes("sk_test_..."),
-  );
-}
