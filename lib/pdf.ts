@@ -279,9 +279,13 @@ function wrap(text: string, width: number) {
 
 export function sanitizePdfFilename(name: string) {
   const trimmed = name.replace(/["'\\/]+/g, "").trim();
-  const base = trimmed.replace(/[^\w.\-]+/g, "-").replace(/^-+|-+$/g, "");
+  const base = trimmed
+    .replace(/[^\w.\-]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "");
   if (!base) return "document.pdf";
-  return base.toLowerCase().endsWith(".pdf") ? base : `${base}.pdf`;
+  const lower = base.toLowerCase();
+  return lower.endsWith(".pdf") ? lower : `${lower}.pdf`;
 }
 
 export function pdfDownloadHeaders(filename: string): Record<string, string> {

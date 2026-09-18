@@ -116,9 +116,10 @@ test("maps typographic unicode into WinAnsi and strips control chars", () => {
 test("download headers attach a safe filename without Buffer copies", () => {
   const headers = pdfDownloadHeaders('INV-2026-0001 / "draft"');
   assert.equal(headers["Content-Type"], "application/pdf");
-  assert.equal(headers["Content-Disposition"], 'attachment; filename="INV-2026-0001-draft.pdf"');
+  assert.equal(headers["Content-Disposition"], 'attachment; filename="inv-2026-0001-draft.pdf"');
   assert.equal(headers["Cache-Control"], "private, no-store");
   assert.equal(sanitizePdfFilename(""), "document.pdf");
+  assert.equal(sanitizePdfFilename("Picture edit & sound pass"), "picture-edit-sound-pass.pdf");
 });
 
 test("PDF stack does not load pdf-lib or copy through Buffer in routes", () => {

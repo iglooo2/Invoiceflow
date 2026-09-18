@@ -21,6 +21,6 @@ export async function GET(
     branded: currentPlanId(proposal.user) !== "pro",
   });
   return new NextResponse(bytes, {
-    headers: pdfDownloadHeaders(`${proposal.title.replace(/\s+/g, "-").toLowerCase()}.pdf`),
+    headers: pdfDownloadHeaders(proposal.title),
   });
 }
