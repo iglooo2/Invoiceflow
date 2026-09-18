@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
-import { githubAuthEnabled, resendEnabled } from "@/lib/utils";
+import { githubAuthEnabled, isDevMode, resendEnabled } from "@/lib/utils";
 import { MarketingFooter, MarketingHeader } from "@/components/marketing/shell";
 import { AuthForms } from "./auth-forms";
 
@@ -29,6 +29,7 @@ export default async function LoginPage({
         <AuthForms
           githubEnabled={githubAuthEnabled()}
           magicEnabled={resendEnabled()}
+          showDemoCredentials={isDevMode()}
           callbackUrl={params.callbackUrl || "/dashboard"}
         />
       </main>

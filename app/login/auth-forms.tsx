@@ -9,10 +9,12 @@ export function AuthForms({
   githubEnabled,
   magicEnabled,
   callbackUrl,
+  showDemoCredentials,
 }: {
   githubEnabled: boolean;
   magicEnabled: boolean;
   callbackUrl: string;
+  showDemoCredentials: boolean;
 }) {
   const [mode, setMode] = useState<"signin" | "register">("signin");
   const [error, setError] = useState<string | null>(null);
@@ -85,10 +87,12 @@ export function AuthForms({
         </p>
       )}
 
-      <p className="mt-6 rounded-2xl bg-muted px-4 py-3 text-sm text-muted-foreground">
-        Demo: <span className="text-foreground">demo@invoiceflow.dev</span> /{" "}
-        <span className="text-foreground">demo1234</span>
-      </p>
+      {showDemoCredentials ? (
+        <p className="mt-6 rounded-2xl bg-muted px-4 py-3 text-sm text-muted-foreground">
+          Demo: <span className="text-foreground">demo@invoiceflow.dev</span> /{" "}
+          <span className="text-foreground">demo1234</span>
+        </p>
+      ) : null}
     </div>
   );
 }
