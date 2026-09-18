@@ -7,6 +7,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { buildRuntimeSchema } from "./prisma-schema.mjs";
+import { patchPrismaClientDir } from "./prisma-cf-wasm.mjs";
 
 const root = path.join(import.meta.dirname, "..");
 const sourcePath = path.join(root, "prisma/schema.prisma");
@@ -58,5 +59,14 @@ const result = spawnSync(
   ["prisma", ...prismaArgs, "--schema", runtimePath],
   { stdio: "inherit", cwd: root, env },
 );
+
+// OpenNext's `next build` re-runs this generate. Re-apply the Workers WASM
+// loader so the client is not bundled with fs.readFileSync(query_compiler_bg.wasm).
+if (!result.status && generating && postgres && env.PRISMA_CF_WASM === "1") {
+  const patched = patchPrismaClientDir(path.join(root, "node_modules/.prisma/client"));
+  if (patched.length) {
+    console.log(`Patched Prisma client WASM loader (${patched.join(", ")})`);
+  }
+}
 
 process.exit(result.status ?? 1);

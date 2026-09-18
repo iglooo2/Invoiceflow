@@ -96,7 +96,7 @@ The app uses Prisma **driver adapters** at runtime so Postgres works on Cloudfla
 
 - **Neon** hosts → `@prisma/adapter-neon` **HTTP** (`PrismaNeonHTTP`), created **lazily on first query** so Worker secrets exist on `process.env`
 - **Supabase / generic Postgres** → `@prisma/adapter-pg` + `pg` over Workers `nodejs_compat`
-- Cloudflare `prisma generate` sets `engineType = "client"` (rust-free). Local SQLite `npm run setup` does not — it still uses the default Prisma client with no adapter
+- Cloudflare `prisma generate` sets `engineType = "client"` (rust-free). `npm run cf:build` then copies `query_compiler_bg.wasm` next to the Worker and imports it as a Wrangler `CompiledWasm` module (Prisma’s Node `fs.readFileSync` path is missing from the `/bundle` FS). Local SQLite `npm run setup` does not — it still uses the default Prisma client with no adapter
 
 `DATABASE_URL` must be a **runtime** Worker secret (not only a build variable). Signup is the first path that queries Postgres; marketing pages do not. If the secret is missing at runtime, `/login` now says so instead of a generic create failure. Neon pooled URLs that include `channel_binding=require` are sanitized for the HTTP adapter (`sslmode=require` is kept).
 
