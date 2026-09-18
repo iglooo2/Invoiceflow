@@ -27,6 +27,24 @@ function firstIssue(error: z.ZodError) {
   return error.issues[0]?.message ?? "Check the form and try again.";
 }
 
+export function parseProposalIdForm(formData: FormData): ParseResult<{ proposalId: string }> {
+  const proposalId = String(formData.get("proposalId") || "").trim();
+  if (!proposalId) return { success: false, error: "Proposal is missing." };
+  return { success: true, data: { proposalId } };
+}
+
+export function parseProposalDecisionForm(
+  formData: FormData,
+): ParseResult<{ token: string; decision: "accepted" | "declined" }> {
+  const token = String(formData.get("token") || "").trim();
+  const decision = String(formData.get("decision") || "").trim();
+  if (!token) return { success: false, error: "Proposal link is missing." };
+  if (decision !== "accepted" && decision !== "declined") {
+    return { success: false, error: "Choose accept or decline." };
+  }
+  return { success: true, data: { token, decision } };
+}
+
 export function parseProposalForm(formData: FormData): ParseResult<ParsedProposalForm> {
   const raw = formData.get("sectionsJson");
   let sectionsRaw: unknown = [];

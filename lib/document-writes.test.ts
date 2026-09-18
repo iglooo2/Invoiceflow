@@ -174,3 +174,23 @@ test("invoice and proposal actions avoid nested writes and $transaction", () => 
     assert.match(source, /insertInvoiceWithItems|insertProposalWithSections/);
   }
 });
+
+test("mark paid and similar mutations take FormData and redirect instead of two-arg bind", () => {
+  const invoiceActions = readFileSync(path.join(root, "app/actions/invoices.ts"), "utf8");
+  const proposalActions = readFileSync(path.join(root, "app/actions/proposals.ts"), "utf8");
+  const invoicePage = readFileSync(path.join(root, "app/dashboard/invoices/[id]/page.tsx"), "utf8");
+  const proposalPage = readFileSync(path.join(root, "app/dashboard/proposals/[id]/page.tsx"), "utf8");
+  const respondButtons = readFileSync(path.join(root, "app/share/p/[token]/respond-buttons.tsx"), "utf8");
+
+  assert.match(invoiceActions, /export async function markInvoiceStatus\(formData: FormData\)/);
+  assert.match(invoiceActions, /redirect\(`\/dashboard\/invoices\/\$\{parsed\.data\.invoiceId\}`\)/);
+  assert.match(invoiceActions, /unstable_rethrow/);
+  assert.doesNotMatch(invoiceActions, /updateMany\(\{\s*where: \{ id: invoiceId/);
+  assert.doesNotMatch(invoicePage, /\.bind\(null,\s*invoice\.id,\s*"paid"\)/);
+  assert.match(invoicePage, /name="status" value="paid"/);
+
+  assert.match(proposalActions, /export async function respondToProposal\(formData: FormData\)/);
+  assert.doesNotMatch(respondButtons, /\.bind\(null,\s*token,/);
+  assert.doesNotMatch(invoicePage, /\.bind\(/);
+  assert.doesNotMatch(proposalPage, /\.bind\(/);
+});

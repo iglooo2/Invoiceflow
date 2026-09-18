@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { parseInvoiceForm } from "./invoice-input";
+import { parseInvoiceForm, parseInvoiceIdForm, parseInvoiceStatusForm } from "./invoice-input";
 
 function invoiceForm(overrides: Record<string, string> = {}, items?: unknown) {
   const form = new FormData();
@@ -54,6 +54,30 @@ test("parseInvoiceForm asks for a line item when every description is empty", ()
   assert.equal(parsed.success, false);
   if (parsed.success) return;
   assert.match(parsed.error, /line item/i);
+});
+
+test("parseInvoiceStatusForm reads hidden invoiceId and paid status", () => {
+  const form = new FormData();
+  form.set("invoiceId", "inv_123");
+  form.set("status", "paid");
+  const parsed = parseInvoiceStatusForm(form);
+  assert.equal(parsed.success, true);
+  if (!parsed.success) return;
+  assert.equal(parsed.data.invoiceId, "inv_123");
+  assert.equal(parsed.data.status, "paid");
+});
+
+test("parseInvoiceStatusForm rejects a missing id or an invalid status", () => {
+  const missing = parseInvoiceIdForm(new FormData());
+  assert.equal(missing.success, false);
+  if (!missing.success) assert.match(missing.error, /Invoice is missing/);
+
+  const form = new FormData();
+  form.set("invoiceId", "inv_123");
+  form.set("status", "[object FormData]");
+  const parsed = parseInvoiceStatusForm(form);
+  assert.equal(parsed.success, false);
+  if (!parsed.success) assert.match(parsed.error, /status is not valid/);
 });
 
 test("parseInvoiceForm does not throw on invalid items JSON", () => {

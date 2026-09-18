@@ -6,7 +6,7 @@ import { addDays } from "date-fns";
 import { databaseRuntimeStatus, prisma } from "@/lib/db";
 import { documentWriteFailureMessage, errorRedirect, safeErrorLog } from "@/lib/db-errors";
 import { insertProposalWithSections, replaceProposalSections } from "@/lib/document-writes";
-import { parseProposalForm } from "@/lib/proposal-input";
+import { parseProposalDecisionForm, parseProposalForm, parseProposalIdForm } from "@/lib/proposal-input";
 import { planFromUser, requireUser } from "@/lib/session";
 import { assertCanCreate, newPublicToken, redirectIfLimitReached } from "@/lib/documents";
 import { SEED_TEMPLATES, type ProposalTemplatePayload } from "@/lib/templates";
@@ -97,10 +97,21 @@ export async function updateProposal(
   redirect(`/dashboard/proposals/${proposalId}`);
 }
 
-export async function deleteProposal(proposalId: string) {
+export async function deleteProposal(formData: FormData) {
   const user = await requireUser();
-  await prisma.proposal.deleteMany({ where: { id: proposalId, userId: user.id } });
-  revalidatePath("/dashboard/proposals");
+  const parsed = parseProposalIdForm(formData);
+  if (!parsed.success) {
+    redirect(errorRedirect("/dashboard/proposals", parsed.error));
+  }
+  const proposalId = parsed.data.proposalId;
+  try {
+    await prisma.proposal.deleteMany({ where: { id: proposalId, userId: user.id } });
+  } catch (error) {
+    unstable_rethrow(error);
+    console.error("deleteProposal failed", safeErrorLog(error), databaseRuntimeStatus());
+    redirect(errorRedirect(`/dashboard/proposals/${proposalId}`, documentWriteFailureMessage(error)));
+  }
+  await revalidateProposalPaths();
   redirect("/dashboard/proposals");
 }
 
@@ -145,36 +156,70 @@ export async function createProposalFromTemplate(slug: string) {
   }
 }
 
-export async function emailProposal(proposalId: string) {
+export async function emailProposal(formData: FormData) {
   const user = await requireUser();
-  const proposal = await prisma.proposal.findFirst({
-    where: { id: proposalId, userId: user.id },
-  });
-  if (!proposal?.clientEmail) {
-    return;
+  const parsed = parseProposalIdForm(formData);
+  if (!parsed.success) {
+    redirect(errorRedirect("/dashboard/proposals", parsed.error));
   }
-  await sendDocumentEmail({
-    to: proposal.clientEmail,
-    subject: `${proposal.title} — proposal from ${user.businessName || user.name || "your freelancer"}`,
-    heading: proposal.title,
-    body: "Open the proposal to review, then accept or decline.",
-    link: publicProposalUrl(proposal.publicToken),
-  });
-  if (proposal.status === "draft") {
-    await prisma.proposal.update({ where: { id: proposal.id }, data: { status: "sent" } });
+  const proposalId = parsed.data.proposalId;
+  const detailPath = `/dashboard/proposals/${proposalId}`;
+  try {
+    const proposal = await prisma.proposal.findFirst({
+      where: { id: proposalId, userId: user.id },
+    });
+    if (!proposal) {
+      redirect(errorRedirect("/dashboard/proposals", "Proposal not found."));
+    }
+    if (!proposal.clientEmail) {
+      redirect(errorRedirect(detailPath, "Add a client email before sending the share link."));
+    }
+    await sendDocumentEmail({
+      to: proposal.clientEmail,
+      subject: `${proposal.title} — proposal from ${user.businessName || user.name || "your freelancer"}`,
+      heading: proposal.title,
+      body: "Open the proposal to review, then accept or decline.",
+      link: publicProposalUrl(proposal.publicToken),
+    });
+    if (proposal.status === "draft") {
+      await prisma.proposal.update({ where: { id: proposal.id }, data: { status: "sent" } });
+    }
+  } catch (error) {
+    unstable_rethrow(error);
+    console.error("emailProposal failed", safeErrorLog(error), databaseRuntimeStatus());
+    redirect(errorRedirect(detailPath, documentWriteFailureMessage(error)));
   }
-  revalidatePath(`/dashboard/proposals/${proposalId}`);
+  await revalidateProposalPaths(proposalId);
+  redirect(detailPath);
 }
 
-export async function respondToProposal(token: string, decision: "accepted" | "declined") {
-  const proposal = await prisma.proposal.findUnique({ where: { publicToken: token } });
-  if (!proposal) throw new Error("Proposal not found");
-  if (proposal.status === "accepted" || proposal.status === "declined") {
-    return;
+export async function respondToProposal(formData: FormData) {
+  const parsed = parseProposalDecisionForm(formData);
+  const token = parsed.success ? parsed.data.token : String(formData.get("token") || "");
+  const sharePath = token ? `/share/p/${token}` : "/";
+  if (!parsed.success) {
+    redirect(errorRedirect(sharePath === "/" ? "/dashboard" : sharePath, parsed.error));
   }
-  await prisma.proposal.update({
-    where: { id: proposal.id },
-    data: { status: decision },
-  });
-  revalidatePath(`/share/p/${token}`);
+  try {
+    const proposal = await prisma.proposal.findUnique({ where: { publicToken: parsed.data.token } });
+    if (!proposal) {
+      redirect(errorRedirect(sharePath, "Proposal not found."));
+    }
+    if (proposal.status !== "accepted" && proposal.status !== "declined") {
+      await prisma.proposal.update({
+        where: { id: proposal.id },
+        data: { status: parsed.data.decision },
+      });
+    }
+  } catch (error) {
+    unstable_rethrow(error);
+    console.error("respondToProposal failed", safeErrorLog(error), databaseRuntimeStatus());
+    redirect(errorRedirect(sharePath, documentWriteFailureMessage(error)));
+  }
+  try {
+    revalidatePath(sharePath);
+  } catch (error) {
+    console.error("proposal respond revalidatePath", safeErrorLog(error));
+  }
+  redirect(sharePath);
 }

@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { parseProposalForm } from "./proposal-input";
+import { parseProposalDecisionForm, parseProposalForm, parseProposalIdForm } from "./proposal-input";
 
 function proposalForm(overrides: Record<string, string> = {}, sections?: unknown) {
   const form = new FormData();
@@ -32,6 +32,27 @@ test("parseProposalForm returns a readable error for a blank title", () => {
   assert.equal(parsed.success, false);
   if (parsed.success) return;
   assert.match(parsed.error, /Title/);
+});
+
+test("parseProposalDecisionForm reads hidden token and decision", () => {
+  const form = new FormData();
+  form.set("token", "abc123token");
+  form.set("decision", "accepted");
+  const parsed = parseProposalDecisionForm(form);
+  assert.equal(parsed.success, true);
+  if (!parsed.success) return;
+  assert.equal(parsed.data.token, "abc123token");
+  assert.equal(parsed.data.decision, "accepted");
+});
+
+test("parseProposalDecisionForm rejects a two-arg bind mixup", () => {
+  assert.equal(parseProposalIdForm(new FormData()).success, false);
+  const form = new FormData();
+  form.set("token", "abc123token");
+  form.set("decision", "[object FormData]");
+  const parsed = parseProposalDecisionForm(form);
+  assert.equal(parsed.success, false);
+  if (!parsed.success) assert.match(parsed.error, /accept or decline/);
 });
 
 test("parseProposalForm does not throw on invalid sections JSON", () => {

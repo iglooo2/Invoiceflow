@@ -8,10 +8,13 @@ import { ProposalResponse } from "./respond-buttons";
 
 export default async function PublicProposalPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ token: string }>;
+  searchParams: Promise<{ error?: string }>;
 }) {
   const { token } = await params;
+  const { error } = await searchParams;
   const proposal = await prisma.proposal.findUnique({
     where: { publicToken: token },
     include: { sections: { orderBy: { sortOrder: "asc" } }, user: true },
@@ -21,6 +24,9 @@ export default async function PublicProposalPage({
 
   return (
     <div className="px-4 py-10">
+      {error ? (
+        <p className="mx-auto mb-4 w-full max-w-3xl rounded-2xl bg-primary/10 px-4 py-3 text-sm">{error}</p>
+      ) : null}
       <div className="no-print mx-auto mb-6 flex w-full max-w-3xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         {branded ? <Wordmark /> : <span className="font-display text-xl">{proposal.user.businessName || proposal.user.name}</span>}
         <div className="flex flex-wrap gap-2">
