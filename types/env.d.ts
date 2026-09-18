@@ -3,9 +3,11 @@ declare namespace NodeJS {
     /**
      * Optional Prisma datasource override (`postgresql` / `sqlite`).
      * Read by `scripts/prisma.mjs`, `lib/site.ts`, and Cloudflare `cf:build`.
-     * Declared here so spreading `process.env` keeps the key (Next.js types
-     * `NODE_ENV` as a known property, which drops the string index signature).
+     * Next.js types `NODE_ENV` as a known property, which drops the string
+     * index signature when spreading `process.env` — keep this key declared,
+     * and type spawn env copies as `NodeJS.ProcessEnv` (see prisma-schema tests).
      */
     PRISMA_PROVIDER?: string;
+    DATABASE_URL?: string;
   }
 }

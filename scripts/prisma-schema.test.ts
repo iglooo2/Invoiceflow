@@ -8,6 +8,18 @@ import { buildRuntimeSchema } from "./prisma-schema.mjs";
 const root = path.join(import.meta.dirname, "..");
 const source = readFileSync(path.join(root, "prisma/schema.prisma"), "utf8");
 
+/**
+ * `next build` typechecks this file via `tsc`. Spreading `process.env` infers a
+ * closed `{ DATABASE_URL; NODE_ENV }` object because Next.js types `NODE_ENV` as
+ * a known key, which drops ProcessEnv's string index signature. Return
+ * `NodeJS.ProcessEnv` so `PRISMA_PROVIDER` remains a valid key to delete.
+ */
+function processEnvCopy(
+  overrides: Record<string, string | undefined> = {},
+): NodeJS.ProcessEnv {
+  return { ...process.env, ...overrides };
+}
+
 test("sqlite runtime schema keeps default client engine", () => {
   const runtime = buildRuntimeSchema(source, "sqlite");
   const generator = runtime.match(/generator client \{[\s\S]*?\}/)?.[0] ?? "";
@@ -22,7 +34,9 @@ test("postgres runtime schema uses rust-free client engine", () => {
 });
 
 test("PRISMA_PROVIDER is a typed process.env key after env spread", () => {
-  const restore = { ...process.env, DATABASE_URL: process.env.DATABASE_URL || "file:./dev.db" };
+  const restore = processEnvCopy({
+    DATABASE_URL: process.env.DATABASE_URL || "file:./dev.db",
+  });
   delete restore.PRISMA_PROVIDER;
   assert.equal(restore.PRISMA_PROVIDER, undefined);
 });
@@ -31,7 +45,7 @@ test("prisma generate with PRISMA_PROVIDER=postgresql works without a postgres D
   const gen = spawnSync("node", ["scripts/prisma.mjs", "generate"], {
     cwd: root,
     encoding: "utf8",
-    env: { ...process.env, PRISMA_PROVIDER: "postgresql", DATABASE_URL: "file:./dev.db" },
+    env: processEnvCopy({ PRISMA_PROVIDER: "postgresql", DATABASE_URL: "file:./dev.db" }),
   });
   try {
     assert.equal(gen.status, 0, gen.stderr || gen.stdout);
@@ -39,7 +53,9 @@ test("prisma generate with PRISMA_PROVIDER=postgresql works without a postgres D
     assert.match(runtime, /provider\s*=\s*"postgresql"/);
     assert.match(runtime, /engineType\s*=\s*"client"/);
   } finally {
-    const restore = { ...process.env, DATABASE_URL: process.env.DATABASE_URL || "file:./dev.db" };
+    const restore = processEnvCopy({
+      DATABASE_URL: process.env.DATABASE_URL || "file:./dev.db",
+    });
     delete restore.PRISMA_PROVIDER;
     spawnSync("node", ["scripts/prisma.mjs", "generate"], {
       cwd: root,
