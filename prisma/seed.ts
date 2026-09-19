@@ -88,6 +88,26 @@ async function main() {
     },
   });
 
+  await prisma.contract.upsert({
+    where: { id: "seed-contract-generic" },
+    update: {
+      name: "Generic Contract",
+      details:
+        "By signing this document, the customer agrees to the services and conditions outlined in this document.",
+      defaultForEstimates: true,
+      defaultForInvoices: true,
+    },
+    create: {
+      id: "seed-contract-generic",
+      userId: user.id,
+      name: "Generic Contract",
+      details:
+        "By signing this document, the customer agrees to the services and conditions outlined in this document.",
+      defaultForEstimates: true,
+      defaultForInvoices: true,
+    },
+  });
+
   const luna = await prisma.client.upsert({
     where: { id: "seed-client-luna" },
     update: {},

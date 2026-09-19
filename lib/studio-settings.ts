@@ -2,7 +2,7 @@ import { isMissingDatabaseSchemaError } from "./db-errors";
 import { isEmployeeCountKey, isIndustryKey } from "./onboarding";
 
 export const SETTINGS_SCHEMA_WARNING =
-  "Postgres is missing Studio Settings tables (StudioSettings, TaxRate). From a laptop, against the Neon direct/unpooled URL (not *-pooler.*): npm run db:push:prod";
+  "Postgres is missing Studio Settings tables (StudioSettings, TaxRate, Contract). From a laptop, against the Neon direct/unpooled URL (not *-pooler.*): npm run db:push:prod";
 
 export const DEFAULT_EMAIL_ESTIMATE =
   "We are excited about the possibility of working with you.";
@@ -108,6 +108,7 @@ export type StudioSettingsRecord = {
   paymentTermsDays: number;
   footerMessage: string;
   defaultMarkupPercent: number;
+  referralCode: string;
 };
 
 export const EMPTY_STUDIO_SETTINGS: StudioSettingsRecord = {
@@ -144,6 +145,7 @@ export const EMPTY_STUDIO_SETTINGS: StudioSettingsRecord = {
   paymentTermsDays: 0,
   footerMessage: "",
   defaultMarkupPercent: 0,
+  referralCode: "",
 };
 
 export type ParseResult<T> = { success: true; data: T } | { success: false; error: string };
@@ -264,6 +266,7 @@ export function normalizeStudioSettings(row: unknown): StudioSettingsRecord {
     paymentTermsDays: Math.max(0, Math.round(num("paymentTermsDays", 0))),
     footerMessage: str("footerMessage"),
     defaultMarkupPercent: Math.max(0, num("defaultMarkupPercent", 0)),
+    referralCode: str("referralCode"),
   };
 }
 
@@ -471,6 +474,39 @@ export function parseTaxForm(formData: FormData): ParseResult<TaxFormInput> {
     return { success: false, error: "Tax rate must be between 0 and 100." };
   }
   return { success: true, data: { name, rate } };
+}
+
+export type ContractFormInput = {
+  id: string;
+  name: string;
+  details: string;
+  defaultForEstimates: boolean;
+  defaultForInvoices: boolean;
+};
+
+export function parseContractForm(formData: FormData): ParseResult<ContractFormInput> {
+  const name = optional(formData, "name");
+  const details = String(formData.get("details") || "").trim();
+  if (!name) return { success: false, error: "Contract name is required." };
+  if (name.length > 120) return { success: false, error: "Contract name is too long." };
+  if (details.length > 20_000) return { success: false, error: "Contract details are too long." };
+  return {
+    success: true,
+    data: {
+      id: optional(formData, "contractId"),
+      name,
+      details,
+      defaultForEstimates: checked(formData, "defaultForEstimates"),
+      defaultForInvoices: checked(formData, "defaultForInvoices"),
+    },
+  };
+}
+
+export function parseReferralGenerateForm(formData: FormData): ParseResult<{ accepted: true }> {
+  if (!checked(formData, "agreeTerms")) {
+    return { success: false, error: "Agree to the referral terms before generating your link." };
+  }
+  return { success: true, data: { accepted: true } };
 }
 
 const IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/gif", "image/webp", "image/svg+xml"]);
