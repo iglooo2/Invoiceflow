@@ -1,3 +1,4 @@
+import { ESTIMATE_STATUSES } from "./estimates";
 import { nanoid } from "nanoid";
 import { startOfMonth } from "date-fns";
 import { redirect } from "next/navigation";
@@ -52,7 +53,7 @@ export function redirectIfLimitReached(error: unknown): never {
 }
 
 export const INVOICE_STATUSES = ["draft", "sent", "paid", "overdue", "void"] as const;
-export const PROPOSAL_STATUSES = ["draft", "sent", "accepted", "declined"] as const;
+export const PROPOSAL_STATUSES = ESTIMATE_STATUSES;
 
 export type InvoiceStatus = (typeof INVOICE_STATUSES)[number];
 export type ProposalStatus = (typeof PROPOSAL_STATUSES)[number];
