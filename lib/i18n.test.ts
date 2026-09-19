@@ -119,5 +119,7 @@ test("Message us stays a translated label and never prints the contact address",
 
   const footer = readFileSync(path.join(import.meta.dirname, "../components/marketing/shell.tsx"), "utf8");
   assert.match(footer, /\{copy\.messageUs\}/);
+  assert.match(footer, /CONTACT_PATH/);
   assert.equal(footer.includes(email), false);
+  assert.equal(footer.includes("mailto:"), false);
 });

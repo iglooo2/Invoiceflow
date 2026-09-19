@@ -3,7 +3,7 @@ import { Wordmark } from "@/components/brand";
 import { LanguageSwitcher } from "@/components/marketing/language-switcher";
 import { Button } from "@/components/ui/button";
 import type { Dictionary } from "@/lib/dictionary";
-import { CONTACT_MAILTO, SITE_DOMAIN, SITE_STUDIO } from "@/lib/site";
+import { CONTACT_PATH, SITE_DOMAIN, SITE_STUDIO } from "@/lib/site";
 import { localizedPath, type Locale } from "@/lib/i18n";
 
 export function MarketingHeader({
@@ -29,6 +29,9 @@ export function MarketingHeader({
         </Link>
         <Link href={`${localizedPath(locale, "/")}#templates`} className="hover:text-foreground">
           {copy.templates}
+        </Link>
+        <Link href={localizedPath(locale, CONTACT_PATH)} className="hover:text-foreground">
+          {copy.messageUs}
         </Link>
       </nav>
       <div className="flex items-center gap-3">
@@ -71,7 +74,7 @@ export function MarketingFooter({
             <Link href={localizedPath(locale, "/pricing")}>{copy.pricing}</Link>
             <Link href={localizedPath(locale, "/terms")}>{copy.terms}</Link>
             <Link href={localizedPath(locale, "/privacy")}>{copy.privacy}</Link>
-            <a href={CONTACT_MAILTO}>{copy.messageUs}</a>
+            <Link href={localizedPath(locale, CONTACT_PATH)}>{copy.messageUs}</Link>
             <Link href={localizedPath(locale, "/login")}>{copy.signIn}</Link>
           </div>
           <LanguageSwitcher locale={locale} path={path} label={copy.language} />

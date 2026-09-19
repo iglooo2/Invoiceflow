@@ -1,6 +1,8 @@
 import "server-only";
 import { Resend } from "resend";
-import { getAppUrl, resendEnabled } from "@/lib/utils";
+import type { ContactTopic } from "@/lib/contact";
+import { CONTACT_EMAIL } from "@/lib/site";
+import { getAppUrl, isDevMode, resendEnabled } from "@/lib/utils";
 
 function getResend() {
   const key = process.env.AUTH_RESEND_KEY || process.env.RESEND_API_KEY;
@@ -45,6 +47,47 @@ export async function sendDocumentEmail(options: {
     html: `<p>${options.heading}</p><p>${options.body}</p><p><a href="${options.link}">Open document</a></p>`,
   });
   return { sent: true as const };
+}
+
+export async function sendContactRequest(options: {
+  email: string;
+  topic: ContactTopic;
+  subject: string;
+  descriptionHtml: string;
+  description: string;
+  attachments?: { filename: string; content: Buffer }[];
+}) {
+  const from = process.env.EMAIL_FROM || "InvoiceFlow Studio <noreply@invoiceflowstudio.com>";
+  const resend = getResend();
+  const html = `
+    <p><strong>Topic:</strong> ${options.topic}</p>
+    <p><strong>From:</strong> ${options.email}</p>
+    <p><strong>Subject:</strong> ${options.subject}</p>
+    ${options.descriptionHtml || `<p>${options.description}</p>`}
+  `;
+
+  if (!resend) {
+    console.info("[InvoiceFlow] Contact request stored locally (no Resend key)", {
+      topic: options.topic,
+      subject: options.subject,
+      email: options.email,
+      files: options.attachments?.length ?? 0,
+    });
+    return { sent: isDevMode(), via: "log" as const };
+  }
+
+  await resend.emails.send({
+    from,
+    to: CONTACT_EMAIL,
+    replyTo: options.email,
+    subject: `[InvoiceFlow] ${options.topic}: ${options.subject}`,
+    html,
+    attachments: options.attachments?.map((file) => ({
+      filename: file.filename,
+      content: file.content,
+    })),
+  });
+  return { sent: true, via: "resend" as const };
 }
 
 export function publicInvoiceUrl(token: string) {

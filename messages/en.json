@@ -4,7 +4,8 @@
     "pricingTitle": "Pricing",
     "loginTitle": "Sign in",
     "termsTitle": "Terms of Service",
-    "privacyTitle": "Privacy Policy"
+    "privacyTitle": "Privacy Policy",
+    "contactTitle": "Submit a request"
   },
   "nav": {
     "how": "How it works",
@@ -134,6 +135,44 @@
       "Public share links are unguessable tokens. Anyone with the link can view the document. Don’t send tokens you want to keep private.",
       "Contact the operator at invoiceflowstudio.com to request export or deletion of your account data."
     ]
+  },
+  "contact": {
+    "title": "Submit a request",
+    "lede": "Fill in the details below and we'll get back to you.",
+    "email": "Your email address",
+    "emailPlaceholder": "you@example.com",
+    "topic": "Topic",
+    "topicPlaceholder": "Select option",
+    "topics": {
+      "general": "General",
+      "billing": "Billing",
+      "support": "Support",
+      "partnership": "Partnership",
+      "other": "Other"
+    },
+    "subject": "Subject",
+    "subjectPlaceholder": "Brief summary of your request",
+    "description": "Description",
+    "descriptionPlaceholder": "Please describe your issue in detail",
+    "attachments": "Attachments",
+    "attach": "Click to attach files",
+    "submit": "Submit",
+    "sending": "Sending…",
+    "successTitle": "Request sent",
+    "successBody": "Thanks — we’ll get back to you at the email you provided.",
+    "sendAnother": "Send another request",
+    "error": "We couldn’t send that just now. Try again in a moment.",
+    "invalid": "Please fill in the required fields.",
+    "bold": "Bold",
+    "italic": "Italic",
+    "bulletList": "Bulleted list",
+    "numberedList": "Numbered list",
+    "alignLeft": "Align left",
+    "alignCenter": "Align center",
+    "alignRight": "Align right",
+    "link": "Link",
+    "quote": "Quote",
+    "linkPrompt": "Enter a URL"
   },
   "app": {
     "signOut": "Sign out",

@@ -4,7 +4,8 @@
     "pricingTitle": "Tarifs",
     "loginTitle": "Connexion",
     "termsTitle": "Conditions d’utilisation",
-    "privacyTitle": "Politique de confidentialité"
+    "privacyTitle": "Politique de confidentialité",
+    "contactTitle": "Envoyer une demande"
   },
   "nav": {
     "how": "Comment ça marche",
@@ -134,6 +135,44 @@
       "Les liens de partage publics sont des jetons difficiles à deviner. Toute personne disposant du lien peut voir le document. N’envoyez pas de jetons que vous voulez garder privés.",
       "Contactez l’opérateur sur invoiceflowstudio.com pour demander l’export ou la suppression des données de votre compte."
     ]
+  },
+  "contact": {
+    "title": "Envoyer une demande",
+    "lede": "Remplissez les informations ci-dessous et nous vous répondrons.",
+    "email": "Votre adresse e-mail",
+    "emailPlaceholder": "vous@exemple.com",
+    "topic": "Sujet",
+    "topicPlaceholder": "Sélectionner une option",
+    "topics": {
+      "general": "Général",
+      "billing": "Facturation",
+      "support": "Assistance",
+      "partnership": "Partenariat",
+      "other": "Autre"
+    },
+    "subject": "Objet",
+    "subjectPlaceholder": "Bref résumé de votre demande",
+    "description": "Description",
+    "descriptionPlaceholder": "Décrivez votre problème en détail",
+    "attachments": "Pièces jointes",
+    "attach": "Cliquez pour joindre des fichiers",
+    "submit": "Envoyer",
+    "sending": "Envoi…",
+    "successTitle": "Demande envoyée",
+    "successBody": "Merci — nous vous répondrons à l’e-mail indiqué.",
+    "sendAnother": "Envoyer une autre demande",
+    "error": "Impossible d’envoyer pour le moment. Réessayez dans un instant.",
+    "invalid": "Veuillez remplir les champs obligatoires.",
+    "bold": "Gras",
+    "italic": "Italique",
+    "bulletList": "Liste à puces",
+    "numberedList": "Liste numérotée",
+    "alignLeft": "Aligner à gauche",
+    "alignCenter": "Centrer",
+    "alignRight": "Aligner à droite",
+    "link": "Lien",
+    "quote": "Citation",
+    "linkPrompt": "Saisissez une URL"
   },
   "app": {
     "signOut": "Se déconnecter",
