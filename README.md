@@ -91,25 +91,51 @@ For Neon, use the **pooled** (`-pooler`) URL as the Worker `DATABASE_URL`, and t
 
 ### Estimates columns (required after the Estimates / PR #23 deploy)
 
-`/dashboard/estimates` queries every `Proposal` scalar. If production Postgres was pushed **before** Estimates landed, it is missing `taxRate`, `markupRate`, `viewedAt`, `signedName`, `signedAt`, and `attachments`. Prisma then throws, and Cloudflare shows **This page couldn’t load** (error id like `158536238`) instead of the list.
+Cloudflare Worker logs on `/dashboard/estimates`:
 
-This build still **loads the page** from the older columns (markup / opened / attachments stay empty). To restore the full Estimates schema, run this **from a laptop** (Prisma uses TCP; the Worker cannot push). No Worker redeploy is required for the SQL itself:
+```
+prisma:error Invalid prisma.proposal.findMany() invocation: column Proposal.taxRate does not exist
+```
+
+Production Neon is missing the six Proposal columns added for Estimates. Prisma’s default `findMany` SELECTs them, the Worker throws, and Cloudflare shows **This page couldn’t load**.
+
+**Unblock (schema):** from a laptop, push the Prisma schema to the Neon **direct / unpooled** URL (not the Worker `*-pooler.*` secret). Prisma talks TCP; the Worker cannot run this. No Worker redeploy is required for the SQL itself.
 
 ```bash
 cd /path/to/invoiceflow
-# Neon: DIRECT / unpooled host — NOT the *-pooler.* URL used by the Worker
-export DATABASE_URL="postgresql://USER:PASSWORD@ep-XXXX.us-east-1.aws.neon.tech/neondb?sslmode=require"
-# If you keep both URLs in .env, db:push:prod prefers DATABASE_URL_UNPOOLED automatically:
-# export DATABASE_URL_UNPOOLED="$DATABASE_URL"
 
+# Neon DIRECT host — NOT *-pooler.*
+export DATABASE_URL="postgresql://USER:PASSWORD@ep-XXXX.us-east-1.aws.neon.tech/neondb?sslmode=require"
+
+# If .env already has DATABASE_URL_UNPOOLED, this script uses it automatically.
 npm run db:push:prod
 ```
 
-That script is `node scripts/prisma.mjs db push --require-postgres`. It refuses SQLite.
+`npm run db:push:prod` is `node scripts/prisma.mjs db push --require-postgres`. It refuses SQLite. That adds:
 
-SQL-only equivalent (Postgres, idempotent): `prisma/add-estimate-columns.sql`
+| Column | Postgres type |
+|---|---|
+| `"taxRate"` | `DOUBLE PRECISION NOT NULL DEFAULT 0` |
+| `"markupRate"` | `DOUBLE PRECISION NOT NULL DEFAULT 0` |
+| `"viewedAt"` | `TIMESTAMP(3)` |
+| `"signedName"` | `TEXT` |
+| `"signedAt"` | `TIMESTAMP(3)` |
+| `"attachments"` | `TEXT` |
 
-Then reload `https://invoiceflowstudio.com/dashboard/estimates`. Creating or approving estimates that write the new columns still needs this push.
+SQL-only equivalent (`prisma/add-estimate-columns.sql`), against the same direct URL:
+
+```sql
+ALTER TABLE "Proposal" ADD COLUMN IF NOT EXISTS "taxRate" DOUBLE PRECISION NOT NULL DEFAULT 0;
+ALTER TABLE "Proposal" ADD COLUMN IF NOT EXISTS "markupRate" DOUBLE PRECISION NOT NULL DEFAULT 0;
+ALTER TABLE "Proposal" ADD COLUMN IF NOT EXISTS "viewedAt" TIMESTAMP(3);
+ALTER TABLE "Proposal" ADD COLUMN IF NOT EXISTS "signedName" TEXT;
+ALTER TABLE "Proposal" ADD COLUMN IF NOT EXISTS "signedAt" TIMESTAMP(3);
+ALTER TABLE "Proposal" ADD COLUMN IF NOT EXISTS "attachments" TEXT;
+```
+
+Then reload `https://invoiceflowstudio.com/dashboard/estimates`. Creating or approving estimates that write the new columns also needs this push.
+
+This app build still **loads the list** from older Proposal columns (markup / opened / attachments stay empty) so a missing schema is a banner, not a Cloudflare error page.
 
 Then seed production only if you want the demo user (skip for a real launch):
 

@@ -168,6 +168,18 @@ test("estimate dashboard pages query through the schema-safe helper", () => {
     "signedAt",
     "attachments",
   ]);
+  const sql = readFileSync(path.join(root, "prisma/add-estimate-columns.sql"), "utf8");
+  for (const column of ESTIMATE_OPTIONAL_COLUMNS) {
+    assert.match(sql, new RegExp(`ADD COLUMN IF NOT EXISTS "${column}"`));
+  }
+  assert.match(
+    readFileSync(path.join(root, "README.md"), "utf8"),
+    /npm run db:push:prod/,
+  );
+  assert.match(
+    readFileSync(path.join(root, "README.md"), "utf8"),
+    /column Proposal\.taxRate does not exist/,
+  );
 });
 
 test("prismaReadFailureMessage tells operators to run db:push:prod", () => {
