@@ -29,6 +29,7 @@ test("localizedPath prefixes marketing routes", () => {
   assert.equal(localizedPath("en", "/"), "/en");
   assert.equal(localizedPath("es", "/pricing"), "/es/pricing");
   assert.equal(localizedPath("es", "/estimates"), "/es/estimates");
+  assert.equal(localizedPath("de", "/contact"), "/de/contact");
   assert.equal(localizedPath("pt", "login"), "/pt/login");
 });
 
@@ -46,6 +47,7 @@ test("shouldSkipLocale leaves app, API, and share routes alone", () => {
   assert.equal(shouldSkipLocale("/icon"), true);
   assert.equal(shouldSkipLocale("/pricing"), false);
   assert.equal(shouldSkipLocale("/estimates"), false);
+  assert.equal(shouldSkipLocale("/contact"), false);
   assert.equal(shouldSkipLocale("/"), false);
   assert.equal(shouldSkipLocale("/es/login"), false);
 });
@@ -99,6 +101,8 @@ test("login and dashboard common errors exist in every locale", () => {
     assert.ok(dict.nav.estimates.length > 0, locale);
     assert.ok(dict.estimatesPage.headline.length > 0, locale);
     assert.ok(dict.app.status.approved.length > 0, locale);
+    assert.ok(dict.meta.contactTitle.length > 0, locale);
+    assert.ok(dict.contact.submit.length > 0, locale);
   }
 });
 
@@ -125,5 +129,7 @@ test("Message us stays a translated label and never prints the contact address",
 
   const footer = readFileSync(path.join(import.meta.dirname, "../components/marketing/shell.tsx"), "utf8");
   assert.match(footer, /\{copy\.messageUs\}/);
+  assert.match(footer, /CONTACT_PATH/);
   assert.equal(footer.includes(email), false);
+  assert.equal(footer.includes("mailto:"), false);
 });

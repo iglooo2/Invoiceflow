@@ -5,6 +5,7 @@
     "loginTitle": "Iniciar sesión",
     "termsTitle": "Términos del servicio",
     "privacyTitle": "Política de privacidad",
+    "contactTitle": "Enviar una solicitud",
     "estimatesTitle": "Presupuestos",
     "estimatesDescription": "Precia trabajos con presupuestos de InvoiceFlow Studio — partidas, margen, impuestos, aprobación en línea y QuickBooks Online cuando estés listo."
   },
@@ -138,6 +139,44 @@
       "Los enlaces públicos son tokens difíciles de adivinar. Quien tenga el enlace puede ver el documento. No envíes tokens que quieras mantener en privado.",
       "Contacta al operador en invoiceflowstudio.com para pedir la exportación o eliminación de los datos de tu cuenta."
     ]
+  },
+  "contact": {
+    "title": "Enviar una solicitud",
+    "lede": "Completa los datos y te responderemos.",
+    "email": "Tu dirección de email",
+    "emailPlaceholder": "tu@ejemplo.com",
+    "topic": "Tema",
+    "topicPlaceholder": "Selecciona una opción",
+    "topics": {
+      "general": "General",
+      "billing": "Facturación",
+      "support": "Soporte",
+      "partnership": "Colaboración",
+      "other": "Otro"
+    },
+    "subject": "Asunto",
+    "subjectPlaceholder": "Resumen breve de tu solicitud",
+    "description": "Descripción",
+    "descriptionPlaceholder": "Describe el problema con detalle",
+    "attachments": "Archivos adjuntos",
+    "attach": "Haz clic para adjuntar archivos",
+    "submit": "Enviar",
+    "sending": "Enviando…",
+    "successTitle": "Solicitud enviada",
+    "successBody": "Gracias — te responderemos al email que indicaste.",
+    "sendAnother": "Enviar otra solicitud",
+    "error": "No pudimos enviarla ahora. Inténtalo en un momento.",
+    "invalid": "Completa los campos obligatorios.",
+    "bold": "Negrita",
+    "italic": "Cursiva",
+    "bulletList": "Lista con viñetas",
+    "numberedList": "Lista numerada",
+    "alignLeft": "Alinear a la izquierda",
+    "alignCenter": "Centrar",
+    "alignRight": "Alinear a la derecha",
+    "link": "Enlace",
+    "quote": "Cita",
+    "linkPrompt": "Introduce una URL"
   },
   "app": {
     "signOut": "Cerrar sesión",

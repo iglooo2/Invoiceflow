@@ -5,6 +5,7 @@
     "loginTitle": "Anmelden",
     "termsTitle": "Nutzungsbedingungen",
     "privacyTitle": "Datenschutz",
+    "contactTitle": "Anfrage senden",
     "estimatesTitle": "Kostenvoranschläge",
     "estimatesDescription": "Kalkuliere Aufträge mit gebrandeten InvoiceFlow-Studio-Voranschlägen — Positionen, Aufschlag, Steuer, Online-Genehmigung und QuickBooks Online, wenn du soweit bist."
   },
@@ -138,6 +139,44 @@
       "Öffentliche Share-Links sind schwer zu erratende Tokens. Jeder mit dem Link kann das Dokument sehen. Schicke keine Tokens, die privat bleiben sollen.",
       "Kontaktiere den Betreiber unter invoiceflowstudio.com, um Export oder Löschung deiner Kontodaten anzufordern."
     ]
+  },
+  "contact": {
+    "title": "Anfrage senden",
+    "lede": "Fülle die Angaben aus, wir melden uns bei dir.",
+    "email": "Deine E-Mail-Adresse",
+    "emailPlaceholder": "du@beispiel.com",
+    "topic": "Thema",
+    "topicPlaceholder": "Option wählen",
+    "topics": {
+      "general": "Allgemein",
+      "billing": "Abrechnung",
+      "support": "Support",
+      "partnership": "Partnerschaft",
+      "other": "Sonstiges"
+    },
+    "subject": "Betreff",
+    "subjectPlaceholder": "Kurze Zusammenfassung deiner Anfrage",
+    "description": "Beschreibung",
+    "descriptionPlaceholder": "Bitte beschreibe dein Anliegen im Detail",
+    "attachments": "Anhänge",
+    "attach": "Klicken, um Dateien anzuhängen",
+    "submit": "Senden",
+    "sending": "Wird gesendet…",
+    "successTitle": "Anfrage gesendet",
+    "successBody": "Danke — wir antworten an die angegebene E-Mail.",
+    "sendAnother": "Weitere Anfrage senden",
+    "error": "Das konnten wir gerade nicht senden. Bitte gleich noch einmal versuchen.",
+    "invalid": "Bitte fülle die Pflichtfelder aus.",
+    "bold": "Fett",
+    "italic": "Kursiv",
+    "bulletList": "Aufzählung",
+    "numberedList": "Nummerierte Liste",
+    "alignLeft": "Links ausrichten",
+    "alignCenter": "Zentrieren",
+    "alignRight": "Rechts ausrichten",
+    "link": "Link",
+    "quote": "Zitat",
+    "linkPrompt": "URL eingeben"
   },
   "app": {
     "signOut": "Abmelden",
