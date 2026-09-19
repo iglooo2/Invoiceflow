@@ -80,11 +80,11 @@ export function StudioProduct() {
   const accent = PALETTE.find((swatch) => swatch.id === swatchId)?.hex ?? "#C4784A";
 
   return (
-    <div className="studio-monitor mx-auto w-full max-w-[920px]">
+    <div className="studio-monitor mx-auto w-full min-w-0 max-w-[920px]">
       <div className="studio-monitor-bezel">
         <div className="studio-monitor-camera" aria-hidden />
         <div className="studio-monitor-screen">
-          <div className="flex min-h-[420px] md:min-h-[520px]">
+          <div className="flex min-h-0 sm:min-h-[420px] md:min-h-[520px]">
             <aside className="hidden w-12 shrink-0 flex-col items-center gap-5 border-r border-[#ece6dc] bg-[#fbf8f3] py-4 sm:flex">
               <span className="grid h-7 w-7 place-items-center rounded-full bg-primary text-[10px] font-semibold text-primary-foreground">
                 IF
@@ -107,8 +107,8 @@ export function StudioProduct() {
                 <p className="text-[13px] font-medium tracking-tight text-foreground">Templates gallery</p>
               </header>
 
-              <div id="templates" className="scroll-mt-24 flex-1 px-4 py-4 sm:px-5">
-                <div className="-mx-1 flex gap-3 overflow-x-auto pb-2 pt-1 [scrollbar-width:thin] sm:mx-0 sm:grid sm:grid-cols-4 sm:overflow-visible sm:pb-0">
+              <div id="templates" className="scroll-mt-24 flex-1 px-3 py-3 sm:px-5 sm:py-4">
+                <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 sm:gap-3">
                   {TEMPLATES.map((template) => {
                     const selected = template.id === selectedId;
                     return (
@@ -116,7 +116,7 @@ export function StudioProduct() {
                         key={template.id}
                         type="button"
                         onClick={() => setSelectedId(template.id)}
-                        className="w-[168px] shrink-0 text-left sm:w-auto"
+                        className="min-w-0 text-left"
                         aria-pressed={selected}
                       >
                         <MiniDocument
