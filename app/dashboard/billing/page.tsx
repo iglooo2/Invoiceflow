@@ -98,7 +98,7 @@ export default async function BillingPage({
             <li>Create a Stripe product/price (~$24/month) in the same mode as your secret key.</li>
             <li>
               Set <code>STRIPE_SECRET_KEY</code> and <code>STRIPE_PRO_PRICE_ID</code> as Cloudflare Worker
-              runtime secrets (not only build variables).
+              encrypted runtime secrets (not plaintext Variables or build-only vars).
             </li>
             <li>
               Local: run <code>stripe listen --forward-to localhost:3000/api/stripe/webhook</code> and paste{" "}
