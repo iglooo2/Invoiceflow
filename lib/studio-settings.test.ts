@@ -10,6 +10,8 @@ import {
   parseMarkupForm,
   parsePreferencesForm,
   parseTaxForm,
+  parseContractForm,
+  parseReferralGenerateForm,
   paymentTermsLabel,
   shouldNotify,
   splitPersonName,
@@ -129,6 +131,29 @@ test("parseTaxForm requires a name and 0-100 rate", () => {
     assert.equal(parsed.data.name, "CA");
     assert.equal(parsed.data.rate, 8.25);
   }
+});
+
+test("parseContractForm requires a name and reads default toggles", () => {
+  const form = new FormData();
+  form.set("details", "By signing this document, the customer agrees.");
+  assert.equal(parseContractForm(form).success, false);
+  form.set("name", "Generic Contract");
+  form.set("defaultForEstimates", "on");
+  form.set("defaultForInvoices", "on");
+  const parsed = parseContractForm(form);
+  assert.equal(parsed.success, true);
+  if (parsed.success) {
+    assert.equal(parsed.data.name, "Generic Contract");
+    assert.equal(parsed.data.defaultForEstimates, true);
+    assert.equal(parsed.data.defaultForInvoices, true);
+  }
+});
+
+test("parseReferralGenerateForm requires the terms checkbox", () => {
+  const form = new FormData();
+  assert.equal(parseReferralGenerateForm(form).success, false);
+  form.set("agreeTerms", "on");
+  assert.equal(parseReferralGenerateForm(form).success, true);
 });
 
 test("payment terms of 0 are due upon receipt", () => {

@@ -9,7 +9,8 @@
     "privacyTitle": "Privacy Policy",
     "contactTitle": "Submit a request",
     "estimatesTitle": "Estimates",
-    "estimatesDescription": "Price jobs with branded InvoiceFlow Studio estimates — line items, markup, tax, online approval, and QuickBooks Online when you are ready."
+    "estimatesDescription": "Price jobs with branded InvoiceFlow Studio estimates — line items, markup, tax, online approval, and QuickBooks Online when you are ready.",
+    "referralTermsTitle": "Referral Program Terms"
   },
   "nav": {
     "how": "How it works",
@@ -262,14 +263,17 @@
     "save": "Save",
     "remove": "Remove",
     "downloadPdf": "Download PDF",
+    "exportCsv": "Export CSV",
     "publicView": "Public view",
     "emailShareLink": "Email share link",
     "markPaid": "Mark paid",
+    "markPending": "Mark pending",
     "copyLink": "Copy link",
     "copied": "Copied",
     "status": {
       "draft": "Draft",
       "sent": "Sent",
+      "pending": "Pending",
       "paid": "Paid",
       "overdue": "Overdue",
       "void": "Void",
@@ -346,7 +350,9 @@
         "documents": "Doc Settings",
         "taxes": "Taxes",
         "markup": "Line Item Markup",
-        "quickbooks": "QuickBooks Sync"
+        "quickbooks": "QuickBooks Sync",
+        "contracts": "Contracts",
+        "refer": "Refer & Earn"
       },
       "account": {
         "heading": "Account Information",
@@ -433,8 +439,8 @@
         "percent": "Default markup %"
       },
       "qbEyebrow": "QuickBooks Online",
-      "qbTitle": "Connect your books",
-      "qbLede": "Sync invoices and estimates with QuickBooks Online so the number you sent is the number your accountant sees. One-time connect, then a daily sync — or tap Sync now after a busy day. Live Intuit OAuth is not enabled on this release.",
+      "qbTitle": "InvoiceFlow Studio → QuickBooks",
+      "qbLede": "Connect your InvoiceFlow Studio → QuickBooks Online accounts to automatically keep your books up-to-date.",
       "qbReserved": "Connect QuickBooks is reserved for your studio. Add an Intuit developer app, then set",
       "qbRedirect": "Redirect URI:",
       "qbBullet1": "Automate bookkeeping after you send from InvoiceFlow Studio.",
@@ -443,7 +449,44 @@
       "qbCredsPresent": "Credentials are present",
       "qbCredsMissing": "Credentials are not set yet",
       "qbConnectReady": "Connect QuickBooks (OAuth coming soon)",
-      "qbConnectSoon": "Connect QuickBooks — coming soon"
+      "qbConnectSoon": "Connect QuickBooks — coming soon",
+      "contracts": {
+        "heading": "Contracts",
+        "empty": "Use “New Contract” to add terms you can attach to estimates and invoices.",
+        "new": "New Contract",
+        "edit": "Edit Contract",
+        "name": "Contract Name",
+        "details": "Contract Details",
+        "defaultEstimate": "Set as default estimate contract",
+        "defaultInvoice": "Set as default invoice contract",
+        "delete": "Delete Contract"
+      },
+      "refer": {
+        "headline": "Invite Contractors and Earn ${reward}!",
+        "lede": "Earn cash rewards for contractors that subscribe to InvoiceFlow Studio Pro for {days} days.",
+        "generate": "Generate Your Referral Link",
+        "termsLead": "By clicking Generate Your Referral Link, you are agreeing to the",
+        "termsLink": "Referral Program Terms & Conditions",
+        "termsTail": "This will enable you to generate your unique referral link and collect earnings.",
+        "agree": "I agree to the Referral Program Terms & Conditions",
+        "share": "Share Now",
+        "copy": "Copy link",
+        "copied": "Copied",
+        "linkLabel": "Your Referral Link",
+        "earnings": "Total Earnings",
+        "earningsHint": "Weekly rewards balance. Payout remaining.",
+        "earningsPlaceholder": "$0.00",
+        "generated": "Your referral link is ready to share.",
+        "phoneMore": "More",
+        "phoneTitle": "Refer & Earn",
+        "phoneStatus": "Status"
+      },
+      "qbUpgrade": "Upgrade Now",
+      "qbLearnMore": "Learn More",
+      "qbProHint": "Upgrade to Pro to access QuickBooks Sync",
+      "qbBenefit1": "Stop exporting your InvoiceFlow Studio data manually",
+      "qbBenefit2": "Stop scrambling to find old documents during tax season",
+      "qbBenefit3": "Keep your bookkeeper happy and off your back!"
     },
     "billingPage": {
       "lede": "You're on {plan}. Starter is limited to 3 invoices and 3 estimates each month. Pro is ${price}/month, unlimited.",
@@ -563,5 +606,15 @@
     ],
     "heroTotal": "Estimate total",
     "heroTotalAmount": "$2,770"
+  },
+  "referralTerms": {
+    "title": "Referral Program Terms & Conditions",
+    "updated": "Last updated September 19, 2026. Stub for the MVP — replace with a reviewed policy before launch.",
+    "paragraphs": [
+      "InvoiceFlow Studio pays a cash reward when someone you invite subscribes to Pro and stays subscribed for the qualifying period shown in Settings.",
+      "Rewards are a placeholder in this release. Earnings, weekly balances, and payouts are not processed yet.",
+      "Referral links use invoiceflowstudio.com/r/ followed by your unique code. Do not use competitor domains or impersonate another studio.",
+      "We may change, pause, or end the referral program with notice. Abuse, self-referrals, and fake accounts are not eligible."
+    ]
   }
 }

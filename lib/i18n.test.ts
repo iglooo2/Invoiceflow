@@ -44,6 +44,7 @@ test("shouldSkipLocale leaves app, API, and share routes alone", () => {
   assert.equal(shouldSkipLocale("/dashboard/invoices"), true);
   assert.equal(shouldSkipLocale("/api/auth/session"), true);
   assert.equal(shouldSkipLocale("/share/i/abc"), true);
+  assert.equal(shouldSkipLocale("/r/AbC123_xyz"), true);
   assert.equal(shouldSkipLocale("/icon"), true);
   assert.equal(shouldSkipLocale("/pricing"), false);
   assert.equal(shouldSkipLocale("/estimates"), false);
@@ -127,6 +128,9 @@ test("login and dashboard common errors exist in every locale", () => {
     assert.ok(dict.nav.estimates.length > 0, locale);
     assert.ok(dict.estimatesPage.headline.length > 0, locale);
     assert.ok(dict.app.status.approved.length > 0, locale);
+    assert.ok(dict.app.status.pending.length > 0, locale);
+    assert.ok(dict.app.markPending.length > 0, locale);
+    assert.ok(dict.app.exportCsv.length > 0, locale);
     assert.ok(dict.meta.contactTitle.length > 0, locale);
     assert.ok(dict.contact.submit.length > 0, locale);
   }

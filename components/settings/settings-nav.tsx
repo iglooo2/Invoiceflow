@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation";
 import {
   Building2,
   ClipboardList,
+  FileText,
+  Gift,
   Link2,
   Percent,
   Receipt,
@@ -22,6 +24,8 @@ const ITEMS = [
   { href: "/dashboard/settings/documents", key: "documents" as const, icon: ClipboardList },
   { href: "/dashboard/settings/taxes", key: "taxes" as const, icon: Wallet },
   { href: "/dashboard/settings/markup", key: "markup" as const, icon: Percent },
+  { href: "/dashboard/settings/contracts", key: "contracts" as const, icon: FileText },
+  { href: "/dashboard/settings/refer", key: "refer" as const, icon: Gift },
   { href: "/dashboard/settings/quickbooks", key: "quickbooks" as const, icon: Receipt },
 ];
 

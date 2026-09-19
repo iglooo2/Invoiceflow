@@ -34,6 +34,13 @@ test("User onboarding columns stay in the source schema", () => {
   assert.match(source, /onboardingComplete Boolean @default\(true\)/);
 });
 
+test("Contract and referral columns stay off the User query surface", () => {
+  assert.match(source, /model Contract \{/);
+  assert.match(source, /defaultForEstimates\s+Boolean/);
+  assert.match(source, /referralCode\s+String\?\s+@unique/);
+  assert.match(source, /referralTermsAcceptedAt\s+DateTime\?/);
+});
+
 test("sqlite runtime schema keeps default client engine", () => {
   const runtime = buildRuntimeSchema(source, "sqlite");
   const generator = runtime.match(/generator client \{[\s\S]*?\}/)?.[0] ?? "";

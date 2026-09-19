@@ -1,8 +1,11 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import {
   ESTIMATE_LIST_PATH,
   ESTIMATE_MARKETING_PATH,
+  ESTIMATE_STATUSES,
   estimateDetailPath,
   estimateStatusLabel,
   formatEstimateDate,
@@ -19,6 +22,24 @@ test("estimate paths stay on the InvoiceFlow dashboard", () => {
 test("accepted estimates display as approved", () => {
   assert.equal(estimateStatusLabel("accepted"), "approved");
   assert.equal(estimateStatusLabel("sent"), "sent");
+  assert.equal(estimateStatusLabel("pending"), "pending");
+});
+
+test("pending is an estimate status and not an invoice status", () => {
+  const root = path.join(import.meta.dirname, "..");
+  assert.deepEqual([...ESTIMATE_STATUSES], ["draft", "sent", "pending", "accepted", "declined"]);
+
+  const estimatesPage = readFileSync(path.join(root, "app/dashboard/estimates/page.tsx"), "utf8");
+  const proposalForm = readFileSync(path.join(root, "components/proposal-form.tsx"), "utf8");
+  const invoicesPage = readFileSync(path.join(root, "app/dashboard/invoices/page.tsx"), "utf8");
+  const invoiceForm = readFileSync(path.join(root, "components/invoice-form.tsx"), "utf8");
+  const invoiceInput = readFileSync(path.join(root, "lib/invoice-input.ts"), "utf8");
+
+  assert.match(estimatesPage, /ESTIMATE_STATUSES/);
+  assert.match(proposalForm, /ESTIMATE_STATUSES/);
+  assert.doesNotMatch(invoicesPage, /pending/);
+  assert.doesNotMatch(invoiceForm, /pending/);
+  assert.doesNotMatch(invoiceInput, /pending/);
 });
 
 test("formatEstimateDate skips invalid values", () => {
