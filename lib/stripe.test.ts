@@ -256,6 +256,8 @@ test("checkout session params omit managed_payments unless opting out", () => {
   });
   assert.equal(first.mode, "subscription");
   assert.equal(first.line_items?.[0]?.price, "price_live");
+  assert.equal(first.metadata?.userId, "user_1");
+  assert.equal(first.subscription_data?.metadata?.userId, "user_1");
   assert.equal(first.managed_payments, undefined);
 
   const fallback = buildProCheckoutSessionParams({
@@ -273,6 +275,9 @@ test("webhook route stays on the default Worker runtime and verifies async", () 
   assert.doesNotMatch(webhook, /export const runtime/);
   assert.match(webhook, /constructEventAsync/);
   assert.match(webhook, /stripeWebhookCryptoProvider/);
+  assert.match(webhook, /handleStripeWebhookEvent/);
+  assert.doesNotMatch(webhook, /\$transaction/);
+  assert.doesNotMatch(webhook, /updateMany/);
 });
 
 test("readCloudflareString is empty outside a Worker request", () => {

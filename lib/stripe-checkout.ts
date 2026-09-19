@@ -55,6 +55,7 @@ export function buildProCheckoutSessionParams(input: {
     cancel_url: `${input.appUrl}/dashboard/billing?status=cancelled`,
     allow_promotion_codes: true,
     metadata: { userId: input.userId },
+    subscription_data: { metadata: { userId: input.userId } },
   };
   if (input.managedPaymentsEnabled === false) {
     params.managed_payments = { enabled: false };
