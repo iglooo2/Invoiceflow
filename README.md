@@ -1,21 +1,22 @@
 # InvoiceFlow Studio
 
-Fast, beautiful invoices and proposals for freelance creatives — designers, video editors, and writers who hate making them by hand.
+Fast invoices and estimates for freelancers and contractors — plus the studio templates designers, editors, and writers already use.
 
 Live domain: **[invoiceflowstudio.com](https://invoiceflowstudio.com)**
 
-This is a focused Micro-SaaS MVP, not an accounting suite. Create from studio templates, send a PDF or shareable link, and track paid / unpaid.
+This is a focused Micro-SaaS MVP, not an accounting suite. Create from studio templates, send a PDF or shareable link, and track paid / unpaid / approved.
 
 ## What you get
 
-- Marketing landing + pricing + Terms/Privacy stubs
+- Marketing landing + pricing + `/estimates` + Terms/Privacy stubs
 - Auth: email/password (works with zero API keys), optional GitHub OAuth, optional Resend magic link
-- Dashboard: invoices, proposals, clients, studio settings, billing
+- Dashboard: invoices, estimates, clients, studio settings, billing
 - Invoice editor (client, line items, tax, notes, due date, status)
-- Proposal editor (sections, optional pricing, accept/decline on the public link)
-- PDF download + public share pages
-- Filters on invoice and proposal lists
-- Free vs Pro limits in code: **Starter = 3 invoices and 3 proposals per month; Pro = unlimited at $24/mo**
+- Estimate editor (line items, markup, tax, attachments list, online approve with a typed name)
+- PDF download + public share pages (opened + approved notifications)
+- Filters on invoice and estimate lists
+- Free vs Pro limits in code: **Starter = 3 invoices and 3 estimates per month; Pro = unlimited at $24/mo**
+- QuickBooks Online **settings placeholder** (Intuit app client id/secret required for live OAuth — not in this release)
 - Stripe Checkout + Customer Portal + webhook (test keys locally, live keys in production). Local demo upgrade if Stripe keys are missing
 - Cloudflare Workers deploy via the **OpenNext** adapter (`@opennextjs/cloudflare`)
 
@@ -64,6 +65,8 @@ See `.env.example`. Placeholders only — never commit real secrets.
 | `STRIPE_WEBHOOK_SECRET` | from Stripe CLI | **runtime secret** `whsec_…` from the matching-mode endpoint | Webhook route returns 501 |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | unused | unused | Not read by Checkout or the Billing button |
 | `AUTH_DEV_MODE` | `true` | **`false`** | Production hides login demo credentials and “Unlock Pro for local demo” |
+| `INTUIT_CLIENT_ID` / `INTUIT_CLIENT_SECRET` | optional | optional Worker secrets | Settings shows Connect QuickBooks; live OAuth is not in this release |
+| `INTUIT_REDIRECT_URI` | optional | optional | Defaults to `{APP_URL}/dashboard/settings` |
 
 Auth.js is configured with `trustHost: true` so it trusts the `Host` header Cloudflare sends.
 
@@ -222,26 +225,36 @@ Without Stripe keys locally, keep `AUTH_DEV_MODE=true` and use **Unlock Pro for 
 | `npm run preview` | Worker runtime locally (Wrangler) |
 | `npm run deploy` | OpenNext build + `wrangler deploy` |
 | `npm run db:push:prod` | `prisma db push` against Postgres only |
-| `npm test` | Money, plan limits, DB URL/adapter helpers, invoice/proposal form parsing, sequential Neon HTTP writes, Prisma postgres engine rewrite, Workers-safe PDF writer |
+| `npm test` | Money, plan limits, DB URL/adapter helpers, invoice/estimate form parsing, sequential Neon HTTP writes, Prisma postgres engine rewrite, Workers-safe PDF writer |
 
 ## Demo path (no paid keys)
 
 1. `npm run setup && npm run dev`
 2. Sign in as `demo@invoiceflow.dev` / `demo1234`
 3. Open the seeded invoice, copy the public link, download PDF
-4. Dashboard → template card → create a Design Project Invoice
-5. Billing → Unlock Pro for local demo (optional)
+4. Dashboard → template card → create a Design Project Invoice or Job Estimate
+5. Open `/estimates` on the marketing site, then Settings → Connect QuickBooks (placeholder)
+6. Billing → Unlock Pro for local demo (optional)
+
+## QuickBooks Online (not live yet)
+
+InvoiceFlow Studio can show the Connect QuickBooks story in Settings and on `/estimates`. Live Intuit OAuth is deferred until an Intuit developer app exists.
+
+1. Create an app in the [Intuit developer portal](https://developer.intuit.com/).
+2. Set redirect URI to `https://invoiceflowstudio.com/dashboard/settings` (or your preview URL).
+3. Add Worker **secrets** `INTUIT_CLIENT_ID` and `INTUIT_CLIENT_SECRET` (optional `INTUIT_REDIRECT_URI`).
+4. Run `npm run db:push:prod` after deploy so estimate columns exist. Invoices, auth, and Stripe billing are unchanged.
 
 ## Cloudflare / Workers notes
 
 - **OpenNext vs vinext:** Cloudflare’s newest Next.js path is [vinext](https://developers.cloudflare.com/workers/frameworks/framework-guides/nextjs/). This repo uses **`@opennextjs/cloudflare`** (still a documented Workers path) so we keep the App Router + `next build` toolchain.
-- **Prisma:** production uses the rust-free client engine + driver adapters (no query-engine binary on Workers). The Prisma client is a lazy proxy so `DATABASE_URL` is read after OpenNext copies Worker secrets onto `process.env`. Local SQLite does not use an adapter. Neon HTTP **cannot run transactions**, so invoice/proposal saves insert the parent row and then each line/section as separate statements (no nested `create`, no `prisma.$transaction`). Signup stays a single `user.create`.
+- **Prisma:** production uses the rust-free client engine + driver adapters (no query-engine binary on Workers). The Prisma client is a lazy proxy so `DATABASE_URL` is read after OpenNext copies Worker secrets onto `process.env`. Local SQLite does not use an adapter. Neon HTTP **cannot run transactions**, so invoice/estimate saves insert the parent row and then each line/section as separate statements (no nested `create`, no `prisma.$transaction`). Signup stays a single `user.create`. After this release, run `npm run db:push:prod` so estimate columns (`taxRate`, `markupRate`, `viewedAt`, `signedName`, `signedAt`, `attachments`) exist on Postgres.
 - **Signup / login check after deploy:** open `/login` → Create account with a new email and 8+ character password. You should land on `/dashboard`. Sign out, sign back in with the same credentials. If the form says **DATABASE_URL is missing at runtime**, add the Neon pooled URL under Worker **runtime** Variables and Secrets (not only build vars) and redeploy. If it mentions missing tables, run `npm run db:push:prod` from a laptop. If it mentions a SQLite Prisma client, set **Build** `PRISMA_PROVIDER=postgresql` and rebuild with `npm run cf:build`. `npm test` covers adapter selection, Neon URL sanitization (`channel_binding` / `sslmode`), Prisma error hints, and postgres generate without a real DATABASE_URL.
 - **Save invoice check after deploy:** `/dashboard/invoices/new` → client name + line description → **Save invoice**. You should land on `/dashboard/invoices/[id]`, not Cloudflare’s generic “This page couldn’t load”. Validation and Prisma errors (including missing `Invoice` / `InvoiceItem` tables) render on the form. If the form says tables are missing or out of date, from a laptop run `npm run db:push:prod` against the Neon **direct/unpooled** URL (`DATABASE_URL_UNPOOLED` or `DATABASE_URL`), then retry save. `npm test` also covers invoice form parsing and sequential (non-transaction) writes.
 - **`pg-cloudflare`:** OpenNext’s package copy does not include `pg-cloudflare`’s `workerd` build. `open-next.config.ts` sets `useWorkerdCondition: false` so `pg` uses `nodejs_compat` sockets. Prefer **Neon HTTP** in production to avoid that path.
 - **Node.js middleware:** Next.js 16 `proxy.ts` (dashboard cookie gate) is **experimental** on Cloudflare OpenNext. Do not set `export const runtime = "edge"` — OpenNext expects the Node.js runtime. If a future OpenNext release rejects Node middleware, the app still authenticates in layouts; only the early `/dashboard` redirect would need a rewrite.
 - **bcryptjs / Stripe / Resend:** JS libraries; they rely on Workers `nodejs_compat`.
-- **PDF download:** invoices and proposals are written as PDF 1.4 in `lib/pdf.ts` using the 14 standard Type1 fonts (no embedding, no `pdf-lib`, no `Buffer` copies). That keeps Download PDF inside Workers CPU/memory limits (Error 1102). Public share pages also print cleanly if a client uses the browser “Save as PDF” dialog. Very large documents still have the 128 MB isolate cap; typical freelance invoices stay tiny.
+- **PDF download:** invoices and estimates are written as PDF 1.4 in `lib/pdf.ts` using the 14 standard Type1 fonts (no embedding, no `pdf-lib`, no `Buffer` copies). That keeps Download PDF inside Workers CPU/memory limits (Error 1102). Public share pages also print cleanly if a client uses the browser “Save as PDF” dialog. Very large documents still have the 128 MB isolate cap; typical freelance invoices stay tiny.
 - **Incremental cache:** default OpenNext in-memory cache. Optional R2 binding documented above.
 - **`next/image` optimization:** not used on the marketing pages. Cloudflare Images binding is not required.
 - **Server Actions:** `next.config.ts` allows CSRF origins for `invoiceflowstudio.com` and `*.workers.dev` (Cloudflare preview URLs).

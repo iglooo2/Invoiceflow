@@ -17,5 +17,9 @@ export function StatusBadge({
   status: string;
   labels?: Record<string, string>;
 }) {
-  return <Badge tone={invoiceTones[status] ?? "muted"}>{labels?.[status] ?? status}</Badge>;
+  const label =
+    status === "accepted" && labels?.approved
+      ? labels.approved
+      : (labels?.[status] ?? status);
+  return <Badge tone={invoiceTones[status] ?? "muted"}>{label}</Badge>;
 }

@@ -83,6 +83,7 @@ test("proposal PDF includes title, investment, and no branded footer for Pro", a
   });
   const source = asLatin1(bytes);
   assert.match(source, /Video edit/);
+  assert.match(source, /ESTIMATE/);
   assert.match(source, /Investment/);
   assert.match(source, /\$1,800\.00/);
   assert.doesNotMatch(source, /Made with InvoiceFlow Studio/);

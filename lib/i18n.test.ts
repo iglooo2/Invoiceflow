@@ -28,6 +28,8 @@ test("formatMessage fills dashboard copy templates", () => {
 test("localizedPath prefixes marketing routes", () => {
   assert.equal(localizedPath("en", "/"), "/en");
   assert.equal(localizedPath("es", "/pricing"), "/es/pricing");
+  assert.equal(localizedPath("es", "/estimates"), "/es/estimates");
+  assert.equal(localizedPath("de", "/contact"), "/de/contact");
   assert.equal(localizedPath("pt", "login"), "/pt/login");
 });
 
@@ -44,6 +46,8 @@ test("shouldSkipLocale leaves app, API, and share routes alone", () => {
   assert.equal(shouldSkipLocale("/share/i/abc"), true);
   assert.equal(shouldSkipLocale("/icon"), true);
   assert.equal(shouldSkipLocale("/pricing"), false);
+  assert.equal(shouldSkipLocale("/estimates"), false);
+  assert.equal(shouldSkipLocale("/contact"), false);
   assert.equal(shouldSkipLocale("/"), false);
   assert.equal(shouldSkipLocale("/es/login"), false);
 });
@@ -92,7 +96,13 @@ test("login and dashboard common errors exist in every locale", () => {
     const dict = getDictionary(locale);
     assert.ok(dict.login.errors.invalidCredentials.length > 0, locale);
     assert.ok(dict.app.errors.invoiceNotFound.length > 0, locale);
+    assert.ok(dict.app.errors.estimateNotFound.length > 0, locale);
     assert.ok(dict.app.errors.clientEmailRequired.length > 0, locale);
+    assert.ok(dict.nav.estimates.length > 0, locale);
+    assert.ok(dict.estimatesPage.headline.length > 0, locale);
+    assert.ok(dict.app.status.approved.length > 0, locale);
+    assert.ok(dict.meta.contactTitle.length > 0, locale);
+    assert.ok(dict.contact.submit.length > 0, locale);
   }
 });
 

@@ -24,6 +24,9 @@ export function MarketingHeader({
         <Link href={`${localizedPath(locale, "/")}#how`} className="hover:text-foreground">
           {copy.how}
         </Link>
+        <Link href={localizedPath(locale, "/estimates")} className="hover:text-foreground">
+          {copy.estimates}
+        </Link>
         <Link href={localizedPath(locale, "/pricing")} className="hover:text-foreground">
           {copy.pricing}
         </Link>
@@ -71,6 +74,7 @@ export function MarketingFooter({
         <p className="text-xs">{SITE_STUDIO} · {SITE_DOMAIN}</p>
         <div className="flex flex-col items-start gap-3 sm:items-end">
           <div className="flex flex-wrap gap-4">
+            <Link href={localizedPath(locale, "/estimates")}>{copy.estimates}</Link>
             <Link href={localizedPath(locale, "/pricing")}>{copy.pricing}</Link>
             <Link href={localizedPath(locale, "/terms")}>{copy.terms}</Link>
             <Link href={localizedPath(locale, "/privacy")}>{copy.privacy}</Link>

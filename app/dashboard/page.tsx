@@ -57,7 +57,7 @@ export default async function DashboardPage() {
             <Link href="/dashboard/invoices/new">{dict.app.newInvoice}</Link>
           </Button>
           <Button asChild variant="outline">
-            <Link href="/dashboard/proposals/new">{dict.app.newProposal}</Link>
+            <Link href="/dashboard/estimates/new">{dict.app.newEstimate}</Link>
           </Button>
         </div>
       </div>
@@ -65,12 +65,12 @@ export default async function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-3">
         <Stat label={dict.app.home.outstanding} value={formatCents(outstanding)} />
         <Stat label={dict.app.home.invoicesThisMonth} value={String(invoiceCount)} />
-        <Stat label={dict.app.home.proposalsThisMonth} value={String(proposalCount)} />
+        <Stat label={dict.app.home.estimatesThisMonth} value={String(proposalCount)} />
       </div>
 
       <section>
         <h2 className="font-display text-2xl">{dict.app.home.startTemplate}</h2>
-        <div className="mt-4 grid gap-3 md:grid-cols-3">
+        <div className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
           <form action={createInvoiceFromTemplate.bind(null, "design-project-invoice")}>
             <TemplateCard title={dict.app.home.tplDesignTitle} body={dict.app.home.tplDesignBody} />
           </form>
@@ -79,6 +79,9 @@ export default async function DashboardPage() {
           </form>
           <form action={createProposalFromTemplate.bind(null, "video-edit-proposal")}>
             <TemplateCard title={dict.app.home.tplVideoTitle} body={dict.app.home.tplVideoBody} />
+          </form>
+          <form action={createProposalFromTemplate.bind(null, "job-estimate")}>
+            <TemplateCard title={dict.app.home.tplJobTitle} body={dict.app.home.tplJobBody} />
           </form>
         </div>
       </section>
@@ -110,17 +113,17 @@ export default async function DashboardPage() {
         </div>
         <div>
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="font-display text-2xl">{dict.app.proposals}</h2>
-            <Link href="/dashboard/proposals" className="text-sm text-primary">
+            <h2 className="font-display text-2xl">{dict.app.estimates}</h2>
+            <Link href="/dashboard/estimates" className="text-sm text-primary">
               {dict.app.viewAll}
             </Link>
           </div>
           <div className="grid gap-2">
-            {proposals.length === 0 ? <Empty text={dict.app.home.noProposals} /> : null}
+            {proposals.length === 0 ? <Empty text={dict.app.home.noEstimates} /> : null}
             {proposals.map((proposal) => (
               <Link
                 key={proposal.id}
-                href={`/dashboard/proposals/${proposal.id}`}
+                href={`/dashboard/estimates/${proposal.id}`}
                 className="flex items-center justify-between rounded-2xl border border-border bg-card px-4 py-3"
               >
                 <div>

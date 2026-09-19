@@ -40,6 +40,9 @@ export type ProposalWriteInput = {
   clientName: string;
   clientEmail?: string | null;
   clientCompany?: string | null;
+  taxRate?: number;
+  markupRate?: number;
+  attachments?: string | null;
 };
 
 export type ProposalSectionInput = {
@@ -79,6 +82,9 @@ function proposalScalars(input: ProposalWriteInput, now: Date) {
     clientName: input.clientName,
     clientEmail: input.clientEmail ?? null,
     clientCompany: input.clientCompany ?? null,
+    taxRate: input.taxRate ?? 0,
+    markupRate: input.markupRate ?? 0,
+    attachments: input.attachments ?? null,
     updatedAt: now,
   };
 }
@@ -204,6 +210,9 @@ export async function replaceProposalSections(
       clientName: input.clientName,
       clientEmail: input.clientEmail ?? null,
       clientCompany: input.clientCompany ?? null,
+      taxRate: input.taxRate ?? 0,
+      markupRate: input.markupRate ?? 0,
+      attachments: input.attachments ?? null,
       updatedAt: now,
     },
   });

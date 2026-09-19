@@ -1,5 +1,6 @@
 import { format } from "date-fns";
-import { formatCents, invoiceTotals, proposalTotalCents } from "@/lib/money";
+import { parseAttachmentsJson, type EstimateAttachment } from "@/lib/estimates";
+import { estimateTotals, formatCents, invoiceTotals } from "@/lib/money";
 import { studioName } from "@/lib/session";
 
 type Studio = {
@@ -120,13 +121,22 @@ export function ProposalPreview({
     clientName: string;
     clientEmail: string | null;
     clientCompany: string | null;
+    taxRate?: number;
+    markupRate?: number;
+    signedName?: string | null;
+    signedAt?: Date | null;
+    attachments?: EstimateAttachment[] | string | null;
     sections: { heading: string; body: string; amount: number | null }[];
   };
 }) {
-  const total = proposalTotalCents(proposal.sections);
+  const totals = estimateTotals(proposal.sections, proposal.taxRate ?? 0, proposal.markupRate ?? 0);
+  const attachments = Array.isArray(proposal.attachments)
+    ? proposal.attachments
+    : parseAttachmentsJson(proposal.attachments);
   return (
     <article className="paper-card mx-auto w-full max-w-3xl rounded-3xl p-8 md:p-12">
       <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{studioName(studio)}</p>
+      <p className="mt-2 text-xs uppercase tracking-[0.2em] text-primary">Estimate</p>
       <h1 className="mt-2 font-display text-4xl">{proposal.title}</h1>
       <p className="mt-2 text-sm text-muted-foreground">
         Prepared for {proposal.clientName}
@@ -146,7 +156,35 @@ export function ProposalPreview({
           </section>
         ))}
       </div>
-      <p className="mt-8 text-lg font-medium">Investment {formatCents(total, proposal.currency)}</p>
+      <div className="mt-8 ml-auto grid w-full max-w-xs gap-1 text-sm">
+        <Row label="Subtotal" value={formatCents(totals.subtotalCents, proposal.currency)} />
+        {totals.markupCents > 0 ? (
+          <Row
+            label={`Markup (${proposal.markupRate ?? 0}%)`}
+            value={formatCents(totals.markupCents, proposal.currency)}
+          />
+        ) : null}
+        {totals.taxCents > 0 ? (
+          <Row label={`Tax (${proposal.taxRate ?? 0}%)`} value={formatCents(totals.taxCents, proposal.currency)} />
+        ) : null}
+        <Row label="Investment" value={formatCents(totals.totalCents, proposal.currency)} strong />
+      </div>
+      {attachments.length ? (
+        <div className="mt-8">
+          <p className="text-xs uppercase tracking-widest text-muted-foreground">Photos & files</p>
+          <ul className="mt-2 grid gap-1 text-sm">
+            {attachments.map((file) => (
+              <li key={file.name}>{file.name}</li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+      {proposal.signedName ? (
+        <p className="mt-6 text-sm">
+          Approved online by <span className="font-medium">{proposal.signedName}</span>
+          {proposal.signedAt ? ` · ${format(proposal.signedAt, "MMM d, yyyy")}` : ""}
+        </p>
+      ) : null}
       {proposal.notes ? <p className="mt-4 text-sm text-muted-foreground">{proposal.notes}</p> : null}
       {branded ? <p className="mt-10 text-xs text-muted-foreground">Made with InvoiceFlow</p> : null}
     </article>

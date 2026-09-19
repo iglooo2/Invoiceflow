@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { markEstimateOpened } from "@/app/actions/proposals";
 import { prisma } from "@/lib/db";
 import { currentPlanId } from "@/lib/plans";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,7 @@ export default async function PublicProposalPage({
     include: { sections: { orderBy: { sortOrder: "asc" } }, user: true },
   });
   if (!proposal) notFound();
+  await markEstimateOpened(token);
   const branded = currentPlanId(proposal.user) !== "pro";
 
   return (

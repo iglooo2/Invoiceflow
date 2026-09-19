@@ -38,11 +38,38 @@ test("parseProposalDecisionForm reads hidden token and decision", () => {
   const form = new FormData();
   form.set("token", "abc123token");
   form.set("decision", "accepted");
+  form.set("signedName", "Luna Alvarez");
   const parsed = parseProposalDecisionForm(form);
   assert.equal(parsed.success, true);
   if (!parsed.success) return;
   assert.equal(parsed.data.token, "abc123token");
   assert.equal(parsed.data.decision, "accepted");
+  assert.equal(parsed.data.signedName, "Luna Alvarez");
+});
+
+test("parseProposalDecisionForm requires a typed name to approve", () => {
+  const form = new FormData();
+  form.set("token", "abc123token");
+  form.set("decision", "accepted");
+  const parsed = parseProposalDecisionForm(form);
+  assert.equal(parsed.success, false);
+  if (parsed.success) return;
+  assert.match(parsed.error, /name/i);
+});
+
+test("parseProposalForm reads tax, markup, and attachments", () => {
+  const parsed = parseProposalForm(
+    proposalForm({
+      taxRate: "8",
+      markupRate: "10",
+      attachmentsJson: JSON.stringify([{ name: "site.jpg" }]),
+    }),
+  );
+  assert.equal(parsed.success, true);
+  if (!parsed.success) return;
+  assert.equal(parsed.data.taxRate, 8);
+  assert.equal(parsed.data.markupRate, 10);
+  assert.match(parsed.data.attachments ?? "", /site\.jpg/);
 });
 
 test("parseProposalDecisionForm rejects a two-arg bind mixup", () => {
@@ -52,7 +79,7 @@ test("parseProposalDecisionForm rejects a two-arg bind mixup", () => {
   form.set("decision", "[object FormData]");
   const parsed = parseProposalDecisionForm(form);
   assert.equal(parsed.success, false);
-  if (!parsed.success) assert.match(parsed.error, /accept or decline/);
+  if (!parsed.success) assert.match(parsed.error, /approve or decline/);
 });
 
 test("parseProposalForm does not throw on invalid sections JSON", () => {

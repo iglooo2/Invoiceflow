@@ -36,7 +36,7 @@ export async function assertCanCreate(
   const createdThisMonth = await countCreatedThisMonth(userId, kind);
   const check = canCreateDocument({ plan, kind, createdThisMonth });
   if (!check.ok) {
-    const noun = kind === "invoice" ? "invoices" : "proposals";
+    const noun = kind === "invoice" ? "invoices" : "estimates";
     throw new Error(
       `Starter plan includes ${check.limit} ${noun} per month. Upgrade to Pro for unlimited.`,
     );
