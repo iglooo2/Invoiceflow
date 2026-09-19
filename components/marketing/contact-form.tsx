@@ -14,8 +14,12 @@ import {
   Quote,
 } from "lucide-react";
 import { submitContactRequest } from "@/app/actions/contact";
+import { Button } from "@/components/ui/button";
 import { CONTACT_TOPICS } from "@/lib/contact";
 import type { Dictionary } from "@/lib/dictionary";
+
+const fieldClass =
+  "mt-2 h-11 w-full rounded-full border border-border bg-muted/70 px-4 text-sm text-foreground outline-none ring-ring placeholder:text-muted-foreground focus:bg-card focus:ring-2";
 
 export function ContactForm({ copy }: { copy: Dictionary["contact"] }) {
   const editorRef = useRef<HTMLDivElement>(null);
@@ -42,12 +46,13 @@ export function ContactForm({ copy }: { copy: Dictionary["contact"] }) {
 
   if (sent) {
     return (
-      <div className="mx-auto w-full max-w-[520px] rounded-[28px] border border-[#d4a24a] bg-[#050a1f] px-8 py-14 text-center text-white">
+      <div className="paper-card mx-auto w-full max-w-[520px] rounded-[28px] px-8 py-14 text-center">
         <h1 className="font-display text-3xl">{copy.successTitle}</h1>
-        <p className="mt-3 text-sm text-white/60">{copy.successBody}</p>
-        <button
+        <p className="mt-3 text-sm text-muted-foreground">{copy.successBody}</p>
+        <Button
           type="button"
-          className="mt-8 w-full rounded-full bg-[#6f5728] py-3 text-sm font-medium text-[#1a1408]"
+          className="mt-8 w-full"
+          size="lg"
           onClick={() => {
             setSent(false);
             setFiles([]);
@@ -55,14 +60,14 @@ export function ContactForm({ copy }: { copy: Dictionary["contact"] }) {
           }}
         >
           {copy.sendAnother}
-        </button>
+        </Button>
       </div>
     );
   }
 
   return (
     <form
-      className="mx-auto w-full max-w-[520px] rounded-[28px] border border-[#d4a24a] bg-[#050a1f] px-7 py-8 text-white shadow-[0_24px_80px_-32px_rgba(0,0,0,0.65)]"
+      className="paper-card mx-auto w-full max-w-[520px] rounded-[28px] px-7 py-8"
       onSubmit={async (event) => {
         event.preventDefault();
         setError(null);
@@ -85,30 +90,28 @@ export function ContactForm({ copy }: { copy: Dictionary["contact"] }) {
     >
       <div className="text-center">
         <h1 className="font-display text-[2rem] leading-tight">{copy.title}</h1>
-        <p className="mt-2 text-sm text-white/55">{copy.lede}</p>
+        <p className="mt-2 text-sm text-muted-foreground">{copy.lede}</p>
       </div>
 
       <label className="mt-8 block text-sm">
-        {copy.email} <span className="text-[#e0b44a]">*</span>
+        {copy.email} <span className="text-primary">*</span>
       </label>
       <input
         name="email"
         type="email"
         required
         placeholder={copy.emailPlaceholder}
-        className="mt-2 h-11 w-full rounded-full bg-[#ececec] px-4 text-sm text-[#1c1917] outline-none placeholder:text-[#9a9a9a]"
+        className={fieldClass}
       />
 
-      <label className="mt-5 block text-sm">
-        {copy.topic}
-      </label>
+      <label className="mt-5 block text-sm">{copy.topic}</label>
       <select
         name="topic"
         defaultValue=""
-        className="mt-2 h-11 w-full appearance-none rounded-full bg-[#ececec] bg-[length:16px] bg-[right_16px_center] bg-no-repeat px-4 text-sm text-[#1c1917] outline-none"
+        className={`${fieldClass} appearance-none bg-[length:16px] bg-[right_16px_center] bg-no-repeat`}
         style={{
           backgroundImage:
-            "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'><path d='m6 9 6 6 6-6'/></svg>\")",
+            "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b6258' stroke-width='2'><path d='m6 9 6 6 6-6'/></svg>\")",
         }}
       >
         <option value="" disabled>
@@ -122,20 +125,15 @@ export function ContactForm({ copy }: { copy: Dictionary["contact"] }) {
       </select>
 
       <label className="mt-5 block text-sm">
-        {copy.subject} <span className="text-[#e0b44a]">*</span>
+        {copy.subject} <span className="text-primary">*</span>
       </label>
-      <input
-        name="subject"
-        required
-        placeholder={copy.subjectPlaceholder}
-        className="mt-2 h-11 w-full rounded-full bg-[#ececec] px-4 text-sm text-[#1c1917] outline-none placeholder:text-[#9a9a9a]"
-      />
+      <input name="subject" required placeholder={copy.subjectPlaceholder} className={fieldClass} />
 
       <label className="mt-5 block text-sm">
-        {copy.description} <span className="text-[#e0b44a]">*</span>
+        {copy.description} <span className="text-primary">*</span>
       </label>
-      <div className="mt-2 overflow-hidden rounded-[22px] bg-white text-[#1c1917]">
-        <div className="flex flex-wrap items-center gap-1 border-b border-[#ececec] px-3 py-2 text-[#444]">
+      <div className="mt-2 overflow-hidden rounded-[22px] border border-border bg-card">
+        <div className="flex flex-wrap items-center gap-1 border-b border-border px-3 py-2 text-muted-foreground">
           <ToolbarButton label={copy.bold} onClick={() => exec("bold")}>
             <Bold className="h-4 w-4" />
           </ToolbarButton>
@@ -157,7 +155,7 @@ export function ContactForm({ copy }: { copy: Dictionary["contact"] }) {
           <ToolbarButton label={copy.alignRight} onClick={() => exec("justifyRight")}>
             <AlignRight className="h-4 w-4" />
           </ToolbarButton>
-          <span className="mx-1 h-4 w-px bg-[#ddd]" />
+          <span className="mx-1 h-4 w-px bg-border" />
           <ToolbarButton label={copy.link} onClick={addLink}>
             <Link2 className="h-4 w-4" />
           </ToolbarButton>
@@ -171,7 +169,7 @@ export function ContactForm({ copy }: { copy: Dictionary["contact"] }) {
           role="textbox"
           aria-label={copy.description}
           data-placeholder={copy.descriptionPlaceholder}
-          className="min-h-[160px] px-4 py-3 text-sm outline-none empty:before:pointer-events-none empty:before:text-[#9a9a9a] empty:before:content-[attr(data-placeholder)]"
+          className="min-h-[160px] px-4 py-3 text-sm outline-none empty:before:pointer-events-none empty:before:text-muted-foreground empty:before:content-[attr(data-placeholder)]"
         />
       </div>
 
@@ -184,12 +182,12 @@ export function ContactForm({ copy }: { copy: Dictionary["contact"] }) {
           event.preventDefault();
           takeFiles(event.dataTransfer.files);
         }}
-        className="mt-2 flex min-h-[120px] w-full flex-col items-center justify-center rounded-[22px] border border-dashed border-[#d4a24a] text-sm text-white/70"
+        className="mt-2 flex min-h-[120px] w-full flex-col items-center justify-center rounded-[22px] border border-dashed border-accent/50 bg-accent/5 text-sm text-muted-foreground hover:border-accent hover:text-foreground"
       >
-        <Paperclip className="mb-2 h-5 w-5" />
+        <Paperclip className="mb-2 h-5 w-5 text-accent" />
         {copy.attach}
         {files.length ? (
-          <span className="mt-2 text-xs text-white/50">{files.map((file) => file.name).join(", ")}</span>
+          <span className="mt-2 text-xs text-muted-foreground">{files.map((file) => file.name).join(", ")}</span>
         ) : null}
       </button>
       <input
@@ -203,15 +201,11 @@ export function ContactForm({ copy }: { copy: Dictionary["contact"] }) {
         }}
       />
 
-      {error ? <p className="mt-4 text-sm text-[#f0b4a8]">{error}</p> : null}
+      {error ? <p className="mt-4 text-sm text-destructive">{error}</p> : null}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="mt-5 h-12 w-full rounded-full bg-[#6f5728] text-sm font-medium text-[#1a1408] disabled:opacity-70"
-      >
+      <Button type="submit" disabled={pending} size="lg" className="mt-5 w-full">
         {pending ? copy.sending : copy.submit}
-      </button>
+      </Button>
     </form>
   );
 }
@@ -229,7 +223,7 @@ function ToolbarButton({
     <button
       type="button"
       aria-label={label}
-      className="grid h-7 w-7 place-items-center rounded-md hover:bg-[#f3f3f3]"
+      className="grid h-7 w-7 place-items-center rounded-md hover:bg-muted hover:text-foreground"
       onMouseDown={(event) => {
         event.preventDefault();
         onClick();

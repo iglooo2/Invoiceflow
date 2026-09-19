@@ -27,4 +27,10 @@ test("Message us links to the contact page and never prints the inbox address", 
 
   const form = readFileSync(path.join(import.meta.dirname, "../components/marketing/contact-form.tsx"), "utf8");
   assert.equal(form.includes(CONTACT_EMAIL), false);
+  assert.equal(form.includes("#050a1f"), false);
+
+  const page = readFileSync(path.join(import.meta.dirname, "../app/[locale]/contact/page.tsx"), "utf8");
+  assert.match(page, /MarketingHeader/);
+  assert.match(page, /MarketingFooter/);
+  assert.equal(page.includes("#050a1f"), false);
 });
