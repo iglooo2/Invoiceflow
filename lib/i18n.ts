@@ -84,6 +84,7 @@ export function negotiateLocale(
 }
 
 export function formatMessage(template: string, vars: Record<string, string | number>) {
+  if (typeof template !== "string") return "";
   return template.replace(/\{(\w+)\}/g, (_, key: string) => String(vars[key] ?? ""));
 }
 

@@ -1,7 +1,8 @@
-import { format } from "date-fns";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
-import { parseAttachmentsJson } from "@/lib/estimates";
+import { prismaReadFailureMessage, safeErrorLog } from "@/lib/db-errors";
+import { formatEstimateDate, parseAttachmentsJson } from "@/lib/estimates";
+import { ESTIMATE_SCHEMA_WARNING, findEstimateForUser } from "@/lib/proposal-queries";
 import { appCopy } from "@/lib/i18n-request";
 import { requireUser } from "@/lib/session";
 import { ProposalForm } from "@/components/proposal-form";
@@ -15,18 +16,35 @@ export default async function EditEstimatePage({
   const user = await requireUser();
   const { dict } = await appCopy();
   const { id } = await params;
-  const [estimate, clients] = await Promise.all([
-    prisma.proposal.findFirst({
-      where: { id, userId: user.id },
-      include: { sections: { orderBy: { sortOrder: "asc" } } },
-    }),
-    prisma.client.findMany({ where: { userId: user.id }, orderBy: { name: "asc" } }),
-  ]);
+  let loaded;
+  try {
+    loaded = await findEstimateForUser(prisma, user.id, id, { includeSections: true });
+  } catch (error) {
+    console.error("EditEstimatePage", safeErrorLog(error));
+    loaded = {
+      estimate: null,
+      usedLegacySchema: false,
+      error: prismaReadFailureMessage(error),
+    };
+  }
+  const clients = await prisma.client.findMany({ where: { userId: user.id }, orderBy: { name: "asc" } });
+  if (loaded.error) {
+    return (
+      <div className="grid gap-6">
+        <h1 className="font-display text-4xl">{dict.app.editEstimate}</h1>
+        <p className="rounded-2xl bg-primary/10 px-4 py-3 text-sm">{loaded.error}</p>
+      </div>
+    );
+  }
+  const estimate = loaded.estimate;
   if (!estimate) notFound();
 
   return (
     <div className="grid gap-6">
       <h1 className="font-display text-4xl">{dict.app.editEstimate}</h1>
+      {loaded.usedLegacySchema ? (
+        <p className="rounded-2xl bg-primary/10 px-4 py-3 text-sm">{ESTIMATE_SCHEMA_WARNING}</p>
+      ) : null}
       <ProposalForm
         action={updateProposal.bind(null, estimate.id)}
         clients={clients}
@@ -36,7 +54,7 @@ export default async function EditEstimatePage({
           clientName: estimate.clientName,
           clientEmail: estimate.clientEmail,
           clientCompany: estimate.clientCompany,
-          validUntil: estimate.validUntil ? format(estimate.validUntil, "yyyy-MM-dd") : "",
+          validUntil: formatEstimateDate(estimate.validUntil, "yyyy-MM-dd"),
           notes: estimate.notes,
           status: estimate.status,
           taxRate: estimate.taxRate,

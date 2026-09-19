@@ -89,6 +89,28 @@ npm run db:migrate:prod              # prisma migrate deploy
 
 For Neon, use the **pooled** (`-pooler`) URL as the Worker `DATABASE_URL`, and the **direct** URL when running `db:push:prod`.
 
+### Estimates columns (required after the Estimates / PR #23 deploy)
+
+`/dashboard/estimates` queries every `Proposal` scalar. If production Postgres was pushed **before** Estimates landed, it is missing `taxRate`, `markupRate`, `viewedAt`, `signedName`, `signedAt`, and `attachments`. Prisma then throws, and Cloudflare shows **This page couldn’t load** (error id like `158536238`) instead of the list.
+
+This build still **loads the page** from the older columns (markup / opened / attachments stay empty). To restore the full Estimates schema, run this **from a laptop** (Prisma uses TCP; the Worker cannot push). No Worker redeploy is required for the SQL itself:
+
+```bash
+cd /path/to/invoiceflow
+# Neon: DIRECT / unpooled host — NOT the *-pooler.* URL used by the Worker
+export DATABASE_URL="postgresql://USER:PASSWORD@ep-XXXX.us-east-1.aws.neon.tech/neondb?sslmode=require"
+# If you keep both URLs in .env, db:push:prod prefers DATABASE_URL_UNPOOLED automatically:
+# export DATABASE_URL_UNPOOLED="$DATABASE_URL"
+
+npm run db:push:prod
+```
+
+That script is `node scripts/prisma.mjs db push --require-postgres`. It refuses SQLite.
+
+SQL-only equivalent (Postgres, idempotent): `prisma/add-estimate-columns.sql`
+
+Then reload `https://invoiceflowstudio.com/dashboard/estimates`. Creating or approving estimates that write the new columns still needs this push.
+
 Then seed production only if you want the demo user (skip for a real launch):
 
 ```bash
@@ -248,7 +270,7 @@ InvoiceFlow Studio can show the Connect QuickBooks story in Settings and on `/es
 ## Cloudflare / Workers notes
 
 - **OpenNext vs vinext:** Cloudflare’s newest Next.js path is [vinext](https://developers.cloudflare.com/workers/frameworks/framework-guides/nextjs/). This repo uses **`@opennextjs/cloudflare`** (still a documented Workers path) so we keep the App Router + `next build` toolchain.
-- **Prisma:** production uses the rust-free client engine + driver adapters (no query-engine binary on Workers). The Prisma client is a lazy proxy so `DATABASE_URL` is read after OpenNext copies Worker secrets onto `process.env`. Local SQLite does not use an adapter. Neon HTTP **cannot run transactions**, so invoice/estimate saves insert the parent row and then each line/section as separate statements (no nested `create`, no `prisma.$transaction`). Signup stays a single `user.create`. After this release, run `npm run db:push:prod` so estimate columns (`taxRate`, `markupRate`, `viewedAt`, `signedName`, `signedAt`, `attachments`) exist on Postgres.
+- **Prisma:** production uses the rust-free client engine + driver adapters (no query-engine binary on Workers). The Prisma client is a lazy proxy so `DATABASE_URL` is read after OpenNext copies Worker secrets onto `process.env`. Local SQLite does not use an adapter. Neon HTTP **cannot run transactions**, so invoice/estimate saves insert the parent row and then each line/section as separate statements (no nested `create`, no `prisma.$transaction`). Signup stays a single `user.create`. Estimate **reads** retry without the new Proposal columns if Postgres has not been pushed yet, and render an in-page message instead of Cloudflare’s generic error page. After this release, run `npm run db:push:prod` so estimate columns (`taxRate`, `markupRate`, `viewedAt`, `signedName`, `signedAt`, `attachments`) exist on Postgres.
 - **Signup / login check after deploy:** open `/login` → Create account with a new email and 8+ character password. You should land on `/dashboard`. Sign out, sign back in with the same credentials. If the form says **DATABASE_URL is missing at runtime**, add the Neon pooled URL under Worker **runtime** Variables and Secrets (not only build vars) and redeploy. If it mentions missing tables, run `npm run db:push:prod` from a laptop. If it mentions a SQLite Prisma client, set **Build** `PRISMA_PROVIDER=postgresql` and rebuild with `npm run cf:build`. `npm test` covers adapter selection, Neon URL sanitization (`channel_binding` / `sslmode`), Prisma error hints, and postgres generate without a real DATABASE_URL.
 - **Save invoice check after deploy:** `/dashboard/invoices/new` → client name + line description → **Save invoice**. You should land on `/dashboard/invoices/[id]`, not Cloudflare’s generic “This page couldn’t load”. Validation and Prisma errors (including missing `Invoice` / `InvoiceItem` tables) render on the form. If the form says tables are missing or out of date, from a laptop run `npm run db:push:prod` against the Neon **direct/unpooled** URL (`DATABASE_URL_UNPOOLED` or `DATABASE_URL`), then retry save. `npm test` also covers invoice form parsing and sequential (non-transaction) writes.
 - **`pg-cloudflare`:** OpenNext’s package copy does not include `pg-cloudflare`’s `workerd` build. `open-next.config.ts` sets `useWorkerdCondition: false` so `pg` uses `nodejs_compat` sockets. Prefer **Neon HTTP** in production to avoid that path.

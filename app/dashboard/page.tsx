@@ -1,9 +1,11 @@
 import Link from "next/link";
-import { format } from "date-fns";
 import { prisma } from "@/lib/db";
+import { safeErrorLog } from "@/lib/db-errors";
 import { countCreatedThisMonth } from "@/lib/documents";
+import { formatEstimateDate } from "@/lib/estimates";
 import { formatCents, invoiceTotals } from "@/lib/money";
 import { PLANS } from "@/lib/plans";
+import { ESTIMATE_SCHEMA_WARNING, listEstimatesForUser } from "@/lib/proposal-queries";
 import { planFromUser, requireUser } from "@/lib/session";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/status-badge";
@@ -16,21 +18,25 @@ export default async function DashboardPage() {
   const user = await requireUser();
   const plan = planFromUser(user);
   const { dict } = await appCopy();
-  const [invoices, proposals, invoiceCount, proposalCount] = await Promise.all([
+  const [invoices, estimateLoad, invoiceCount, proposalCount] = await Promise.all([
     prisma.invoice.findMany({
       where: { userId: user.id },
       include: { items: true },
       orderBy: { createdAt: "desc" },
       take: 5,
     }),
-    prisma.proposal.findMany({
-      where: { userId: user.id },
-      orderBy: { createdAt: "desc" },
+    listEstimatesForUser(prisma, {
+      userId: user.id,
       take: 5,
+      includeSections: false,
     }),
     countCreatedThisMonth(user.id, "invoice"),
-    countCreatedThisMonth(user.id, "proposal"),
+    countCreatedThisMonth(user.id, "proposal").catch((error) => {
+      console.error("proposal count", safeErrorLog(error));
+      return 0;
+    }),
   ]);
+  const proposals = estimateLoad.estimates;
 
   const outstanding = invoices
     .filter((invoice) => invoice.status === "sent" || invoice.status === "overdue")
@@ -119,23 +125,32 @@ export default async function DashboardPage() {
             </Link>
           </div>
           <div className="grid gap-2">
-            {proposals.length === 0 ? <Empty text={dict.app.home.noEstimates} /> : null}
-            {proposals.map((proposal) => (
-              <Link
-                key={proposal.id}
-                href={`/dashboard/estimates/${proposal.id}`}
-                className="flex items-center justify-between rounded-2xl border border-border bg-card px-4 py-3"
-              >
-                <div>
-                  <p className="font-medium">{proposal.title}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {proposal.clientName}
-                    {proposal.validUntil ? ` · ${format(proposal.validUntil, "MMM d")}` : ""}
-                  </p>
-                </div>
-                <StatusBadge status={proposal.status} labels={dict.app.status} />
-              </Link>
-            ))}
+            {estimateLoad.error ? (
+              <p className="rounded-2xl bg-primary/10 px-4 py-3 text-sm">{estimateLoad.error}</p>
+            ) : null}
+            {estimateLoad.usedLegacySchema ? (
+              <p className="rounded-2xl bg-primary/10 px-4 py-3 text-sm">{ESTIMATE_SCHEMA_WARNING}</p>
+            ) : null}
+            {proposals.length === 0 && !estimateLoad.error ? <Empty text={dict.app.home.noEstimates} /> : null}
+            {proposals.map((proposal) => {
+              const until = formatEstimateDate(proposal.validUntil, "MMM d");
+              return (
+                <Link
+                  key={proposal.id}
+                  href={`/dashboard/estimates/${proposal.id}`}
+                  className="flex items-center justify-between rounded-2xl border border-border bg-card px-4 py-3"
+                >
+                  <div>
+                    <p className="font-medium">{proposal.title}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {proposal.clientName}
+                      {until ? ` · ${until}` : ""}
+                    </p>
+                  </div>
+                  <StatusBadge status={proposal.status} labels={dict.app.status} />
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>

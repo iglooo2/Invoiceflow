@@ -5,6 +5,7 @@ import {
   ESTIMATE_MARKETING_PATH,
   estimateDetailPath,
   estimateStatusLabel,
+  formatEstimateDate,
   parseAttachmentsJson,
   serializeAttachments,
 } from "./estimates";
@@ -18,6 +19,12 @@ test("estimate paths stay on the InvoiceFlow dashboard", () => {
 test("accepted estimates display as approved", () => {
   assert.equal(estimateStatusLabel("accepted"), "approved");
   assert.equal(estimateStatusLabel("sent"), "sent");
+});
+
+test("formatEstimateDate skips invalid values", () => {
+  assert.equal(formatEstimateDate(new Date(2026, 8, 19), "yyyy-MM-dd"), "2026-09-19");
+  assert.equal(formatEstimateDate(null, "MMM d"), "");
+  assert.equal(formatEstimateDate("not-a-date", "MMM d"), "");
 });
 
 test("attachment JSON keeps names and drops blanks", () => {
