@@ -201,6 +201,8 @@ test("checkout action retries missing customers and tax-code Managed Payments fa
   const action = readFileSync(path.join(import.meta.dirname, "../app/actions/billing.ts"), "utf8");
   assert.match(action, /isMissingStripeCustomerError/);
   assert.match(action, /createStripeCustomerForUser/);
+  assert.match(action, /email: string \| null/);
+  assert.match(action, /if \(!user\.email\)/);
   assert.match(action, /ensureStripeProductSaaSTaxCode/);
   assert.match(action, /isStripeTaxCodeError/);
   assert.match(action, /buildProCheckoutSessionParams/);
