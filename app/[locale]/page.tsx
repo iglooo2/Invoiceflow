@@ -51,7 +51,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
 
         <section className="relative mx-auto w-full max-w-6xl px-4 pb-16 pt-2">
           <StudioProduct />
-          <div className="relative z-10 mx-auto -mt-5 flex justify-center sm:-mt-6">
+          <div className="mt-5 flex justify-center">
             <Button asChild variant="soft">
               <Link href={ctaHref}>{signedIn ? dict.home.openStudio : dict.home.startCta}</Link>
             </Button>
