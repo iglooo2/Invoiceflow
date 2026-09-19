@@ -1,5 +1,6 @@
 import type { NextAuthConfig } from "next-auth";
 import type { Provider } from "next-auth/providers";
+import type { NextRequest } from "next/server";
 import NextAuth from "next-auth";
 import Apple from "next-auth/providers/apple";
 import Credentials from "next-auth/providers/credentials";
@@ -8,10 +9,14 @@ import Google from "next-auth/providers/google";
 import Resend from "next-auth/providers/resend";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
+import { resolveAppleClientSecret } from "@/lib/apple-secret";
+import { appleFormPostCookies, shouldUseSecureAuthCookies } from "@/lib/auth-cookies";
 import {
   appleAuthEnabled,
+  appleCredentials,
   githubAuthEnabled,
   googleAuthEnabled,
+  publishAuthRuntimeEnv,
   readAuthSecret,
   resendEnabled,
 } from "@/lib/auth-env";
@@ -20,7 +25,7 @@ import { safeErrorLog } from "@/lib/db-errors";
 import { sendMagicLinkEmail } from "@/lib/email";
 import { markNewUserOnboarding } from "@/lib/onboarding";
 
-function buildAuthProviders(): Provider[] {
+async function buildAuthProviders(): Promise<Provider[]> {
   const providers: Provider[] = [
     Credentials({
       name: "Email and password",
@@ -63,12 +68,29 @@ function buildAuthProviders(): Provider[] {
   }
 
   if (appleAuthEnabled()) {
-    providers.push(
-      Apple({
-        clientId: readAuthSecret("AUTH_APPLE_ID"),
-        clientSecret: readAuthSecret("AUTH_APPLE_SECRET"),
-      }),
-    );
+    const apple = appleCredentials();
+    try {
+      const clientSecret = await resolveAppleClientSecret(apple);
+      providers.push(
+        Apple({
+          clientId: apple.clientId,
+          clientSecret,
+          // OIDC id_token is required; Auth.js defaults are nonce+state (not PKCE).
+          // Apple's `name email` scopes force response_mode=form_post.
+          checks: ["nonce", "state"],
+          client: { token_endpoint_auth_method: "client_secret_post" },
+          authorization: {
+            params: {
+              scope: "name email",
+              response_mode: "form_post",
+            },
+          },
+          allowDangerousEmailAccountLinking: true,
+        }),
+      );
+    } catch (error) {
+      console.error("Apple client secret failed", safeErrorLog(error));
+    }
   }
 
   if (githubAuthEnabled()) {
@@ -95,7 +117,10 @@ function buildAuthProviders(): Provider[] {
   return providers;
 }
 
-function authOptions(): NextAuthConfig {
+async function authOptions(request?: NextRequest): Promise<NextAuthConfig> {
+  publishAuthRuntimeEnv();
+  const providers = await buildAuthProviders();
+  const secureCookies = shouldUseSecureAuthCookies(request?.url, readAuthSecret("AUTH_URL"));
   return {
     adapter: PrismaAdapter(prisma),
     session: { strategy: "jwt" },
@@ -107,7 +132,8 @@ function authOptions(): NextAuthConfig {
       signIn: "/login",
       error: "/login",
     },
-    providers: buildAuthProviders(),
+    providers,
+    cookies: appleAuthEnabled() ? appleFormPostCookies(secureCookies) : undefined,
     events: {
       async createUser({ user }) {
         if (!user.id) return;

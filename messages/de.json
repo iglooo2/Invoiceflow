@@ -116,7 +116,7 @@
     "apple": "Mit Apple weiter",
     "github": "Mit GitHub weiter",
     "googleHint": "Google Sign-In ist nicht konfiguriert. Setze AUTH_GOOGLE_ID und AUTH_GOOGLE_SECRET als Cloudflare-Worker-Secrets.",
-    "appleHint": "Apple Sign-In ist nicht konfiguriert. Setze AUTH_APPLE_ID und AUTH_APPLE_SECRET als Worker-Secrets. Erzeuge das Secret mit deiner Apple Team ID und dem Schlüssel.",
+    "appleHint": "Apple Sign-In ist nicht konfiguriert. Setze AUTH_APPLE_ID und AUTH_APPLE_SECRET (.p8-Schlüssel oder JWT) als Worker-Secrets. Ist AUTH_APPLE_SECRET die .p8-Datei, setze auch AUTH_APPLE_TEAM und AUTH_APPLE_KEY_ID.",
     "githubHint": "GitHub OAuth erscheint hier, wenn AUTH_GITHUB_ID und AUTH_GITHUB_SECRET gesetzt sind.",
     "demoPrefix": "Demo:",
     "errors": {
@@ -129,7 +129,8 @@
       "magicEmail": "Gib die E-Mail für den Magic Link ein.",
       "magicFailed": "Magic Link konnte nicht gesendet werden. AUTH_RESEND_KEY prüfen.",
       "oauthFailed": "Diese Anmeldung wurde nicht abgeschlossen. Versuche E-Mail und Passwort oder prüfe die Google/Apple-Worker-Secrets.",
-      "oauthNotConfigured": "Diese Anmeldemethode ist auf diesem Server nicht konfiguriert."
+      "oauthNotConfigured": "Diese Anmeldemethode ist auf diesem Server nicht konfiguriert.",
+      "appleSecretInvalid": "Apple Sign-In ist falsch konfiguriert. AUTH_APPLE_SECRET muss ein JWT sein oder ein .p8-Schlüssel mit AUTH_APPLE_TEAM und AUTH_APPLE_KEY_ID."
     }
   },
   "onboarding": {
