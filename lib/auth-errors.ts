@@ -79,7 +79,22 @@ export function credentialsActionErrorMessage(
  */
 export function errorCodeFromRedirectDigest(digest: string): string | null {
   if (!digest.startsWith("NEXT_REDIRECT")) return null;
-  const match = digest.match(/[?&]error=([^;&]+)/i);
+  const parts = digest.split(";");
+  const destination = parts.slice(2, -2).join(";");
+  const fromDestination = errorCodeFromLocation(destination);
+  if (fromDestination) return fromDestination;
+  return errorCodeFromLocation(digest);
+}
+
+function errorCodeFromLocation(value: string): string | null {
+  if (!value) return null;
+  let decoded = value;
+  try {
+    decoded = decodeURIComponent(value.replace(/\+/g, " "));
+  } catch {
+    decoded = value;
+  }
+  const match = decoded.match(/[?&]error=([^;&/#]+)/i);
   if (!match?.[1]) return null;
   try {
     return decodeURIComponent(match[1].replace(/\+/g, " ")).trim() || null;

@@ -65,6 +65,12 @@ test("Auth.js NEXT_REDIRECT digest exposes the error query without swallowing su
     ),
     "OAuthCallback",
   );
+  assert.equal(
+    errorCodeFromRedirectDigest(
+      "NEXT_REDIRECT;replace;%2Fen%2Flogin%3Ferror%3DCredentialsSignin;303;",
+    ),
+    "CredentialsSignin",
+  );
   assert.equal(errorCodeFromRedirectDigest("NEXT_REDIRECT;push;/dashboard;303;"), null);
   assert.equal(errorCodeFromRedirectDigest("NEXT_NOT_FOUND"), null);
   assert.equal(
