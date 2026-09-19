@@ -1,0 +1,242 @@
+{
+  "meta": {
+    "description": "Schluss mit Word-Docs. Wähle eine Vorlage, die zu deiner Arbeit passt — schnelle Rechnungen und Angebote für Designer, Editoren und Texter.",
+    "pricingTitle": "Preise",
+    "loginTitle": "Anmelden",
+    "termsTitle": "Nutzungsbedingungen",
+    "privacyTitle": "Datenschutz"
+  },
+  "nav": {
+    "how": "So funktioniert’s",
+    "pricing": "Preise",
+    "templates": "Vorlagen",
+    "signIn": "Anmelden",
+    "startFree": "Kostenlos starten",
+    "dashboard": "Dashboard",
+    "messageUs": "Schreib uns",
+    "terms": "Bedingungen",
+    "privacy": "Datenschutz",
+    "language": "Sprache"
+  },
+  "home": {
+    "eyebrow": "InvoiceFlow Studio",
+    "headline": "Schluss mit Word-Docs.\nWähle eine Vorlage, die zu deiner Arbeit passt.",
+    "lede": "Das fokussierte Tool für Designer, Editoren und Texter, die lieber Arbeit ausliefern als mit einer .docx kämpfen. Wähle eine Studio-Vorlage, sende ein PDF oder einen Kundenlink und sieh, was bezahlt ist.",
+    "createInvoice": "Erste Rechnung erstellen",
+    "seePricing": "Preise ansehen",
+    "startCta": "Kostenlos starten (3 Rechnungen/Mo.)",
+    "openStudio": "Studio öffnen",
+    "freeNote": "Kostenlos: 3 Rechnungen und 3 Angebote im Monat. Keine Buchhaltungs-Suite. Kein 47-Schritte-Assistent.",
+    "how": [
+      {
+        "title": "Mit einer Studio-Vorlage starten",
+        "body": "Designprojekt, Retainer oder Videoschnitt — kein leeres Tabellenblatt, das so tut, als wäre es eine Marke."
+      },
+      {
+        "title": "PDF oder öffentlichen Link senden",
+        "body": "Kunden öffnen eine klare Seite auf dem Handy. Du lädst ein PDF herunter, das nicht nach 2009 aussieht."
+      },
+      {
+        "title": "Bezahlt, gesendet und überfällig im Blick",
+        "body": "Eine einfache Liste. Filter. Mehr nicht. QuickBooks kann warten, bis du es wirklich brauchst."
+      }
+    ],
+    "templatesTitle": "Vorlagen, die du wirklich nutzt",
+    "templatesLede": "Gemacht für die Menschen, für die dieses Produkt da ist: unabhängige Designer, Videoeditoren und Texter.",
+    "templates": [
+      {
+        "title": "Rechnung für ein Designprojekt",
+        "body": "Discovery, Identitätssystem, Logo-Suite, Guidelines. 50 % zum Start."
+      },
+      {
+        "title": "Retainer-Rechnung",
+        "body": "Stunden plus asynchrone Art Direction. Text „Zahlung bis zum 5.“ inklusive."
+      },
+      {
+        "title": "Angebot für Videoschnitt",
+        "body": "Der Cut, die Deliverables, das Investment — annehmen oder ablehnen über den Link."
+      }
+    ],
+    "startStarter": "Mit Starter beginnen",
+    "goPro": "Zu Pro wechseln",
+    "freePrice": "Gratis",
+    "perMonthShort": "/Mo."
+  },
+  "pricing": {
+    "headline": "Einfacher Preis für eine einfache Aufgabe.",
+    "lede": "InvoiceFlow Studio ist keine Buchhaltungs-Suite. Es ist der schnellste Weg, eine schöne Rechnung oder ein Angebot zu senden und zu wissen, ob sie bezahlt wurde — auf invoiceflowstudio.com.",
+    "perMonth": "/ Monat",
+    "useStarter": "Starter nutzen",
+    "upgradePro": "Auf Pro upgraden"
+  },
+  "plans": {
+    "free": {
+      "name": "Starter",
+      "blurb": "Reicht, um diesen Monat keine hässlichen Word-Docs mehr zu schicken.",
+      "features": [
+        "3 Rechnungen / Monat",
+        "3 Angebote / Monat",
+        "PDF-Download + teilbare Kundenlinks",
+        "Studio-Vorlagen",
+        "InvoiceFlow-Kennzeichnung auf öffentlichen Seiten"
+      ]
+    },
+    "pro": {
+      "name": "Pro",
+      "blurb": "Unbegrenzte Rechnungen und Angebote für ein arbeitendes Studio.",
+      "features": [
+        "Unbegrenzte Rechnungen & Angebote",
+        "PDF-Download + teilbare Kundenlinks",
+        "Eigene Studiodaten auf jedem Dokument",
+        "Kein InvoiceFlow-Kennzeichen in der Kundenansicht",
+        "Stripe-Abrechnungsportal"
+      ]
+    }
+  },
+  "login": {
+    "headline": "Zurück an die Arbeit. Um das PDF kümmern wir uns.",
+    "lede": "E-Mail und Passwort funktionieren ohne API-Keys. GitHub oder Resend kannst du ergänzen, wenn du Production-Auth brauchst.",
+    "signIn": "Anmelden",
+    "createAccount": "Konto erstellen",
+    "name": "Name",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "magicLabel": "Oder einen Magic Link per E-Mail",
+    "sendMagic": "Magic Link senden",
+    "github": "Mit GitHub weiter",
+    "githubHint": "GitHub OAuth erscheint hier, wenn AUTH_GITHUB_ID und AUTH_GITHUB_SECRET gesetzt sind.",
+    "demoPrefix": "Demo:",
+    "errors": {
+      "invalidEmailPassword": "Gib eine gültige E-Mail und ein Passwort ein.",
+      "invalidCredentials": "Diese Zugangsdaten passen nicht. Nutze den Demo-Login oder erstelle ein Konto.",
+      "registerRequired": "Name, eine gültige E-Mail und ein Passwort mit 8+ Zeichen sind erforderlich.",
+      "accountExists": "Ein Konto mit dieser E-Mail existiert bereits. Melde dich an.",
+      "hashFailed": "Das Passwort konnte auf diesem Server nicht gehasht werden. Worker-Logs prüfen (bcryptjs / crypto).",
+      "signInFailed": "Konto erstellt, aber die Anmeldung ist fehlgeschlagen. Bitte einloggen.",
+      "magicEmail": "Gib die E-Mail für den Magic Link ein.",
+      "magicFailed": "Magic Link konnte nicht gesendet werden. AUTH_RESEND_KEY prüfen."
+    }
+  },
+  "terms": {
+    "title": "Nutzungsbedingungen",
+    "updated": "Zuletzt aktualisiert am 15. September 2026. Das ist ein MVP-Entwurf — vor dem Produktionseinsatz rechtlich prüfen lassen.",
+    "paragraphs": [
+      "InvoiceFlow Studio (invoiceflowstudio.com) ist ein Werkzeug zum Erstellen, Versenden und Verfolgen von Rechnungen und Angeboten. In diesem MVP ist es keine Bank, kein Buchhalter, kein Steuerberater und kein Zahlungsdienstleister für die Rechnungen deiner Kunden.",
+      "Du bleibst Eigentümer der Inhalte, die du hochlädst. Du bist verantwortlich für die Richtigkeit von Rechnungen, Steuern und Kundenkommunikation. Wir können Konten sperren, die den Dienst missbrauchen.",
+      "Abos (Pro) verlängern sich monatlich über Stripe, bis sie gekündigt werden. Limits des kostenlosen Plans werden in der Software durchgesetzt und können mit Hinweis geändert werden.",
+      "Die Software wird „wie besehen“ ohne Gewähr bereitgestellt. Die Haftung ist auf den Betrag begrenzt, den du uns in den vorangegangenen drei Monaten gezahlt hast."
+    ]
+  },
+  "privacy": {
+    "title": "Datenschutz",
+    "updated": "Zuletzt aktualisiert am 15. September 2026. MVP-Entwurf — vor dem Launch durch eine geprüfte Richtlinie ersetzen.",
+    "paragraphs": [
+      "Wir erfassen Konto-E-Mail, Studio-Profildaten, Rechnungen, Angebote und Abrechnungsmetadaten, die wir zum Betrieb des Produkts brauchen.",
+      "Die Anmeldung kann E-Mail/Passwort, GitHub OAuth und optional Resend-Magic-Links nutzen. Zahlungen laufen über Stripe; wir speichern Kunden- und Abo-IDs, keine vollständigen Kartennummern.",
+      "Öffentliche Share-Links sind schwer zu erratende Tokens. Jeder mit dem Link kann das Dokument sehen. Schicke keine Tokens, die privat bleiben sollen.",
+      "Kontaktiere den Betreiber unter invoiceflowstudio.com, um Export oder Löschung deiner Kontodaten anzufordern."
+    ]
+  },
+  "app": {
+    "signOut": "Abmelden",
+    "overview": "Übersicht",
+    "invoices": "Rechnungen",
+    "proposals": "Angebote",
+    "clients": "Kunden",
+    "billing": "Abrechnung",
+    "settings": "Einstellungen",
+    "newInvoice": "Neue Rechnung",
+    "newProposal": "Neues Angebot",
+    "newInvoiceLede": "Leeres Blatt. Oder zurück und mit einer Vorlage starten.",
+    "newProposalLede": "Abschnitte, optionale Preise, Annehmen/Ablehnen über den öffentlichen Link.",
+    "viewAll": "Alle ansehen",
+    "search": "Suchen",
+    "filter": "Filtern",
+    "allStatuses": "Alle Status",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "save": "Speichern",
+    "remove": "Entfernen",
+    "downloadPdf": "PDF herunterladen",
+    "publicView": "Öffentliche Ansicht",
+    "emailShareLink": "Link per E-Mail",
+    "markPaid": "Als bezahlt markieren",
+    "copyLink": "Link kopieren",
+    "copied": "Kopiert",
+    "status": {
+      "draft": "Entwurf",
+      "sent": "Gesendet",
+      "paid": "Bezahlt",
+      "overdue": "Überfällig",
+      "void": "Ungültig",
+      "accepted": "Angenommen",
+      "declined": "Abgelehnt"
+    },
+    "home": {
+      "title": "Gut — du bist da. Schick etwas raus.",
+      "proOn": "Pro ist aktiv. Unbegrenzte Rechnungen und Angebote in diesem Monat.",
+      "usage": "{invoices}/{invoiceLimit} Rechnungen und {proposals}/{proposalLimit} Angebote in diesem Monat genutzt.",
+      "outstanding": "Offen (aktuell)",
+      "invoicesThisMonth": "Rechnungen in diesem Monat",
+      "proposalsThisMonth": "Angebote in diesem Monat",
+      "startTemplate": "Mit einer Vorlage starten",
+      "tplDesignTitle": "Rechnung für ein Designprojekt",
+      "tplDesignBody": "Brand-Suite-Positionen, 14 Tage Zahlungsziel.",
+      "tplRetainerTitle": "Retainer-Rechnung",
+      "tplRetainerBody": "Stunden + async Direction, fällig in 7 Tagen.",
+      "tplVideoTitle": "Angebot für Videoschnitt",
+      "tplVideoBody": "Cut, Deliverables, Investment, annehmen/ablehnen.",
+      "noInvoices": "Noch keine Rechnungen.",
+      "noProposals": "Noch keine Angebote."
+    },
+    "invoiceList": {
+      "lede": "Nach Status filtern oder Kunde und Nummer suchen.",
+      "number": "Nummer",
+      "client": "Kunde",
+      "status": "Status",
+      "total": "Summe",
+      "empty": "Keine Rechnungen passen zu diesen Filtern."
+    },
+    "proposalList": {
+      "lede": "Gesendete, angenommene und abgelehnte Arbeit im Blick.",
+      "title": "Titel",
+      "client": "Kunde",
+      "status": "Status",
+      "investment": "Investment",
+      "empty": "Keine Angebote passen zu diesen Filtern."
+    },
+    "clientsPage": {
+      "lede": "Speichere die Leute, die du abrechnest, damit die nächste Rechnung 30 Sekunden dauert.",
+      "name": "Name",
+      "email": "E-Mail",
+      "company": "Firma",
+      "address": "Adresse",
+      "save": "Kunde speichern",
+      "empty": "Noch keine Kunden. Das Demokonto enthält Hearth Goods und Oak & Film."
+    },
+    "settingsPage": {
+      "title": "Studio-Daten",
+      "lede": "Das sehen Kunden auf Rechnungen, Angeboten und PDFs.",
+      "yourName": "Dein Name",
+      "studioName": "Studioname",
+      "studioEmail": "Studio-E-Mail",
+      "phone": "Telefon",
+      "website": "Website",
+      "address": "Adresse"
+    },
+    "billingPage": {
+      "lede": "Du bist auf {plan}. Starter ist auf 3 Rechnungen und 3 Angebote pro Monat begrenzt. Pro kostet ${price}/Monat, unbegrenzt.",
+      "success": "Stripe-Checkout abgeschlossen. Neu laden, falls der Plan noch nicht gewechselt hat — der Webhook holt nach.",
+      "demo": "Lokales Demo-Pro für 30 Tage freigeschaltet.",
+      "limit": "Starter umfasst 3 Rechnungen und 3 Angebote pro Monat. Upgrade auf Pro für unbegrenzt.",
+      "portal": "Stripe-Kundenportal",
+      "unlockDemo": "Pro für lokale Demo freischalten",
+      "returnStarter": "Zurück zu Starter"
+    },
+    "errors": {
+      "invoiceNotFound": "Rechnung nicht gefunden.",
+      "proposalNotFound": "Angebot nicht gefunden.",
+      "clientEmailRequired": "Füge eine Kunden-E-Mail hinzu, bevor du den Link sendest."
+    }
+  }
+}

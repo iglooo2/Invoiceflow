@@ -9,6 +9,7 @@ import { CopyLinkButton } from "@/components/copy-link-button";
 import { InvoicePreview } from "@/components/document-preview";
 import { StatusBadge } from "@/components/status-badge";
 import { deleteInvoice, emailInvoice, markInvoiceStatus } from "@/app/actions/invoices";
+import { appCopy } from "@/lib/i18n-request";
 
 export default async function InvoiceDetailPage({
   params,
@@ -18,6 +19,7 @@ export default async function InvoiceDetailPage({
   searchParams: Promise<{ error?: string }>;
 }) {
   const user = await requireUser();
+  const { dict } = await appCopy();
   const { id } = await params;
   const { error } = await searchParams;
   const invoice = await prisma.invoice.findFirst({
@@ -34,19 +36,19 @@ export default async function InvoiceDetailPage({
           <p className="text-sm text-muted-foreground">{invoice.number}</p>
           <div className="mt-1 flex flex-wrap items-center gap-3">
             <h1 className="font-display text-4xl">{invoice.clientName}</h1>
-            <StatusBadge status={invoice.status} />
+            <StatusBadge status={invoice.status} labels={dict.app.status} />
           </div>
         </div>
         <div className="no-print flex flex-wrap gap-2">
-          <CopyLinkButton value={share} />
+          <CopyLinkButton value={share} label={dict.app.copyLink} copiedLabel={dict.app.copied} />
           <Button asChild variant="outline">
-            <a href={`/api/invoices/${invoice.id}/pdf`}>Download PDF</a>
+            <a href={`/api/invoices/${invoice.id}/pdf`}>{dict.app.downloadPdf}</a>
           </Button>
           <Button asChild variant="outline">
-            <Link href={`/share/i/${invoice.publicToken}`}>Public view</Link>
+            <Link href={`/share/i/${invoice.publicToken}`}>{dict.app.publicView}</Link>
           </Button>
           <Button asChild>
-            <Link href={`/dashboard/invoices/${invoice.id}/edit`}>Edit</Link>
+            <Link href={`/dashboard/invoices/${invoice.id}/edit`}>{dict.app.edit}</Link>
           </Button>
         </div>
       </div>
@@ -55,7 +57,7 @@ export default async function InvoiceDetailPage({
         <form action={emailInvoice}>
           <input type="hidden" name="invoiceId" value={invoice.id} />
           <Button type="submit" variant="secondary">
-            Email share link
+            {dict.app.emailShareLink}
           </Button>
         </form>
         {invoice.status !== "paid" ? (
@@ -63,14 +65,14 @@ export default async function InvoiceDetailPage({
             <input type="hidden" name="invoiceId" value={invoice.id} />
             <input type="hidden" name="status" value="paid" />
             <Button type="submit" variant="outline">
-              Mark paid
+              {dict.app.markPaid}
             </Button>
           </form>
         ) : null}
         <form action={deleteInvoice}>
           <input type="hidden" name="invoiceId" value={invoice.id} />
           <Button type="submit" variant="ghost">
-            Delete
+            {dict.app.delete}
           </Button>
         </form>
       </div>

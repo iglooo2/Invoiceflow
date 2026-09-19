@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/session";
 import { InvoiceForm } from "@/components/invoice-form";
 import { updateInvoice } from "@/app/actions/invoices";
+import { appCopy } from "@/lib/i18n-request";
 
 export default async function EditInvoicePage({
   params,
@@ -11,6 +12,7 @@ export default async function EditInvoicePage({
   params: Promise<{ id: string }>;
 }) {
   const user = await requireUser();
+  const { dict } = await appCopy();
   const { id } = await params;
   const [invoice, clients] = await Promise.all([
     prisma.invoice.findFirst({
@@ -23,7 +25,7 @@ export default async function EditInvoicePage({
 
   return (
     <div className="grid gap-6">
-      <h1 className="font-display text-4xl">Edit {invoice.number}</h1>
+      <h1 className="font-display text-4xl">{dict.app.edit} {invoice.number}</h1>
       <InvoiceForm
         action={updateInvoice.bind(null, invoice.id)}
         clients={clients}

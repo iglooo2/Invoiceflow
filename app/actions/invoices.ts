@@ -11,6 +11,7 @@ import { planFromUser, requireUser } from "@/lib/session";
 import { assertCanCreate, newPublicToken, nextInvoiceNumber, redirectIfLimitReached } from "@/lib/documents";
 import { SEED_TEMPLATES, type InvoiceTemplatePayload } from "@/lib/templates";
 import { sendDocumentEmail, publicInvoiceUrl } from "@/lib/email";
+import { appCopy } from "@/lib/i18n-request";
 
 export type InvoiceActionResult = { error: string };
 
@@ -73,7 +74,10 @@ export async function updateInvoice(
     const existing = await prisma.invoice.findFirst({
       where: { id: invoiceId, userId: user.id },
     });
-    if (!existing) return { error: "Invoice not found." };
+    if (!existing) {
+      const { dict } = await appCopy();
+      return { error: dict.app.errors.invoiceNotFound };
+    }
     const parsed = parseInvoiceForm(formData);
     if (!parsed.success) return { error: parsed.error };
     await replaceInvoiceItems(
@@ -207,10 +211,12 @@ export async function emailInvoice(formData: FormData) {
       where: { id: invoiceId, userId: user.id },
     });
     if (!invoice) {
-      redirect(errorRedirect("/dashboard/invoices", "Invoice not found."));
+      const { dict } = await appCopy();
+      redirect(errorRedirect("/dashboard/invoices", dict.app.errors.invoiceNotFound));
     }
     if (!invoice.clientEmail) {
-      redirect(errorRedirect(detailPath, "Add a client email before sending the share link."));
+      const { dict } = await appCopy();
+      redirect(errorRedirect(detailPath, dict.app.errors.clientEmailRequired));
     }
     await sendDocumentEmail({
       to: invoice.clientEmail,

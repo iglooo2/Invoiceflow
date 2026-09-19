@@ -1,0 +1,242 @@
+{
+  "meta": {
+    "description": "Deixe os docs do Word de lado. Escolha um modelo que combine com o seu trabalho — faturas e propostas rápidas para designers, editores e redatores.",
+    "pricingTitle": "Preços",
+    "loginTitle": "Entrar",
+    "termsTitle": "Termos de serviço",
+    "privacyTitle": "Política de privacidade"
+  },
+  "nav": {
+    "how": "Como funciona",
+    "pricing": "Preços",
+    "templates": "Modelos",
+    "signIn": "Entrar",
+    "startFree": "Começar grátis",
+    "dashboard": "Painel",
+    "messageUs": "Fale conosco",
+    "terms": "Termos",
+    "privacy": "Privacidade",
+    "language": "Idioma"
+  },
+  "home": {
+    "eyebrow": "InvoiceFlow Studio",
+    "headline": "Deixe os docs do Word de lado.\nEscolha um modelo que combine com o seu trabalho.",
+    "lede": "A ferramenta objetiva para designers, editores e redatores que preferem entregar trabalho a brigar com um .docx. Escolha um modelo de estúdio, envie um PDF ou um link para o cliente e saiba o que foi pago.",
+    "createInvoice": "Criar sua primeira fatura",
+    "seePricing": "Ver preços",
+    "startCta": "Começar grátis (3 faturas/mês)",
+    "openStudio": "Abrir seu estúdio",
+    "freeNote": "Grátis: 3 faturas e 3 propostas por mês. Sem suíte de contabilidade. Sem assistente de 47 passos.",
+    "how": [
+      {
+        "title": "Comece com um modelo de estúdio",
+        "body": "Projeto de design, retainer ou edição de vídeo — não uma planilha em branco fingindo ser uma marca."
+      },
+      {
+        "title": "Envie PDF ou um link público",
+        "body": "Seus clientes abrem uma página limpa no celular. Você baixa um PDF que não parece 2009."
+      },
+      {
+        "title": "Acompanhe pago, enviado e atrasado",
+        "body": "Uma lista simples. Filtros. Só isso. O QuickBooks pode esperar até você realmente precisar dele."
+      }
+    ],
+    "templatesTitle": "Modelos que você vai usar de verdade",
+    "templatesLede": "Feitos para o público deste produto: designers independentes, editores de vídeo e redatores.",
+    "templates": [
+      {
+        "title": "Fatura de projeto de design",
+        "body": "Discovery, sistema de identidade, suíte de logo, guidelines. 50% para começar."
+      },
+      {
+        "title": "Fatura de retainer",
+        "body": "Horas mais direção de arte assíncrona. Inclui o texto de pagamento até o dia 5."
+      },
+      {
+        "title": "Proposta de edição de vídeo",
+        "body": "O corte, os entregáveis, o investimento — aceitar ou recusar pelo link."
+      }
+    ],
+    "startStarter": "Começar no Starter",
+    "goPro": "Ir para o Pro",
+    "freePrice": "Grátis",
+    "perMonthShort": "/mês"
+  },
+  "pricing": {
+    "headline": "Preço simples para um trabalho simples.",
+    "lede": "InvoiceFlow Studio não é uma suíte de contabilidade. É o jeito mais rápido de enviar uma fatura ou proposta bonita e saber se foi paga — em invoiceflowstudio.com.",
+    "perMonth": "/ mês",
+    "useStarter": "Usar Starter",
+    "upgradePro": "Assinar o Pro"
+  },
+  "plans": {
+    "free": {
+      "name": "Starter",
+      "blurb": "O suficiente para parar de mandar Word feio neste mês.",
+      "features": [
+        "3 faturas / mês",
+        "3 propostas / mês",
+        "Download de PDF + links para clientes",
+        "Modelos de estúdio",
+        "Marca InvoiceFlow nas páginas públicas"
+      ]
+    },
+    "pro": {
+      "name": "Pro",
+      "blurb": "Faturas e propostas ilimitadas para um estúdio em operação.",
+      "features": [
+        "Faturas e propostas ilimitadas",
+        "Download de PDF + links para clientes",
+        "Dados do seu estúdio em cada documento",
+        "Sem marca InvoiceFlow na visão do cliente",
+        "Portal de cobrança da Stripe"
+      ]
+    }
+  },
+  "login": {
+    "headline": "Volte ao trabalho. A gente cuida do PDF.",
+    "lede": "E-mail e senha funcionam sem chaves de API. Adicione GitHub ou Resend quando quiser autenticação de produção.",
+    "signIn": "Entrar",
+    "createAccount": "Criar conta",
+    "name": "Nome",
+    "email": "E-mail",
+    "password": "Senha",
+    "magicLabel": "Ou envie um link mágico",
+    "sendMagic": "Enviar link mágico",
+    "github": "Continuar com GitHub",
+    "githubHint": "O GitHub OAuth aparece aqui quando AUTH_GITHUB_ID e AUTH_GITHUB_SECRET estão definidos.",
+    "demoPrefix": "Demo:",
+    "errors": {
+      "invalidEmailPassword": "Informe um e-mail e uma senha válidos.",
+      "invalidCredentials": "Essas credenciais não conferem. Tente o login demo ou crie uma conta.",
+      "registerRequired": "Nome, um e-mail válido e uma senha com 8+ caracteres são obrigatórios.",
+      "accountExists": "Já existe uma conta com esse e-mail. Entre em vez disso.",
+      "hashFailed": "Não foi possível gerar o hash da senha neste servidor. Veja os logs do Worker (bcryptjs / crypto).",
+      "signInFailed": "Conta criada, mas o login falhou. Tente entrar.",
+      "magicEmail": "Informe o e-mail para o link mágico.",
+      "magicFailed": "Não foi possível enviar o link mágico. Verifique AUTH_RESEND_KEY."
+    }
+  },
+  "terms": {
+    "title": "Termos de serviço",
+    "updated": "Última atualização: 15 de setembro de 2026. Rascunho do MVP — peça revisão jurídica antes do uso em produção.",
+    "paragraphs": [
+      "InvoiceFlow Studio (invoiceflowstudio.com) é uma ferramenta para criar, enviar e acompanhar faturas e propostas. Neste MVP, não é banco, contador, consultor fiscal nem processador de pagamentos das faturas dos seus clientes.",
+      "Você é dono do conteúdo que envia. Você responde pela precisão das faturas, impostos e comunicações com clientes. Podemos suspender contas que abusem do serviço.",
+      "Assinaturas (Pro) renovam todo mês via Stripe até serem canceladas. Os limites do plano gratuito são aplicados no software e podem mudar com aviso.",
+      "O software é oferecido “como está”, sem garantias. O limite de responsabilidade é o valor que você nos pagou nos três meses anteriores."
+    ]
+  },
+  "privacy": {
+    "title": "Política de privacidade",
+    "updated": "Última atualização: 15 de setembro de 2026. Rascunho do MVP — substitua por uma política revisada antes do lançamento.",
+    "paragraphs": [
+      "Coletamos o e-mail da conta, dados do perfil do estúdio, faturas, propostas e metadados de cobrança necessários para operar o produto.",
+      "O acesso pode usar e-mail/senha, GitHub OAuth e, opcionalmente, links mágicos do Resend. Os pagamentos passam pela Stripe; guardamos IDs de cliente e assinatura, não números completos de cartão.",
+      "Links públicos de compartilhamento são tokens difíceis de adivinhar. Qualquer pessoa com o link pode ver o documento. Não envie tokens que você queira manter privados.",
+      "Fale com o operador em invoiceflowstudio.com para pedir a exportação ou exclusão dos dados da sua conta."
+    ]
+  },
+  "app": {
+    "signOut": "Sair",
+    "overview": "Visão geral",
+    "invoices": "Faturas",
+    "proposals": "Propostas",
+    "clients": "Clientes",
+    "billing": "Cobrança",
+    "settings": "Configurações",
+    "newInvoice": "Nova fatura",
+    "newProposal": "Nova proposta",
+    "newInvoiceLede": "Começar em branco. Ou volte e use um modelo.",
+    "newProposalLede": "Seções, preços opcionais, aceitar/recusar no link público.",
+    "viewAll": "Ver todas",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "allStatuses": "Todos os status",
+    "edit": "Editar",
+    "delete": "Excluir",
+    "save": "Salvar",
+    "remove": "Remover",
+    "downloadPdf": "Baixar PDF",
+    "publicView": "Visão pública",
+    "emailShareLink": "Enviar link",
+    "markPaid": "Marcar como paga",
+    "copyLink": "Copiar link",
+    "copied": "Copiado",
+    "status": {
+      "draft": "Rascunho",
+      "sent": "Enviada",
+      "paid": "Paga",
+      "overdue": "Atrasada",
+      "void": "Anulada",
+      "accepted": "Aceita",
+      "declined": "Recusada"
+    },
+    "home": {
+      "title": "Ótimo — você chegou. Envie alguma coisa.",
+      "proOn": "O Pro está ativo. Faturas e propostas ilimitadas neste mês.",
+      "usage": "{invoices}/{invoiceLimit} faturas e {proposals}/{proposalLimit} propostas usadas neste mês.",
+      "outstanding": "Em aberto (recente)",
+      "invoicesThisMonth": "Faturas neste mês",
+      "proposalsThisMonth": "Propostas neste mês",
+      "startTemplate": "Começar com um modelo",
+      "tplDesignTitle": "Fatura de projeto de design",
+      "tplDesignBody": "Itens de brand suite, prazo de 14 dias.",
+      "tplRetainerTitle": "Fatura de retainer",
+      "tplRetainerBody": "Horas + direção assíncrona, vencimento em 7 dias.",
+      "tplVideoTitle": "Proposta de edição de vídeo",
+      "tplVideoBody": "Corte, entregáveis, investimento, aceitar/recusar.",
+      "noInvoices": "Ainda não há faturas.",
+      "noProposals": "Ainda não há propostas."
+    },
+    "invoiceList": {
+      "lede": "Filtre por status ou busque cliente e número.",
+      "number": "Número",
+      "client": "Cliente",
+      "status": "Status",
+      "total": "Total",
+      "empty": "Nenhuma fatura corresponde a esses filtros."
+    },
+    "proposalList": {
+      "lede": "Acompanhe o trabalho enviado, aceito e recusado.",
+      "title": "Título",
+      "client": "Cliente",
+      "status": "Status",
+      "investment": "Investimento",
+      "empty": "Nenhuma proposta corresponde a esses filtros."
+    },
+    "clientsPage": {
+      "lede": "Salve quem você fatura para a próxima levar trinta segundos.",
+      "name": "Nome",
+      "email": "E-mail",
+      "company": "Empresa",
+      "address": "Endereço",
+      "save": "Salvar cliente",
+      "empty": "Ainda não há clientes. A conta demo inclui Hearth Goods e Oak & Film."
+    },
+    "settingsPage": {
+      "title": "Dados do estúdio",
+      "lede": "É isso que os clientes veem em faturas, propostas e PDFs.",
+      "yourName": "Seu nome",
+      "studioName": "Nome do estúdio",
+      "studioEmail": "E-mail do estúdio",
+      "phone": "Telefone",
+      "website": "Site",
+      "address": "Endereço"
+    },
+    "billingPage": {
+      "lede": "Você está no {plan}. O Starter limita a 3 faturas e 3 propostas por mês. O Pro custa ${price}/mês, ilimitado.",
+      "success": "O checkout da Stripe terminou. Atualize se o plano ainda não mudou — o webhook pode estar alcançando.",
+      "demo": "Pro de demo local liberado por 30 dias.",
+      "limit": "O Starter inclui 3 faturas e 3 propostas por mês. Assine o Pro para ilimitado.",
+      "portal": "Portal do cliente da Stripe",
+      "unlockDemo": "Liberar Pro para demo local",
+      "returnStarter": "Voltar ao Starter"
+    },
+    "errors": {
+      "invoiceNotFound": "Fatura não encontrada.",
+      "proposalNotFound": "Proposta não encontrada.",
+      "clientEmailRequired": "Adicione o e-mail do cliente antes de enviar o link."
+    }
+  }
+}
