@@ -133,6 +133,34 @@ test("resolveStripeCustomerForUser reuses a Live customer by email after the id 
   assert.deepEqual(calls.at(-1), { stripeCustomerId: "cus_live_existing" });
 });
 
+test("production leftover test-mode customer error is detected and cleared without SQL", async () => {
+  const productionError = Object.assign(
+    new Error(
+      "No such customer: 'cus_VHjClofm056k8h'; a similar object exists in test mode, but a live mode key was used to make this request.",
+    ),
+    { code: "resource_missing", param: "customer" },
+  );
+  assert.equal(isMissingStripeCustomerError(productionError), true);
+
+  const { db, calls } = mockDb("cus_VHjClofm056k8h");
+  const { stripe, created } = mockStripe({
+    retrieve: async () => {
+      throw productionError;
+    },
+    createId: "cus_live_auto",
+  });
+  const result = await resolveStripeCustomerForUser({
+    user: { ...user, email: "igloo85@gmail.com", stripeCustomerId: "cus_VHjClofm056k8h" },
+    stripe,
+    db,
+  });
+  assert.equal(result.customerId, "cus_live_auto");
+  assert.equal(result.replaced, true);
+  assert.deepEqual(created, ["cus_live_auto"]);
+  assert.equal(calls[0]?.stripeCustomerId, null);
+  assert.equal(calls.at(-1)?.stripeCustomerId, "cus_live_auto");
+});
+
 test("resolveStripeCustomerForUser clears a leftover test cus_ and creates a Live customer", async () => {
   const { db, calls } = mockDb("cus_test_leftover");
   const { stripe, created } = mockStripe({
