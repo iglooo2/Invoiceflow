@@ -3,9 +3,12 @@ import { createStripeClient } from "./stripe-client";
 import { readStripeProPriceId, readStripeSecretKey, readStripeWebhookSecret } from "./stripe-env";
 
 export {
+  isMissingStripeCustomerError,
   stripeEnabled,
   stripeFailureMessage,
+  stripeKeyMode,
   stripeMisconfiguredMessage,
+  stripeUpgradeButtonLabel,
   readStripeProPriceId,
   readStripeSecretKey,
   readStripeWebhookSecret,

@@ -9,6 +9,7 @@ import { requireUser } from "@/lib/session";
 import {
   getStripe,
   getStripeProPriceId,
+  isMissingStripeCustomerError,
   stripeEnabled,
   stripeFailureMessage,
   stripeMisconfiguredMessage,
@@ -17,6 +18,28 @@ import { getAppUrl, isDevMode } from "@/lib/utils";
 
 function redirectBillingError(message: string): never {
   redirect(errorRedirect("/dashboard/billing", message));
+}
+
+async function createStripeCustomerForUser(user: {
+  id: string;
+  email: string;
+  name?: string | null;
+  businessName?: string | null;
+}) {
+  const stripe = getStripe();
+  if (!stripe) {
+    redirectBillingError(stripeMisconfiguredMessage());
+  }
+  const customer = await stripe.customers.create({
+    email: user.email,
+    name: user.businessName || user.name || undefined,
+    metadata: { userId: user.id },
+  });
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { stripeCustomerId: customer.id },
+  });
+  return customer.id;
 }
 
 export async function startProCheckout() {
@@ -33,27 +56,29 @@ export async function startProCheckout() {
 
     let customerId = user.stripeCustomerId;
     if (!customerId) {
-      const customer = await stripe.customers.create({
-        email: user.email,
-        name: user.businessName || user.name || undefined,
-        metadata: { userId: user.id },
-      });
-      customerId = customer.id;
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { stripeCustomerId: customerId },
-      });
+      customerId = await createStripeCustomerForUser(user);
     }
 
-    const session = await stripe.checkout.sessions.create({
-      mode: "subscription",
+    const checkoutParams = {
+      mode: "subscription" as const,
       customer: customerId,
       line_items: [{ price: priceId, quantity: 1 }],
       success_url: `${getAppUrl()}/dashboard/billing?status=success`,
       cancel_url: `${getAppUrl()}/dashboard/billing?status=cancelled`,
       allow_promotion_codes: true,
       metadata: { userId: user.id },
-    });
+    };
+
+    let session;
+    try {
+      session = await stripe.checkout.sessions.create(checkoutParams);
+    } catch (error) {
+      unstable_rethrow(error);
+      // Test-mode cus_… ids are invisible to live keys (and the reverse).
+      if (!customerId || !isMissingStripeCustomerError(error)) throw error;
+      customerId = await createStripeCustomerForUser(user);
+      session = await stripe.checkout.sessions.create({ ...checkoutParams, customer: customerId });
+    }
 
     if (!session.url) {
       redirectBillingError("Stripe did not return a checkout URL.");

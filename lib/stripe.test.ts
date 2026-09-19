@@ -11,6 +11,7 @@ import {
   STRIPE_REQUEST_TIMEOUT_MS,
 } from "./stripe-client";
 import {
+  isMissingStripeCustomerError,
   isPlaceholderStripePriceId,
   isPlaceholderStripeSecret,
   isPlaceholderStripeWebhookSecret,
@@ -19,7 +20,9 @@ import {
   readStripeSecretKey,
   stripeEnabled,
   stripeFailureMessage,
+  stripeKeyMode,
   stripeMisconfiguredMessage,
+  stripeUpgradeButtonLabel,
 } from "./stripe-env";
 
 test("treats .env.example Stripe placeholders as missing", () => {
@@ -113,9 +116,42 @@ test("stripeFailureMessage maps misconfig and API failures without leaking secre
   assert.equal(stripeFailureMessage(new Error("Stripe is not configured")), stripeMisconfiguredMessage());
   assert.match(stripeFailureMessage(new Error("Invalid API Key provided")), /API key/);
   assert.match(stripeFailureMessage(new Error("No such price: price_missing")), /price id/);
+  assert.match(
+    stripeFailureMessage(Object.assign(new Error("No such customer: cus_test"), { code: "resource_missing", param: "customer" })),
+    /customer/,
+  );
   assert.match(stripeFailureMessage(new Error("An error occurred with our connection to Stripe")), /reach Stripe/);
   const leaked = stripeFailureMessage(new Error("postgresql://invoice:s3cret@ep-foo.neon.tech/db"));
   assert.equal(leaked.includes("s3cret"), false);
+  assert.match(stripeFailureMessage(new Error("unexpected stripe boom")), /Couldn’t complete the Stripe request/);
+});
+
+test("stripeKeyMode follows secret prefix, not AUTH or publishable env", () => {
+  assert.equal(stripeKeyMode("sk_test_51abc"), "test");
+  assert.equal(stripeKeyMode("rk_test_restricted"), "test");
+  assert.equal(stripeKeyMode("sk_live_51abc"), "live");
+  assert.equal(stripeKeyMode("rk_live_restricted"), "live");
+  assert.equal(stripeKeyMode("pk_live_51abc"), "live");
+  assert.equal(stripeKeyMode(""), "unknown");
+  assert.equal(stripeUpgradeButtonLabel("test"), "Upgrade with Stripe (test mode)");
+  assert.equal(stripeUpgradeButtonLabel("live"), "Upgrade with Stripe");
+  assert.equal(stripeUpgradeButtonLabel("unknown"), "Upgrade with Stripe");
+});
+
+test("billing page labels Upgrade from runtime Stripe mode, not hardcoded test copy", () => {
+  const page = readFileSync(path.join(import.meta.dirname, "../app/dashboard/billing/page.tsx"), "utf8");
+  assert.match(page, /stripeUpgradeButtonLabel/);
+  assert.match(page, /stripeKeyMode/);
+  assert.doesNotMatch(page, /<Button type="submit">Upgrade with Stripe \(test mode\)<\/Button>/);
+});
+
+test("missing Stripe customer errors are detected for test-to-live retries", () => {
+  assert.equal(isMissingStripeCustomerError(new Error("No such customer: 'cus_test123'")), true);
+  assert.equal(
+    isMissingStripeCustomerError(Object.assign(new Error("No such customer"), { code: "resource_missing", param: "customer" })),
+    true,
+  );
+  assert.equal(isMissingStripeCustomerError(new Error("No such price: price_abc")), false);
 });
 
 test("webhook signatures verify with SubtleCrypto instead of Node crypto", async () => {
@@ -136,6 +172,13 @@ test("webhook signatures verify with SubtleCrypto instead of Node crypto", async
     stripeWebhookCryptoProvider(),
   );
   assert.equal(event.id, "evt_test");
+});
+
+test("checkout action retries when Stripe reports a missing customer", () => {
+  const action = readFileSync(path.join(import.meta.dirname, "../app/actions/billing.ts"), "utf8");
+  assert.match(action, /isMissingStripeCustomerError/);
+  assert.match(action, /createStripeCustomerForUser/);
+  assert.match(action, /checkout\.sessions\.create/);
 });
 
 test("webhook route stays on the default Worker runtime and verifies async", () => {
