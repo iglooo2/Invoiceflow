@@ -25,10 +25,13 @@ function redirectBillingError(message: string): never {
 
 async function createStripeCustomerForUser(user: {
   id: string;
-  email: string;
+  email: string | null;
   name?: string | null;
   businessName?: string | null;
 }) {
+  if (!user.email) {
+    redirectBillingError("Your account needs an email address to subscribe.");
+  }
   const stripe = getStripe();
   if (!stripe) {
     redirectBillingError(stripeMisconfiguredMessage());
