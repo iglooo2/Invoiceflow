@@ -4,7 +4,8 @@
     "pricingTitle": "Preços",
     "loginTitle": "Entrar",
     "termsTitle": "Termos de serviço",
-    "privacyTitle": "Política de privacidade"
+    "privacyTitle": "Política de privacidade",
+    "contactTitle": "Enviar uma solicitação"
   },
   "nav": {
     "how": "Como funciona",
@@ -134,6 +135,44 @@
       "Links públicos de compartilhamento são tokens difíceis de adivinhar. Qualquer pessoa com o link pode ver o documento. Não envie tokens que você queira manter privados.",
       "Fale com o operador em invoiceflowstudio.com para pedir a exportação ou exclusão dos dados da sua conta."
     ]
+  },
+  "contact": {
+    "title": "Enviar uma solicitação",
+    "lede": "Preencha os dados abaixo e retornaremos o contato.",
+    "email": "Seu endereço de e-mail",
+    "emailPlaceholder": "voce@exemplo.com",
+    "topic": "Assunto",
+    "topicPlaceholder": "Selecione uma opção",
+    "topics": {
+      "general": "Geral",
+      "billing": "Cobrança",
+      "support": "Suporte",
+      "partnership": "Parceria",
+      "other": "Outro"
+    },
+    "subject": "Título",
+    "subjectPlaceholder": "Resumo breve da sua solicitação",
+    "description": "Descrição",
+    "descriptionPlaceholder": "Descreva o problema em detalhe",
+    "attachments": "Anexos",
+    "attach": "Clique para anexar arquivos",
+    "submit": "Enviar",
+    "sending": "Enviando…",
+    "successTitle": "Solicitação enviada",
+    "successBody": "Obrigado — responderemos no e-mail informado.",
+    "sendAnother": "Enviar outra solicitação",
+    "error": "Não foi possível enviar agora. Tente de novo em instantes.",
+    "invalid": "Preencha os campos obrigatórios.",
+    "bold": "Negrito",
+    "italic": "Itálico",
+    "bulletList": "Lista com marcadores",
+    "numberedList": "Lista numerada",
+    "alignLeft": "Alinhar à esquerda",
+    "alignCenter": "Centralizar",
+    "alignRight": "Alinhar à direita",
+    "link": "Link",
+    "quote": "Citação",
+    "linkPrompt": "Informe uma URL"
   },
   "app": {
     "signOut": "Sair",

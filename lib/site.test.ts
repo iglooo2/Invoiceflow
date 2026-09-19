@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { CONTACT_EMAIL, CONTACT_MAILTO, isNeonUrl, isPostgresUrl } from "./site";
+import { CONTACT_EMAIL, CONTACT_PATH, isNeonUrl, isPostgresUrl } from "./site";
 
 test("detects postgres urls", () => {
   assert.equal(isPostgresUrl("postgresql://u:p@host/db"), true);
@@ -15,15 +15,16 @@ test("detects neon hosts", () => {
   assert.equal(isNeonUrl("postgresql://u:p@db.supabase.co/postgres"), false);
 });
 
-test("contact mailto uses inquiry subject without exposing the address as link text", () => {
+test("Message us links to the contact page and never prints the inbox address", () => {
   assert.equal(CONTACT_EMAIL, "galit.igor@yahoo.com");
-  assert.equal(
-    CONTACT_MAILTO,
-    "mailto:galit.igor@yahoo.com?subject=InvoiceFlow%20Studio%20inquiry",
-  );
+  assert.equal(CONTACT_PATH, "/contact");
 
   const footer = readFileSync(path.join(import.meta.dirname, "../components/marketing/shell.tsx"), "utf8");
   assert.match(footer, /\{copy\.messageUs\}/);
-  assert.match(footer, /href=\{CONTACT_MAILTO\}/);
+  assert.match(footer, /localizedPath\(locale, CONTACT_PATH\)/);
+  assert.equal(footer.includes("mailto:"), false);
   assert.equal(footer.includes(CONTACT_EMAIL), false);
+
+  const form = readFileSync(path.join(import.meta.dirname, "../components/marketing/contact-form.tsx"), "utf8");
+  assert.equal(form.includes(CONTACT_EMAIL), false);
 });
