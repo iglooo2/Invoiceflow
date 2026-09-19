@@ -27,6 +27,10 @@
       "fallthrough": true
     }
   ],
+  // `wrangler deploy` / Workers Builds treat `vars` as the full plaintext set.
+  // Without keep_vars, dashboard text vars (e.g. STRIPE_PRO_PRICE_ID) are deleted.
+  // Encrypted Secrets are never replaced. Do not put live Stripe ids in `vars`.
+  "keep_vars": true,
   "vars": {
     "NEXTJS_ENV": "production"
   }

@@ -59,9 +59,9 @@ See `.env.example`. Placeholders only — never commit real secrets.
 | `NEXT_PUBLIC_APP_URL` | `http://localhost:3000` | `https://invoiceflowstudio.com` | Share links and Stripe redirects |
 | `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET` | optional | optional | GitHub button hidden |
 | `AUTH_RESEND_KEY` / `EMAIL_FROM` | optional | optional | Magic link hidden; share-link email logs to console |
-| `STRIPE_SECRET_KEY` | optional test key | **runtime** `sk_test_…` or `sk_live_…` | Checkout disabled |
-| `STRIPE_PRO_PRICE_ID` | optional | **runtime** `price_…` in the **same mode** as the secret | Same |
-| `STRIPE_WEBHOOK_SECRET` | from Stripe CLI | **runtime** `whsec_…` from the matching-mode endpoint | Webhook route returns 501 |
+| `STRIPE_SECRET_KEY` | optional test key | **runtime secret** `sk_test_…` or `sk_live_…` | Checkout disabled |
+| `STRIPE_PRO_PRICE_ID` | optional | **runtime secret** `price_…` in the **same mode** as the secret | Same |
+| `STRIPE_WEBHOOK_SECRET` | from Stripe CLI | **runtime secret** `whsec_…` from the matching-mode endpoint | Webhook route returns 501 |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | unused | unused | Not read by Checkout or the Billing button |
 | `AUTH_DEV_MODE` | `true` | **`false`** | Production hides login demo credentials and “Unlock Pro for local demo” |
 
@@ -127,7 +127,7 @@ Do this in the Cloudflare dashboard — the agent cannot click it for you:
 4. Build settings:
    - **Root directory:** `/` (repo root)
    - **Build command:** `npm run cf:build` (forces a Postgres Prisma client, then OpenNext)
-   - **Deploy command:** `npx wrangler deploy`
+   - **Deploy command:** `npx wrangler deploy` (`wrangler.jsonc` sets `keep_vars: true` so dashboard plaintext vars are not deleted)
    - **Non-production branch deploy command:** `npx wrangler versions upload` (preview URLs)
    - Alternative build command: `npx opennextjs-cloudflare build` — then you **must** set `PRISMA_PROVIDER=postgresql` and a `postgresql://` `DATABASE_URL` as **build** variables so `prisma generate` does not emit SQLite.
 5. **Settings → Variables and Secrets** (runtime — *not* only build vars). Add:
@@ -142,13 +142,15 @@ Do this in the Cloudflare dashboard — the agent cannot click it for you:
    | `PRISMA_PROVIDER` | Variable | `postgresql` |
    | `STRIPE_SECRET_KEY` | Secret (**runtime**) | `sk_live_…` for production charges |
    | `STRIPE_WEBHOOK_SECRET` | Secret (**runtime**) | Live endpoint `whsec_…` |
-   | `STRIPE_PRO_PRICE_ID` | Variable (**runtime**) | Live-mode `price_…` (Dashboard Live toggle) |
+   | `STRIPE_PRO_PRICE_ID` | Secret (**runtime**) | Live-mode `price_…` (Dashboard Live toggle). Must be encrypted — a plaintext Variable is wiped on Git deploy if `keep_vars` is off. Never put the live id in the repo. |
    | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | unused | Do not rely on this — see Stripe section |
    | `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET` | Secret | if using GitHub login |
    | `AUTH_RESEND_KEY` | Secret | if using magic links |
    | `EMAIL_FROM` | Variable | `InvoiceFlow Studio <noreply@invoiceflowstudio.com>` |
 
    Also add **`PRISMA_PROVIDER=postgresql` as a Build variable** (required). `npm run cf:build` now runs `prisma generate` in Postgres mode even if Build `DATABASE_URL` is missing or still `file:./dev.db`. The real Neon URL must still be a **runtime** secret. Optionally set Build `DATABASE_URL` to any `postgresql://…` placeholder; do not rely on SQLite at build time.
+
+   **Why Stripe price id must be a Secret:** `wrangler deploy` (Workers Builds / `npm run deploy`) uploads `wrangler.jsonc` `vars` as the complete plaintext set. That file only declares `NEXTJS_ENV=production`, so a dashboard **Variable** named `STRIPE_PRO_PRICE_ID` is deleted and Billing shows “Stripe isn’t wired yet”. Encrypted **Secrets** (`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, and now `STRIPE_PRO_PRICE_ID`) are not replaced. `keep_vars: true` in `wrangler.jsonc` also keeps other dashboard Variables (`AUTH_URL`, `EMAIL_FROM`, …). Do not put a live `price_…` in the repo.
 
 6. Save, then **Retry build** / push to `main`.
 7. **Custom domain:** Worker → **Settings → Domains & Routes → Add** → `invoiceflowstudio.com`. Because the zone is already on Cloudflare, accept the proxied record it offers. Optionally add `www` and redirect it to apex in the zone.
@@ -174,8 +176,8 @@ Checkout is a **server action** (`startProCheckout` → `stripe.checkout.session
 | Variable | When it is read | Notes |
 |---|---|---|
 | `STRIPE_SECRET_KEY` | **Runtime** Worker secret | Preferred via `getCloudflareContext()`. Do not rely on a Build var — Next may inline an empty/placeholder `process.env` at `cf:build`. |
-| `STRIPE_PRO_PRICE_ID` | **Runtime** | Must be created in the **same** Stripe mode as the secret. A test `price_…` with `sk_live_` fails (`No such price`). |
-| `STRIPE_WEBHOOK_SECRET` | **Runtime** | Live Dashboard endpoint for production; Stripe CLI `whsec_…` locally. |
+| `STRIPE_PRO_PRICE_ID` | **Runtime** Worker secret | Encrypted secret, same as the Stripe key. Must be created in the **same** Stripe mode as the secret. A test `price_…` with `sk_live_` fails (`No such price`). A dashboard **plaintext Variable** is deleted on `wrangler deploy` because `wrangler.jsonc` `vars` only lists `NEXTJS_ENV` — Secrets survive. |
+| `STRIPE_WEBHOOK_SECRET` | **Runtime** Worker secret | Live Dashboard endpoint for production; Stripe CLI `whsec_…` locally. |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | **Not used** | This app never calls Stripe.js. Setting `pk_live_…` as a Runtime var will **not** change the Billing button or Checkout. If you later add client Stripe.js, `NEXT_PUBLIC_*` **must be a Build variable** — Next.js inlines it into the client bundle at `next build` / `npm run cf:build`. |
 | `NEXT_PUBLIC_APP_URL` | Build inlines if referenced; runtime fallback is `AUTH_URL` then `https://invoiceflowstudio.com` | Used for Checkout `success_url` / `cancel_url`. |
 | `PRISMA_PROVIDER` | **Build** (required) | Unrelated to Stripe; still required so Prisma is Postgres. |
@@ -186,7 +188,7 @@ Changing live Stripe secrets on **Runtime** does **not** require a rebuild. Afte
 
 1. In the Stripe Dashboard, switch to **Live** (not Test).
 2. Create product “InvoiceFlow Pro” with a **$24/month** recurring **live** price. Copy that `price_…` (it is not the test-mode id).
-3. Set Worker **runtime** secrets: `STRIPE_SECRET_KEY=sk_live_…`, `STRIPE_PRO_PRICE_ID=<live price>`, `STRIPE_WEBHOOK_SECRET` from a Live endpoint at `https://invoiceflowstudio.com/api/stripe/webhook`.
+3. Set Worker **encrypted runtime secrets** (Settings → Variables and Secrets → Secret, not Variable): `STRIPE_SECRET_KEY=sk_live_…`, `STRIPE_PRO_PRICE_ID=<live price>`, `STRIPE_WEBHOOK_SECRET` from a Live endpoint at `https://invoiceflowstudio.com/api/stripe/webhook`. If `STRIPE_PRO_PRICE_ID` already exists as a plaintext Variable, delete it and re-add it as a Secret so preview `versions upload` cannot wipe it.
 4. You do not need `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` for Checkout.
 5. Accounts that already clicked Upgrade under test keys may have a test `cus_…` stored. Checkout now creates a new customer if Stripe returns “No such customer”.
 6. Live accounts often have **Managed Payments** on by default. Checkout writes Stripe tax code `txcd_10103001` (SaaS — business use) onto the Pro product when it is missing. If Stripe still rejects the session, Checkout retries with `managed_payments[enabled]=false` so Upgrade can complete without a Dashboard tax-code edit.
