@@ -1,23 +1,26 @@
 import Link from "next/link";
 import { logout } from "@/app/actions/auth";
 import { Wordmark } from "@/components/brand";
+import { LanguageSwitcher } from "@/components/marketing/language-switcher";
 import { Button } from "@/components/ui/button";
+import { appCopy } from "@/lib/i18n-request";
 import { requireUser, studioName, planFromUser } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 
-const links = [
-  ["Overview", "/dashboard"],
-  ["Invoices", "/dashboard/invoices"],
-  ["Estimates", "/dashboard/estimates"],
-  ["Clients", "/dashboard/clients"],
-  ["Billing", "/dashboard/billing"],
-  ["Settings", "/dashboard/settings"],
-];
-
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser();
   const plan = planFromUser(user);
+  const { locale, dict } = await appCopy();
+  const links = [
+    [dict.app.overview, "/dashboard"],
+    [dict.app.invoices, "/dashboard/invoices"],
+    [dict.app.estimates, "/dashboard/estimates"],
+    [dict.app.clients, "/dashboard/clients"],
+    [dict.app.billing, "/dashboard/billing"],
+    [dict.app.settings, "/dashboard/settings"],
+  ] as const;
+
   return (
     <div className="min-h-screen">
       <header className="no-print border-b border-border bg-card/80 backdrop-blur">
@@ -25,11 +28,14 @@ export default async function DashboardLayout({ children }: { children: React.Re
           <div className="flex items-center justify-between gap-4">
             <Wordmark href="/dashboard" />
             <div className="flex items-center gap-3 text-sm">
+              <LanguageSwitcher locale={locale} path="/dashboard" label={dict.nav.language} persist="cookie" />
               <span className="hidden text-muted-foreground sm:inline">{studioName(user)}</span>
-              <span className="rounded-full bg-muted px-2 py-0.5 text-xs capitalize">{plan}</span>
+              <span className="rounded-full bg-muted px-2 py-0.5 text-xs">
+                {plan === "pro" ? dict.plans.pro.name : dict.plans.free.name}
+              </span>
               <form action={logout}>
                 <Button variant="ghost" size="sm">
-                  Sign out
+                  {dict.app.signOut}
                 </Button>
               </form>
             </div>

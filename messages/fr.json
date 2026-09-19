@@ -1,0 +1,365 @@
+{
+  "meta": {
+    "description": "Factures et devis rapides pour indépendants et artisans qui préfèrent faire le travail plutôt que se battre avec un tableur.",
+    "pricingTitle": "Tarifs",
+    "loginTitle": "Connexion",
+    "termsTitle": "Conditions d’utilisation",
+    "privacyTitle": "Politique de confidentialité",
+    "estimatesTitle": "Devis",
+    "estimatesDescription": "Chiffrez vos chantiers avec des devis InvoiceFlow Studio — lignes, marge, taxe, approbation en ligne et QuickBooks Online quand vous serez prêts."
+  },
+  "nav": {
+    "how": "Comment ça marche",
+    "pricing": "Tarifs",
+    "templates": "Modèles",
+    "signIn": "Connexion",
+    "startFree": "Commencer gratuitement",
+    "dashboard": "Tableau de bord",
+    "messageUs": "Écrivez-nous",
+    "terms": "Conditions",
+    "privacy": "Confidentialité",
+    "language": "Langue",
+    "estimates": "Devis"
+  },
+  "home": {
+    "eyebrow": "Pour les créatifs freelance",
+    "headline": "Des factures à l’image de votre travail. Envoyées avant que le café refroidisse.",
+    "lede": "InvoiceFlow Studio est l’outil ciblé pour les designers, monteurs et rédacteurs qui préfèrent livrer plutôt que se battre avec Word. Choisissez un modèle, envoyez un PDF ou un lien soigné, et voyez ce qui est payé — sur invoiceflowstudio.com.",
+    "createInvoice": "Créer votre première facture",
+    "seePricing": "Voir les tarifs",
+    "freeNote": "Gratuit : 3 factures et 3 devis par mois. Pas de suite comptable. Pas d’assistant en 47 étapes.",
+    "how": [
+      {
+        "title": "Partez d’un modèle studio",
+        "body": "Projet design, retainer ou montage vidéo — pas une feuille blanche qui se fait passer pour une marque."
+      },
+      {
+        "title": "Envoyez un PDF ou un lien public",
+        "body": "Vos clients ouvrent une page nette sur leur téléphone. Vous téléchargez un PDF qui ne date pas de 2009."
+      },
+      {
+        "title": "Suivez payé, envoyé et en retard",
+        "body": "Une liste simple. Des filtres. C’est tout. QuickBooks peut attendre le jour où vous en aurez vraiment besoin."
+      }
+    ],
+    "templatesTitle": "Des modèles que vous utiliserez vraiment",
+    "templatesLede": "Conçus pour les gens à qui ce produit s’adresse : designers indépendants, monteurs vidéo et rédacteurs.",
+    "templates": [
+      {
+        "title": "Facture de projet design",
+        "body": "Discovery, système d’identité, suite de logo, guidelines. 50 % pour commencer."
+      },
+      {
+        "title": "Facture de retainer",
+        "body": "Heures plus direction artistique asynchrone. Texte « paiement avant le 5 » inclus."
+      },
+      {
+        "title": "Proposition de montage vidéo",
+        "body": "Le cut, les livrables, l’investissement — accepter ou refuser depuis le lien."
+      }
+    ],
+    "startStarter": "Commencer avec Starter",
+    "goPro": "Passer à Pro",
+    "freePrice": "Gratuit",
+    "perMonthShort": "/mois"
+  },
+  "pricing": {
+    "headline": "Un tarif simple pour un travail simple.",
+    "lede": "InvoiceFlow Studio n’est pas une suite comptable. C’est le plus rapide pour envoyer une belle facture ou un devis et savoir s’il a été approuvé ou payé — sur invoiceflowstudio.com.",
+    "perMonth": "/ mois",
+    "useStarter": "Utiliser Starter",
+    "upgradePro": "Passer à Pro"
+  },
+  "plans": {
+    "free": {
+      "name": "Starter",
+      "blurb": "Assez pour arrêter d’envoyer de vilains Word ce mois-ci.",
+      "features": [
+        "3 factures / mois",
+        "3 devis / mois",
+        "PDF + liens client",
+        "Modèles studio + lignes enregistrées",
+        "Marque InvoiceFlow sur les pages publiques"
+      ]
+    },
+    "pro": {
+      "name": "Pro",
+      "blurb": "Factures et devis illimités pour un studio qui tourne.",
+      "features": [
+        "Factures et devis illimités",
+        "PDF + liens client",
+        "Coordonnées studio sur chaque document",
+        "Pas de marque InvoiceFlow côté client",
+        "Sync QuickBooks Online (bientôt)",
+        "Portail de facturation Stripe"
+      ]
+    }
+  },
+  "login": {
+    "headline": "Reprenez le travail. On s’occupe du PDF.",
+    "lede": "L’e-mail et le mot de passe fonctionnent sans clé API. Ajoutez GitHub ou Resend quand vous serez prêts pour l’auth de production.",
+    "signIn": "Connexion",
+    "createAccount": "Créer un compte",
+    "name": "Nom",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "magicLabel": "Ou envoyer un lien magique",
+    "sendMagic": "Envoyer le lien magique",
+    "github": "Continuer avec GitHub",
+    "githubHint": "GitHub OAuth apparaît ici lorsque AUTH_GITHUB_ID et AUTH_GITHUB_SECRET sont définis.",
+    "demoPrefix": "Démo :",
+    "errors": {
+      "invalidEmailPassword": "Saisissez un e-mail et un mot de passe valides.",
+      "invalidCredentials": "Ces identifiants ne correspondent pas. Essayez la démo ou créez un compte.",
+      "registerRequired": "Le nom, un e-mail valide et un mot de passe de 8+ caractères sont requis.",
+      "accountExists": "Un compte existe déjà avec cet e-mail. Connectez-vous.",
+      "hashFailed": "Impossible de hacher ce mot de passe sur ce serveur. Vérifiez les logs Worker (bcryptjs / crypto).",
+      "signInFailed": "Compte créé, mais la connexion a échoué. Essayez de vous connecter.",
+      "magicEmail": "Saisissez l’e-mail pour le lien magique.",
+      "magicFailed": "Impossible d’envoyer un lien magique. Vérifiez AUTH_RESEND_KEY."
+    }
+  },
+  "terms": {
+    "title": "Conditions d’utilisation",
+    "updated": "Dernière mise à jour : 15 septembre 2026. Brouillon MVP — faites relire par un conseil avant une mise en production.",
+    "paragraphs": [
+      "InvoiceFlow Studio (invoiceflowstudio.com) est un outil pour créer, envoyer et suivre des factures et des propositions. Dans ce MVP, ce n’est ni une banque, ni un comptable, ni un conseiller fiscal, ni un prestataire de paiement pour les factures de vos clients.",
+      "Vous restez propriétaire du contenu que vous importez. Vous êtes responsable de l’exactitude des factures, des taxes et des échanges clients. Nous pouvons suspendre les comptes qui abusent du service.",
+      "Les abonnements (Pro) se renouvellent chaque mois via Stripe jusqu’à annulation. Les limites de l’offre gratuite sont appliquées dans le logiciel et peuvent changer avec préavis.",
+      "Le logiciel est fourni « en l’état », sans garantie. La limite de responsabilité est le montant que vous nous avez payé au cours des trois mois précédents."
+    ]
+  },
+  "privacy": {
+    "title": "Politique de confidentialité",
+    "updated": "Dernière mise à jour : 15 septembre 2026. Brouillon MVP — remplacez-le par une politique relue avant le lancement.",
+    "paragraphs": [
+      "Nous collectons l’e-mail du compte, les informations du profil studio, les factures, les propositions et les métadonnées de facturation nécessaires au fonctionnement du produit.",
+      "L’authentification peut utiliser e-mail/mot de passe, GitHub OAuth et, en option, des liens magiques Resend. Les paiements passent par Stripe ; nous stockons les identifiants client et d’abonnement, pas les numéros de carte complets.",
+      "Les liens de partage publics sont des jetons difficiles à deviner. Toute personne disposant du lien peut voir le document. N’envoyez pas de jetons que vous voulez garder privés.",
+      "Contactez l’opérateur sur invoiceflowstudio.com pour demander l’export ou la suppression des données de votre compte."
+    ]
+  },
+  "app": {
+    "signOut": "Se déconnecter",
+    "overview": "Aperçu",
+    "invoices": "Factures",
+    "proposals": "Propositions",
+    "clients": "Clients",
+    "billing": "Facturation",
+    "settings": "Réglages",
+    "newInvoice": "Nouvelle facture",
+    "newProposal": "Nouvelle proposition",
+    "newInvoiceLede": "Page blanche. Ou revenez et partez d’un modèle.",
+    "newProposalLede": "Sections, prix optionnels, accepter/refuser sur le lien public.",
+    "viewAll": "Tout voir",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "allStatuses": "Tous les statuts",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "save": "Enregistrer",
+    "remove": "Retirer",
+    "downloadPdf": "Télécharger le PDF",
+    "publicView": "Vue publique",
+    "emailShareLink": "Envoyer le lien",
+    "markPaid": "Marquer payée",
+    "copyLink": "Copier le lien",
+    "copied": "Copié",
+    "status": {
+      "draft": "Brouillon",
+      "sent": "Envoyée",
+      "paid": "Payée",
+      "overdue": "En retard",
+      "void": "Annulée",
+      "accepted": "Acceptée",
+      "declined": "Refusée",
+      "approved": "Approuvé"
+    },
+    "home": {
+      "title": "Bien — vous êtes là. Envoyez quelque chose.",
+      "proOn": "Pro est actif. Factures et devis illimités ce mois-ci.",
+      "usage": "{invoices}/{invoiceLimit} factures et {proposals}/{proposalLimit} devis utilisés ce mois-ci.",
+      "outstanding": "En attente (récent)",
+      "invoicesThisMonth": "Factures ce mois-ci",
+      "proposalsThisMonth": "Propositions ce mois-ci",
+      "startTemplate": "Partir d’un modèle",
+      "tplDesignTitle": "Facture de projet design",
+      "tplDesignBody": "Lignes brand suite, délai 14 jours.",
+      "tplRetainerTitle": "Facture de retainer",
+      "tplRetainerBody": "Heures + direction async, échéance 7 jours.",
+      "tplVideoTitle": "Devis de montage vidéo",
+      "tplVideoBody": "Montage, livrables, investissement, approbation en ligne.",
+      "noInvoices": "Pas encore de factures.",
+      "noProposals": "Pas encore de propositions.",
+      "estimatesThisMonth": "Devis ce mois-ci",
+      "tplJobTitle": "Devis de chantier",
+      "tplJobBody": "Visite, main-d’œuvre, matériaux — envoyez depuis le chantier.",
+      "noEstimates": "Pas encore de devis."
+    },
+    "invoiceList": {
+      "lede": "Filtrez par statut ou cherchez client et numéro.",
+      "number": "Numéro",
+      "client": "Client",
+      "status": "Statut",
+      "total": "Total",
+      "empty": "Aucune facture ne correspond à ces filtres."
+    },
+    "proposalList": {
+      "lede": "Suivez le travail envoyé, accepté et refusé.",
+      "title": "Titre",
+      "client": "Client",
+      "status": "Statut",
+      "investment": "Investissement",
+      "empty": "Aucune proposition ne correspond à ces filtres."
+    },
+    "clientsPage": {
+      "lede": "Enregistrez les personnes que vous facturez pour que la suivante prenne trente secondes.",
+      "name": "Nom",
+      "email": "E-mail",
+      "company": "Société",
+      "address": "Adresse",
+      "save": "Enregistrer le client",
+      "empty": "Pas encore de clients. Le compte démo inclut Hearth Goods et Oak & Film."
+    },
+    "settingsPage": {
+      "title": "Infos du studio",
+      "lede": "C’est ce que les clients voient sur les factures, devis et PDF.",
+      "yourName": "Votre nom",
+      "studioName": "Nom du studio",
+      "studioEmail": "E-mail du studio",
+      "phone": "Téléphone",
+      "website": "Site web",
+      "address": "Adresse",
+      "qbEyebrow": "QuickBooks Online",
+      "qbTitle": "Connectez vos livres",
+      "qbLede": "Synchronisez factures et devis avec QuickBooks Online pour que le chiffre envoyé soit celui que voit votre comptable. Une connexion, puis un sync quotidien — ou touchez Sync maintenant. L’OAuth Intuit en direct n’est pas dans cette version.",
+      "qbReserved": "Connecter QuickBooks est réservé pour votre studio. Créez une app développeur Intuit, puis définissez",
+      "qbRedirect": "URI de redirection :",
+      "qbBullet1": "Automatisez la compta après l’envoi depuis InvoiceFlow Studio.",
+      "qbBullet2": "Gardez factures et devis alignés avec QuickBooks Online.",
+      "qbBullet3": "Le comptable reste dans QuickBooks ; vous, dans l’outil studio.",
+      "qbCredsPresent": "Les identifiants sont présents",
+      "qbCredsMissing": "Les identifiants ne sont pas encore définis",
+      "qbConnectReady": "Connecter QuickBooks (OAuth bientôt)",
+      "qbConnectSoon": "Connecter QuickBooks — bientôt"
+    },
+    "billingPage": {
+      "lede": "Vous êtes sur {plan}. Starter est limité à 3 factures et 3 devis par mois. Pro est à ${price}/mois, illimité.",
+      "success": "Le checkout Stripe est terminé. Actualisez si le plan n’a pas encore changé — le webhook peut rattraper.",
+      "demo": "Pro démo local débloqué pour 30 jours.",
+      "limit": "Starter inclut 3 factures et 3 devis par mois. Passez à Pro pour l’illimité.",
+      "portal": "Portail client Stripe",
+      "unlockDemo": "Débloquer Pro en démo locale",
+      "returnStarter": "Revenir à Starter"
+    },
+    "errors": {
+      "invoiceNotFound": "Facture introuvable.",
+      "proposalNotFound": "Proposition introuvable.",
+      "clientEmailRequired": "Ajoutez l’e-mail du client avant d’envoyer le lien.",
+      "estimateNotFound": "Devis introuvable."
+    },
+    "estimates": "Devis",
+    "newEstimate": "Nouveau devis",
+    "newEstimateLede": "Lignes, marge, taxe et un lien que le client approuve depuis son téléphone.",
+    "editEstimate": "Modifier le devis",
+    "estimateList": {
+      "lede": "Chiffrez le chantier, envoyez un lien à votre image, suivez ouvert, approuvé et refusé.",
+      "title": "Titre",
+      "client": "Client",
+      "status": "Statut",
+      "opened": "Ouvert",
+      "total": "Total",
+      "attached": "{count} joint(s)",
+      "empty": "Aucun devis ne correspond à ces filtres."
+    },
+    "estimateActivity": {
+      "opened": "Ouvert {when}.",
+      "notOpened": "Pas encore ouvert.",
+      "approved": "Approuvé en ligne par {name}{when}.",
+      "waiting": "En attente d’une approbation en ligne.",
+      "email": "Nous e-mailons votre studio quand un client ouvre ou approuve — sans Resend, le statut se met quand même à jour ici."
+    }
+  },
+  "estimatesPage": {
+    "eyebrow": "Devis pour indépendants et artisans",
+    "headline": "Chiffrez le chantier. Envoyez le devis. Obtenez le oui.",
+    "lede": "InvoiceFlow Studio est la façon ciblée d’écrire un devis à votre image, d’envoyer un PDF ou un lien, et de savoir quand le client l’a ouvert ou approuvé — sans transformer la semaine en comptabilité.",
+    "startFreeCreate": "Commencer gratuitement — créer un devis",
+    "create": "Créer un devis",
+    "freeNote": "Starter inclut 3 devis par mois. Ça marche depuis le téléphone. Pas d’assistant en 47 étapes.",
+    "themes": [
+      {
+        "title": "Chiffrez juste",
+        "body": "Parcourez le périmètre une fois, écrivez-le, et envoyez un chiffre que vous pouvez défendre. Un devis précis garde le chantier rentable avant la première commande de matériaux."
+      },
+      {
+        "title": "Devis sur place",
+        "body": "Construisez un devis détaillé depuis le téléphone sur le chantier. Ajoutez main-d’œuvre, matériaux et notes pendant que le client regarde encore le travail — puis envoyez le lien avant de partir."
+      },
+      {
+        "title": "Faites pro",
+        "body": "Chaque devis porte le nom de votre studio, vos couleurs et un PDF propre. Le client voit un document de marque, pas la capture d’un tableur."
+      },
+      {
+        "title": "Chiffrez en confiance",
+        "body": "Détaillez le travail, ajoutez marge et taxe. Le total se met à jour pendant que vous tapez, pour que vous connaissiez le chiffre avant le client."
+      },
+      {
+        "title": "Approuvez plus vite",
+        "body": "Le client ouvre le devis sur son téléphone, relit les lignes, tape son nom et approuve en ligne. Plus d’imprimer-signer-scanner."
+      },
+      {
+        "title": "Photos, fichiers et chantiers qui reviennent",
+        "body": "Joignez les noms de photos et fichiers du site, réutilisez des lignes enregistrées et partez d’un modèle pour que le prochain chantier similaire soit déjà à moitié écrit."
+      }
+    ],
+    "buildTitle": "Construire un devis professionnel",
+    "buildItems": [
+      "Prix détaillés pour que le client voie la main-d’œuvre, les matériaux et le pourquoi.",
+      "Lignes et modèles enregistrés pour les chantiers que vous savez déjà chiffrer.",
+      "Photos et fichiers listés sur le devis pour que le périmètre se voie, pas seulement se lise.",
+      "Signature numérique : tapez un nom, approuvez en ligne, c’est fait.",
+      "Notifications à l’ouverture ou à l’approbation (e-mail si un studio est renseigné ; sinon, le tableau de bord le note).",
+      "Mise en page téléphone : l’allée, le couloir, ou les cinq dernières minutes de la visite."
+    ],
+    "qbEyebrow": "QuickBooks Online",
+    "qbTitle": "Gardez les livres cohérents",
+    "qbLede": "Quand le chantier devient facture, les chiffres doivent déjà correspondre. InvoiceFlow Studio est conçu pour synchroniser factures et devis avec QuickBooks Online, sans retaper les lignes pour votre comptable.",
+    "qbItems": [
+      "Connectez une fois — nous retenons le fichier entreprise.",
+      "Sync quotidienne automatique, ou touchez Sync maintenant après une grosse journée.",
+      "Factures et devis restent alignés pour que les livres correspondent au travail.",
+      "Votre comptable reste dans QuickBooks Online ; vous continuez d’envoyer depuis InvoiceFlow Studio."
+    ],
+    "qbNoteBefore": "L’OAuth Intuit en direct n’est pas dans cette version. Créez une app développeur Intuit (",
+    "qbNoteMid": ") et utilisez",
+    "qbNoteAfter": "pour réserver Connecter QuickBooks. L’histoire est ici ; la poignée de main arrive quand les identifiants sont en place.",
+    "qbCta": "Ouvrir les réglages QuickBooks",
+    "notifyTitle": "Sachez quand ils regardent — et quand ils disent oui",
+    "notifyLede": "Le lien public enregistre la première ouverture et l’approbation en ligne. Si vous avez un e-mail de studio, InvoiceFlow Studio envoie une courte note. Dans tous les cas, le tableau de bord affiche Ouvert et Approuvé pour relancer tant que le chantier est chaud.",
+    "heroStudio": "Studio North",
+    "heroTitle": "Devis de chantier",
+    "heroStatus": "Envoyé",
+    "heroClient": "Hearth Goods · Valable 14 jours",
+    "heroLines": [
+      {
+        "label": "Visite et périmètre",
+        "amount": "$125"
+      },
+      {
+        "label": "Main-d’œuvre",
+        "amount": "$1,800"
+      },
+      {
+        "label": "Matériaux",
+        "amount": "$640"
+      },
+      {
+        "label": "Marge + taxe",
+        "amount": "$205"
+      }
+    ],
+    "heroTotal": "Total du devis",
+    "heroTotalAmount": "$2,770"
+  }
+}

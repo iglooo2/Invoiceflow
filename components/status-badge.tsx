@@ -10,10 +10,16 @@ const invoiceTones: Record<string, "muted" | "primary" | "accent" | "success" | 
   declined: "danger",
 };
 
-const statusLabels: Record<string, string> = {
-  accepted: "approved",
-};
-
-export function StatusBadge({ status }: { status: string }) {
-  return <Badge tone={invoiceTones[status] ?? "muted"}>{statusLabels[status] ?? status}</Badge>;
+export function StatusBadge({
+  status,
+  labels,
+}: {
+  status: string;
+  labels?: Record<string, string>;
+}) {
+  const label =
+    status === "accepted" && labels?.approved
+      ? labels.approved
+      : (labels?.[status] ?? status);
+  return <Badge tone={invoiceTones[status] ?? "muted"}>{label}</Badge>;
 }

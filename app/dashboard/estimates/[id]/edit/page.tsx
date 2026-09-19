@@ -2,6 +2,7 @@ import { format } from "date-fns";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { parseAttachmentsJson } from "@/lib/estimates";
+import { appCopy } from "@/lib/i18n-request";
 import { requireUser } from "@/lib/session";
 import { ProposalForm } from "@/components/proposal-form";
 import { updateProposal } from "@/app/actions/proposals";
@@ -12,6 +13,7 @@ export default async function EditEstimatePage({
   params: Promise<{ id: string }>;
 }) {
   const user = await requireUser();
+  const { dict } = await appCopy();
   const { id } = await params;
   const [estimate, clients] = await Promise.all([
     prisma.proposal.findFirst({
@@ -24,7 +26,7 @@ export default async function EditEstimatePage({
 
   return (
     <div className="grid gap-6">
-      <h1 className="font-display text-4xl">Edit estimate</h1>
+      <h1 className="font-display text-4xl">{dict.app.editEstimate}</h1>
       <ProposalForm
         action={updateProposal.bind(null, estimate.id)}
         clients={clients}

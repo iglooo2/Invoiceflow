@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { appCopy } from "@/lib/i18n-request";
 import { requireUser } from "@/lib/session";
 import { ProposalForm } from "@/components/proposal-form";
 import { createProposal } from "@/app/actions/proposals";
@@ -9,6 +10,7 @@ export default async function NewEstimatePage({
   searchParams: Promise<{ error?: string }>;
 }) {
   const user = await requireUser();
+  const { dict } = await appCopy();
   const { error } = await searchParams;
   const clients = await prisma.client.findMany({
     where: { userId: user.id },
@@ -17,10 +19,8 @@ export default async function NewEstimatePage({
   return (
     <div className="grid gap-6">
       <div>
-        <h1 className="font-display text-4xl">New estimate</h1>
-        <p className="text-muted-foreground">
-          Line items, markup, tax, and a share link clients can approve from their phone.
-        </p>
+        <h1 className="font-display text-4xl">{dict.app.newEstimate}</h1>
+        <p className="text-muted-foreground">{dict.app.newEstimateLede}</p>
       </div>
       <ProposalForm
         action={createProposal}

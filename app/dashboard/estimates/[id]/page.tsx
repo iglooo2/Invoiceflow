@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { publicProposalUrl } from "@/lib/email";
 import { estimateEditPath } from "@/lib/estimates";
+import { appCopy } from "@/lib/i18n-request";
+import { formatMessage } from "@/lib/i18n";
 import { currentPlanId } from "@/lib/plans";
 import { requireUser } from "@/lib/session";
 import { Button } from "@/components/ui/button";
@@ -19,6 +21,7 @@ export default async function EstimateDetailPage({
   searchParams: Promise<{ error?: string }>;
 }) {
   const user = await requireUser();
+  const { dict } = await appCopy();
   const { id } = await params;
   const { error } = await searchParams;
   const estimate = await prisma.proposal.findFirst({
@@ -27,6 +30,7 @@ export default async function EstimateDetailPage({
   });
   if (!estimate) notFound();
   const share = publicProposalUrl(estimate.publicToken);
+  const activity = dict.app.estimateActivity;
 
   return (
     <div className="grid gap-6">
@@ -36,40 +40,44 @@ export default async function EstimateDetailPage({
           <p className="text-muted-foreground">{estimate.clientName}</p>
         </div>
         <div className="no-print flex flex-wrap gap-2">
-          <CopyLinkButton value={share} />
+          <CopyLinkButton value={share} label={dict.app.copyLink} copiedLabel={dict.app.copied} />
           <Button asChild variant="outline">
-            <a href={`/api/proposals/${estimate.id}/pdf`}>Download PDF</a>
+            <a href={`/api/proposals/${estimate.id}/pdf`}>{dict.app.downloadPdf}</a>
           </Button>
           <Button asChild variant="outline">
-            <Link href={`/share/p/${estimate.publicToken}`}>Public view</Link>
+            <Link href={`/share/p/${estimate.publicToken}`}>{dict.app.publicView}</Link>
           </Button>
           <Button asChild>
-            <Link href={estimateEditPath(estimate.id)}>Edit</Link>
+            <Link href={estimateEditPath(estimate.id)}>{dict.app.edit}</Link>
           </Button>
         </div>
       </div>
       {error ? <p className="rounded-2xl bg-primary/10 px-4 py-3 text-sm">{error}</p> : null}
       <div className="no-print rounded-3xl border border-border bg-card px-4 py-3 text-sm text-muted-foreground">
         {estimate.viewedAt
-          ? `Opened ${format(estimate.viewedAt, "MMM d, yyyy 'at' h:mm a")}.`
-          : "Not opened yet."}{" "}
+          ? formatMessage(activity.opened, {
+              when: format(estimate.viewedAt, "MMM d, yyyy 'at' h:mm a"),
+            })
+          : activity.notOpened}{" "}
         {estimate.signedName
-          ? `Approved online by ${estimate.signedName}${estimate.signedAt ? ` on ${format(estimate.signedAt, "MMM d")}` : ""}.`
-          : "Waiting for an online approval."}{" "}
-        We email your studio address when a client opens or approves — if Resend is not configured, the status
-        still updates here.
+          ? formatMessage(activity.approved, {
+              name: estimate.signedName,
+              when: estimate.signedAt ? ` · ${format(estimate.signedAt, "MMM d")}` : "",
+            })
+          : activity.waiting}{" "}
+        {activity.email}
       </div>
       <div className="no-print flex flex-wrap gap-2">
         <form action={emailProposal}>
           <input type="hidden" name="proposalId" value={estimate.id} />
           <Button type="submit" variant="secondary">
-            Email share link
+            {dict.app.emailShareLink}
           </Button>
         </form>
         <form action={deleteProposal}>
           <input type="hidden" name="proposalId" value={estimate.id} />
           <Button type="submit" variant="ghost">
-            Delete
+            {dict.app.delete}
           </Button>
         </form>
       </div>

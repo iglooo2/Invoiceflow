@@ -1,0 +1,365 @@
+{
+  "meta": {
+    "description": "Faturas e orçamentos rápidos para freelancers e empreiteiros que preferem fazer o serviço a brigar com uma planilha.",
+    "pricingTitle": "Preços",
+    "loginTitle": "Entrar",
+    "termsTitle": "Termos de serviço",
+    "privacyTitle": "Política de privacidade",
+    "estimatesTitle": "Orçamentos",
+    "estimatesDescription": "Precifique serviços com orçamentos do InvoiceFlow Studio — itens, markup, imposto, aprovação online e QuickBooks Online quando você estiver pronto."
+  },
+  "nav": {
+    "how": "Como funciona",
+    "pricing": "Preços",
+    "templates": "Modelos",
+    "signIn": "Entrar",
+    "startFree": "Começar grátis",
+    "dashboard": "Painel",
+    "messageUs": "Fale conosco",
+    "terms": "Termos",
+    "privacy": "Privacidade",
+    "language": "Idioma",
+    "estimates": "Orçamentos"
+  },
+  "home": {
+    "eyebrow": "Para criativos freelancer",
+    "headline": "Faturas com a cara do seu trabalho. Enviadas antes do café esfriar.",
+    "lede": "InvoiceFlow Studio é a ferramenta objetiva para designers, editores e redatores que preferem entregar trabalho a brigar com o Word. Escolha um modelo, envie um PDF ou um link caprichado e veja o que foi pago — em invoiceflowstudio.com.",
+    "createInvoice": "Criar sua primeira fatura",
+    "seePricing": "Ver preços",
+    "freeNote": "Grátis: 3 faturas e 3 orçamentos por mês. Sem suíte contábil. Sem assistente de 47 passos.",
+    "how": [
+      {
+        "title": "Comece com um modelo de estúdio",
+        "body": "Projeto de design, retainer ou edição de vídeo — não uma planilha em branco fingindo ser uma marca."
+      },
+      {
+        "title": "Envie PDF ou um link público",
+        "body": "Seus clientes abrem uma página limpa no celular. Você baixa um PDF que não parece 2009."
+      },
+      {
+        "title": "Acompanhe pago, enviado e atrasado",
+        "body": "Uma lista simples. Filtros. Só isso. O QuickBooks pode esperar até você realmente precisar dele."
+      }
+    ],
+    "templatesTitle": "Modelos que você vai usar de verdade",
+    "templatesLede": "Feitos para o público deste produto: designers independentes, editores de vídeo e redatores.",
+    "templates": [
+      {
+        "title": "Fatura de projeto de design",
+        "body": "Discovery, sistema de identidade, suíte de logo, guidelines. 50% para começar."
+      },
+      {
+        "title": "Fatura de retainer",
+        "body": "Horas mais direção de arte assíncrona. Inclui o texto de pagamento até o dia 5."
+      },
+      {
+        "title": "Proposta de edição de vídeo",
+        "body": "O corte, os entregáveis, o investimento — aceitar ou recusar pelo link."
+      }
+    ],
+    "startStarter": "Começar no Starter",
+    "goPro": "Ir para o Pro",
+    "freePrice": "Grátis",
+    "perMonthShort": "/mês"
+  },
+  "pricing": {
+    "headline": "Preço simples para um trabalho simples.",
+    "lede": "InvoiceFlow Studio não é uma suíte contábil. É o jeito mais rápido de enviar uma fatura ou orçamento bonito e saber se foi aprovado ou pago — em invoiceflowstudio.com.",
+    "perMonth": "/ mês",
+    "useStarter": "Usar Starter",
+    "upgradePro": "Assinar o Pro"
+  },
+  "plans": {
+    "free": {
+      "name": "Starter",
+      "blurb": "O suficiente para parar de mandar Word feio neste mês.",
+      "features": [
+        "3 faturas / mês",
+        "3 orçamentos / mês",
+        "PDF + links para o cliente",
+        "Modelos de estúdio + itens salvos",
+        "Marca InvoiceFlow nas páginas públicas"
+      ]
+    },
+    "pro": {
+      "name": "Pro",
+      "blurb": "Faturas e orçamentos ilimitados para um estúdio em movimento.",
+      "features": [
+        "Faturas e orçamentos ilimitados",
+        "PDF + links para o cliente",
+        "Dados do estúdio em cada documento",
+        "Sem marca InvoiceFlow na visão do cliente",
+        "Sincronização com QuickBooks Online (em breve)",
+        "Portal de cobrança Stripe"
+      ]
+    }
+  },
+  "login": {
+    "headline": "Volte ao trabalho. A gente cuida do PDF.",
+    "lede": "E-mail e senha funcionam sem chaves de API. Adicione GitHub ou Resend quando quiser autenticação de produção.",
+    "signIn": "Entrar",
+    "createAccount": "Criar conta",
+    "name": "Nome",
+    "email": "E-mail",
+    "password": "Senha",
+    "magicLabel": "Ou envie um link mágico",
+    "sendMagic": "Enviar link mágico",
+    "github": "Continuar com GitHub",
+    "githubHint": "O GitHub OAuth aparece aqui quando AUTH_GITHUB_ID e AUTH_GITHUB_SECRET estão definidos.",
+    "demoPrefix": "Demo:",
+    "errors": {
+      "invalidEmailPassword": "Informe um e-mail e uma senha válidos.",
+      "invalidCredentials": "Essas credenciais não conferem. Tente o login demo ou crie uma conta.",
+      "registerRequired": "Nome, um e-mail válido e uma senha com 8+ caracteres são obrigatórios.",
+      "accountExists": "Já existe uma conta com esse e-mail. Entre em vez disso.",
+      "hashFailed": "Não foi possível gerar o hash da senha neste servidor. Veja os logs do Worker (bcryptjs / crypto).",
+      "signInFailed": "Conta criada, mas o login falhou. Tente entrar.",
+      "magicEmail": "Informe o e-mail para o link mágico.",
+      "magicFailed": "Não foi possível enviar o link mágico. Verifique AUTH_RESEND_KEY."
+    }
+  },
+  "terms": {
+    "title": "Termos de serviço",
+    "updated": "Última atualização: 15 de setembro de 2026. Rascunho do MVP — peça revisão jurídica antes do uso em produção.",
+    "paragraphs": [
+      "InvoiceFlow Studio (invoiceflowstudio.com) é uma ferramenta para criar, enviar e acompanhar faturas e propostas. Neste MVP, não é banco, contador, consultor fiscal nem processador de pagamentos das faturas dos seus clientes.",
+      "Você é dono do conteúdo que envia. Você responde pela precisão das faturas, impostos e comunicações com clientes. Podemos suspender contas que abusem do serviço.",
+      "Assinaturas (Pro) renovam todo mês via Stripe até serem canceladas. Os limites do plano gratuito são aplicados no software e podem mudar com aviso.",
+      "O software é oferecido “como está”, sem garantias. O limite de responsabilidade é o valor que você nos pagou nos três meses anteriores."
+    ]
+  },
+  "privacy": {
+    "title": "Política de privacidade",
+    "updated": "Última atualização: 15 de setembro de 2026. Rascunho do MVP — substitua por uma política revisada antes do lançamento.",
+    "paragraphs": [
+      "Coletamos o e-mail da conta, dados do perfil do estúdio, faturas, propostas e metadados de cobrança necessários para operar o produto.",
+      "O acesso pode usar e-mail/senha, GitHub OAuth e, opcionalmente, links mágicos do Resend. Os pagamentos passam pela Stripe; guardamos IDs de cliente e assinatura, não números completos de cartão.",
+      "Links públicos de compartilhamento são tokens difíceis de adivinhar. Qualquer pessoa com o link pode ver o documento. Não envie tokens que você queira manter privados.",
+      "Fale com o operador em invoiceflowstudio.com para pedir a exportação ou exclusão dos dados da sua conta."
+    ]
+  },
+  "app": {
+    "signOut": "Sair",
+    "overview": "Visão geral",
+    "invoices": "Faturas",
+    "proposals": "Propostas",
+    "clients": "Clientes",
+    "billing": "Cobrança",
+    "settings": "Configurações",
+    "newInvoice": "Nova fatura",
+    "newProposal": "Nova proposta",
+    "newInvoiceLede": "Começar em branco. Ou volte e use um modelo.",
+    "newProposalLede": "Seções, preços opcionais, aceitar/recusar no link público.",
+    "viewAll": "Ver todas",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "allStatuses": "Todos os status",
+    "edit": "Editar",
+    "delete": "Excluir",
+    "save": "Salvar",
+    "remove": "Remover",
+    "downloadPdf": "Baixar PDF",
+    "publicView": "Visão pública",
+    "emailShareLink": "Enviar link",
+    "markPaid": "Marcar como paga",
+    "copyLink": "Copiar link",
+    "copied": "Copiado",
+    "status": {
+      "draft": "Rascunho",
+      "sent": "Enviada",
+      "paid": "Paga",
+      "overdue": "Atrasada",
+      "void": "Anulada",
+      "accepted": "Aceita",
+      "declined": "Recusada",
+      "approved": "Aprovado"
+    },
+    "home": {
+      "title": "Ótimo — você chegou. Envie alguma coisa.",
+      "proOn": "O Pro está ativo. Faturas e orçamentos ilimitados neste mês.",
+      "usage": "{invoices}/{invoiceLimit} faturas e {proposals}/{proposalLimit} orçamentos usados neste mês.",
+      "outstanding": "Em aberto (recente)",
+      "invoicesThisMonth": "Faturas neste mês",
+      "proposalsThisMonth": "Propostas neste mês",
+      "startTemplate": "Começar com um modelo",
+      "tplDesignTitle": "Fatura de projeto de design",
+      "tplDesignBody": "Itens de brand suite, prazo de 14 dias.",
+      "tplRetainerTitle": "Fatura de retainer",
+      "tplRetainerBody": "Horas + direção assíncrona, vencimento em 7 dias.",
+      "tplVideoTitle": "Orçamento de edição de vídeo",
+      "tplVideoBody": "Corte, entregas, investimento, aprove online.",
+      "noInvoices": "Ainda não há faturas.",
+      "noProposals": "Ainda não há propostas.",
+      "estimatesThisMonth": "Orçamentos neste mês",
+      "tplJobTitle": "Orçamento de obra",
+      "tplJobBody": "Visita, mão de obra, materiais — envie do canteiro.",
+      "noEstimates": "Ainda não há orçamentos."
+    },
+    "invoiceList": {
+      "lede": "Filtre por status ou busque cliente e número.",
+      "number": "Número",
+      "client": "Cliente",
+      "status": "Status",
+      "total": "Total",
+      "empty": "Nenhuma fatura corresponde a esses filtros."
+    },
+    "proposalList": {
+      "lede": "Acompanhe o trabalho enviado, aceito e recusado.",
+      "title": "Título",
+      "client": "Cliente",
+      "status": "Status",
+      "investment": "Investimento",
+      "empty": "Nenhuma proposta corresponde a esses filtros."
+    },
+    "clientsPage": {
+      "lede": "Salve quem você fatura para a próxima levar trinta segundos.",
+      "name": "Nome",
+      "email": "E-mail",
+      "company": "Empresa",
+      "address": "Endereço",
+      "save": "Salvar cliente",
+      "empty": "Ainda não há clientes. A conta demo inclui Hearth Goods e Oak & Film."
+    },
+    "settingsPage": {
+      "title": "Dados do estúdio",
+      "lede": "É isso que os clientes veem em faturas, orçamentos e PDFs.",
+      "yourName": "Seu nome",
+      "studioName": "Nome do estúdio",
+      "studioEmail": "E-mail do estúdio",
+      "phone": "Telefone",
+      "website": "Site",
+      "address": "Endereço",
+      "qbEyebrow": "QuickBooks Online",
+      "qbTitle": "Conecte seus livros",
+      "qbLede": "Sincronize faturas e orçamentos com o QuickBooks Online para o número que você enviou ser o que o contador vê. Conecte uma vez e depois um sync diário — ou toque em Sincronizar agora. OAuth ao vivo da Intuit não está nesta versão.",
+      "qbReserved": "Conectar QuickBooks fica reservado para o seu estúdio. Crie um app de desenvolvedor Intuit e defina",
+      "qbRedirect": "URI de redirecionamento:",
+      "qbBullet1": "Automatize a contabilidade depois de enviar pelo InvoiceFlow Studio.",
+      "qbBullet2": "Mantenha faturas e orçamentos alinhados com o QuickBooks Online.",
+      "qbBullet3": "O contador fica no QuickBooks; você, na ferramenta do estúdio.",
+      "qbCredsPresent": "As credenciais estão presentes",
+      "qbCredsMissing": "As credenciais ainda não estão definidas",
+      "qbConnectReady": "Conectar QuickBooks (OAuth em breve)",
+      "qbConnectSoon": "Conectar QuickBooks — em breve"
+    },
+    "billingPage": {
+      "lede": "Você está no {plan}. O Starter limita a 3 faturas e 3 orçamentos por mês. O Pro custa ${price}/mês, ilimitado.",
+      "success": "O checkout da Stripe terminou. Atualize se o plano ainda não mudou — o webhook pode estar alcançando.",
+      "demo": "Pro de demo local liberado por 30 dias.",
+      "limit": "O Starter inclui 3 faturas e 3 orçamentos por mês. Passe para o Pro para ilimitado.",
+      "portal": "Portal do cliente da Stripe",
+      "unlockDemo": "Liberar Pro para demo local",
+      "returnStarter": "Voltar ao Starter"
+    },
+    "errors": {
+      "invoiceNotFound": "Fatura não encontrada.",
+      "proposalNotFound": "Proposta não encontrada.",
+      "clientEmailRequired": "Adicione o e-mail do cliente antes de enviar o link.",
+      "estimateNotFound": "Orçamento não encontrado."
+    },
+    "estimates": "Orçamentos",
+    "newEstimate": "Novo orçamento",
+    "newEstimateLede": "Itens, markup, imposto e um link que o cliente aprova no telefone.",
+    "editEstimate": "Editar orçamento",
+    "estimateList": {
+      "lede": "Precifique o serviço, envie um link com a sua marca e acompanhe aberto, aprovado e recusado.",
+      "title": "Título",
+      "client": "Cliente",
+      "status": "Status",
+      "opened": "Aberto",
+      "total": "Total",
+      "attached": "{count} anexos",
+      "empty": "Nenhum orçamento corresponde a esses filtros."
+    },
+    "estimateActivity": {
+      "opened": "Aberto {when}.",
+      "notOpened": "Ainda não aberto.",
+      "approved": "Aprovado online por {name}{when}.",
+      "waiting": "Aguardando uma aprovação online.",
+      "email": "Enviamos um e-mail ao seu estúdio quando um cliente abre ou aprova — se o Resend não estiver configurado, o status ainda atualiza aqui."
+    }
+  },
+  "estimatesPage": {
+    "eyebrow": "Orçamentos para freelancers e empreiteiros",
+    "headline": "Precifique o serviço. Envie o orçamento. Conquiste o sim.",
+    "lede": "InvoiceFlow Studio é o jeito focado de escrever um orçamento com a sua marca, enviar um PDF ou um link e saber quando o cliente abriu ou aprovou — sem transformar a semana em contabilidade.",
+    "startFreeCreate": "Comece grátis — crie um orçamento",
+    "create": "Criar um orçamento",
+    "freeNote": "O Starter inclui 3 orçamentos por mês. Funciona no telefone. Sem assistente de 47 passos.",
+    "themes": [
+      {
+        "title": "Precifique certo",
+        "body": "Percorra o escopo uma vez, escreva e envie um número que você possa defender. Um orçamento preciso mantém o serviço lucrativo antes de pedir o primeiro material."
+      },
+      {
+        "title": "Orce no local",
+        "body": "Monte um orçamento detalhado no telefone, no canteiro. Some mão de obra, materiais e notas enquanto o cliente ainda olha o serviço — e envie o link antes de ir embora."
+      },
+      {
+        "title": "Pareça profissional",
+        "body": "Cada orçamento leva o nome do seu estúdio, as cores e um PDF limpo. O cliente vê um documento de marca, não a captura de uma planilha."
+      },
+      {
+        "title": "Precifique com confiança",
+        "body": "Itemize o trabalho, some markup e imposto. O total atualiza enquanto você digita, para você saber o número antes do cliente."
+      },
+      {
+        "title": "Aprove mais rápido",
+        "body": "O cliente abre o orçamento no telefone, revisa as linhas, digita o nome e aprova online. Sem imprimir, assinar e escanear."
+      },
+      {
+        "title": "Fotos, arquivos e serviços que se repetem",
+        "body": "Anexe nomes de fotos e arquivos do local, reutilize itens salvos e comece de um modelo para o próximo serviço parecido já nascer pela metade."
+      }
+    ],
+    "buildTitle": "Monte um orçamento profissional",
+    "buildItems": [
+      "Preço itemizado para o cliente ver mão de obra, materiais e o porquê.",
+      "Itens e modelos salvos para os serviços que você já sabe precificar.",
+      "Fotos e arquivos listados no orçamento para o escopo ser visual, não só um parágrafo.",
+      "Assinatura digital: digite um nome, aprove online, pronto.",
+      "Avisos quando abrir ou aprovar (e-mail se houver endereço do estúdio; senão, marcamos no painel).",
+      "Layout para o telefone: a calçada, o corredor ou os últimos cinco minutos da visita."
+    ],
+    "qbEyebrow": "QuickBooks Online",
+    "qbTitle": "Mantenha os livros consistentes",
+    "qbLede": "Quando o serviço vira fatura, os números já deveriam bater. O InvoiceFlow Studio foi feito para sincronizar faturas e orçamentos com o QuickBooks Online, sem redigitar linhas para o contador.",
+    "qbItems": [
+      "Conecte uma vez — lembramos o arquivo da empresa.",
+      "Sincronização diária automática, ou toque em Sincronizar agora depois de um dia cheio.",
+      "Faturas e orçamentos ficam alinhados para os livros baterem com o trabalho.",
+      "Seu contador fica no QuickBooks Online; você continua enviando pelo InvoiceFlow Studio."
+    ],
+    "qbNoteBefore": "OAuth ao vivo da Intuit não está nesta versão. Crie um app de desenvolvedor Intuit (",
+    "qbNoteMid": ") e use",
+    "qbNoteAfter": "para reservar Conectar QuickBooks. A história está aqui; o handshake chega quando as credenciais existirem.",
+    "qbCta": "Abrir configurações do QuickBooks",
+    "notifyTitle": "Saiba quando eles olham — e quando dizem sim",
+    "notifyLede": "O link público registra a primeira abertura e a aprovação online. Se houver e-mail do estúdio, o InvoiceFlow Studio envia uma nota curta. De qualquer forma, o painel mostra Aberto e Aprovado para você acompanhar enquanto o serviço ainda está quente.",
+    "heroStudio": "Studio North",
+    "heroTitle": "Orçamento de obra",
+    "heroStatus": "Enviado",
+    "heroClient": "Hearth Goods · Válido 14 dias",
+    "heroLines": [
+      {
+        "label": "Visita e escopo",
+        "amount": "$125"
+      },
+      {
+        "label": "Mão de obra",
+        "amount": "$1,800"
+      },
+      {
+        "label": "Materiais",
+        "amount": "$640"
+      },
+      {
+        "label": "Markup + imposto",
+        "amount": "$205"
+      }
+    ],
+    "heroTotal": "Total do orçamento",
+    "heroTotalAmount": "$2,770"
+  }
+}

@@ -1,0 +1,365 @@
+{
+  "meta": {
+    "description": "Fast invoices and estimates for freelancers and contractors who would rather do the work than wrestle a spreadsheet.",
+    "pricingTitle": "Pricing",
+    "loginTitle": "Sign in",
+    "termsTitle": "Terms of Service",
+    "privacyTitle": "Privacy Policy",
+    "estimatesTitle": "Estimates",
+    "estimatesDescription": "Price jobs with branded InvoiceFlow Studio estimates — line items, markup, tax, online approval, and QuickBooks Online when you are ready."
+  },
+  "nav": {
+    "how": "How it works",
+    "pricing": "Pricing",
+    "templates": "Templates",
+    "signIn": "Sign in",
+    "startFree": "Start free",
+    "dashboard": "Dashboard",
+    "messageUs": "Message us",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "language": "Language",
+    "estimates": "Estimates"
+  },
+  "home": {
+    "eyebrow": "For freelance creatives",
+    "headline": "Invoices that look like your work. Sent before the coffee cools.",
+    "lede": "InvoiceFlow Studio is the focused tool for designers, editors, and writers who would rather ship work than wrestle Word docs. Pick a template, send a gorgeous PDF or link, and see what’s paid — at invoiceflowstudio.com.",
+    "createInvoice": "Create your first invoice",
+    "seePricing": "See pricing",
+    "freeNote": "Free: 3 invoices and 3 estimates a month. No accounting suite. No 47-step wizard.",
+    "how": [
+      {
+        "title": "Start from a studio template",
+        "body": "Design project, retainer, or video edit — not a blank spreadsheet pretending to be a brand."
+      },
+      {
+        "title": "Send PDF or a public link",
+        "body": "Clients open a clean page on their phone. You download a PDF that doesn’t look like 2009."
+      },
+      {
+        "title": "Track paid, sent, and overdue",
+        "body": "A simple list. Filters. That’s it. QuickBooks can wait until you actually need QuickBooks."
+      }
+    ],
+    "templatesTitle": "Templates you’ll actually use",
+    "templatesLede": "Seeded for the people this product is for: independent designers, video editors, and writers.",
+    "templates": [
+      {
+        "title": "Design Project Invoice",
+        "body": "Discovery, identity system, logo suite, guidelines. 50% to start."
+      },
+      {
+        "title": "Retainer Invoice",
+        "body": "Hours plus async art direction. Pay-by-the-5th language included."
+      },
+      {
+        "title": "Video Edit Proposal",
+        "body": "The cut, deliverables, investment — accept or decline from the link."
+      }
+    ],
+    "startStarter": "Start on Starter",
+    "goPro": "Go Pro",
+    "freePrice": "Free",
+    "perMonthShort": "/mo"
+  },
+  "pricing": {
+    "headline": "Simple pricing for a simple job.",
+    "lede": "InvoiceFlow Studio is not an accounting suite. It’s the fastest way to send a beautiful invoice or estimate and know whether it got approved or paid — at invoiceflowstudio.com.",
+    "perMonth": "/ month",
+    "useStarter": "Use Starter",
+    "upgradePro": "Upgrade to Pro"
+  },
+  "plans": {
+    "free": {
+      "name": "Starter",
+      "blurb": "Enough to stop sending ugly Word docs this month.",
+      "features": [
+        "3 invoices / month",
+        "3 estimates / month",
+        "PDF download + shareable client links",
+        "Studio templates + saved line items",
+        "InvoiceFlow mark on public pages"
+      ]
+    },
+    "pro": {
+      "name": "Pro",
+      "blurb": "Unlimited invoices and estimates for a working studio.",
+      "features": [
+        "Unlimited invoices & estimates",
+        "PDF download + shareable client links",
+        "Custom studio details on every document",
+        "No InvoiceFlow mark on client views",
+        "QuickBooks Online sync (coming soon)",
+        "Stripe billing portal"
+      ]
+    }
+  },
+  "login": {
+    "headline": "Get back to the work. We’ll handle the PDF.",
+    "lede": "Email and password work with zero API keys. Add GitHub or Resend when you’re ready for production auth.",
+    "signIn": "Sign in",
+    "createAccount": "Create account",
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "magicLabel": "Or email a magic link",
+    "sendMagic": "Send magic link",
+    "github": "Continue with GitHub",
+    "githubHint": "GitHub OAuth appears here when AUTH_GITHUB_ID and AUTH_GITHUB_SECRET are set.",
+    "demoPrefix": "Demo:",
+    "errors": {
+      "invalidEmailPassword": "Enter a valid email and password.",
+      "invalidCredentials": "Those credentials didn’t match. Try the demo login or create an account.",
+      "registerRequired": "Name, a valid email, and an 8+ character password are required.",
+      "accountExists": "An account with that email already exists. Sign in instead.",
+      "hashFailed": "Couldn’t hash that password on this server. Check Worker logs (bcryptjs / crypto).",
+      "signInFailed": "Account created, but sign-in failed. Try logging in.",
+      "magicEmail": "Enter the email for your magic link.",
+      "magicFailed": "Couldn’t send a magic link. Check AUTH_RESEND_KEY."
+    }
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "updated": "Last updated September 15, 2026. This is an MVP stub — have counsel review before production use.",
+    "paragraphs": [
+      "InvoiceFlow Studio (invoiceflowstudio.com) is a tool for creating, sending, and tracking invoices and proposals. It is not a bank, accountant, tax advisor, or payment processor for your client invoices in this MVP.",
+      "You own the content you upload. You are responsible for the accuracy of invoices, tax, and client communications. We may suspend accounts that abuse the service.",
+      "Subscriptions (Pro) renew monthly via Stripe until cancelled. Free-plan limits are enforced in software and may change with notice.",
+      "The software is provided “as is” without warranties. Limit of liability is the amount you paid us in the prior three months."
+    ]
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "updated": "Last updated September 15, 2026. Stub for the MVP — replace with a reviewed policy before launch.",
+    "paragraphs": [
+      "We collect account email, studio profile details, invoices, proposals, and billing metadata needed to run the product.",
+      "Auth may use email/password, GitHub OAuth, and optional Resend magic links. Payments go through Stripe; we store customer and subscription IDs, not full card numbers.",
+      "Public share links are unguessable tokens. Anyone with the link can view the document. Don’t send tokens you want to keep private.",
+      "Contact the operator at invoiceflowstudio.com to request export or deletion of your account data."
+    ]
+  },
+  "app": {
+    "signOut": "Sign out",
+    "overview": "Overview",
+    "invoices": "Invoices",
+    "proposals": "Proposals",
+    "clients": "Clients",
+    "billing": "Billing",
+    "settings": "Settings",
+    "newInvoice": "New invoice",
+    "newProposal": "New proposal",
+    "newInvoiceLede": "Blank slate. Or go back and start from a template.",
+    "newProposalLede": "Sections, optional prices, accept/decline on the public link.",
+    "viewAll": "View all",
+    "search": "Search",
+    "filter": "Filter",
+    "allStatuses": "All statuses",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "remove": "Remove",
+    "downloadPdf": "Download PDF",
+    "publicView": "Public view",
+    "emailShareLink": "Email share link",
+    "markPaid": "Mark paid",
+    "copyLink": "Copy link",
+    "copied": "Copied",
+    "status": {
+      "draft": "Draft",
+      "sent": "Sent",
+      "paid": "Paid",
+      "overdue": "Overdue",
+      "void": "Void",
+      "accepted": "Accepted",
+      "declined": "Declined",
+      "approved": "Approved"
+    },
+    "home": {
+      "title": "Good — you're here. Send something.",
+      "proOn": "Pro is on. Unlimited invoices and estimates this month.",
+      "usage": "{invoices}/{invoiceLimit} invoices and {proposals}/{proposalLimit} estimates used this month.",
+      "outstanding": "Outstanding (recent)",
+      "invoicesThisMonth": "Invoices this month",
+      "proposalsThisMonth": "Proposals this month",
+      "startTemplate": "Start from a template",
+      "tplDesignTitle": "Design Project Invoice",
+      "tplDesignBody": "Brand suite line items, 14-day terms.",
+      "tplRetainerTitle": "Retainer Invoice",
+      "tplRetainerBody": "Hours + async direction, due in 7 days.",
+      "tplVideoTitle": "Video Edit Estimate",
+      "tplVideoBody": "Cut, deliverables, investment, approve online.",
+      "noInvoices": "No invoices yet.",
+      "noProposals": "No proposals yet.",
+      "estimatesThisMonth": "Estimates this month",
+      "tplJobTitle": "Job Estimate",
+      "tplJobBody": "Site visit, labor, materials — send from the jobsite.",
+      "noEstimates": "No estimates yet."
+    },
+    "invoiceList": {
+      "lede": "Filter by status or search client and number.",
+      "number": "Number",
+      "client": "Client",
+      "status": "Status",
+      "total": "Total",
+      "empty": "No invoices match those filters."
+    },
+    "proposalList": {
+      "lede": "Track sent, accepted, and declined work.",
+      "title": "Title",
+      "client": "Client",
+      "status": "Status",
+      "investment": "Investment",
+      "empty": "No proposals match those filters."
+    },
+    "clientsPage": {
+      "lede": "Save the people you invoice so the next one takes thirty seconds.",
+      "name": "Name",
+      "email": "Email",
+      "company": "Company",
+      "address": "Address",
+      "save": "Save client",
+      "empty": "No saved clients yet. The demo account includes Hearth Goods and Oak & Film."
+    },
+    "settingsPage": {
+      "title": "Studio details",
+      "lede": "This is what clients see on invoices, estimates, and PDFs.",
+      "yourName": "Your name",
+      "studioName": "Studio name",
+      "studioEmail": "Studio email",
+      "phone": "Phone",
+      "website": "Website",
+      "address": "Address",
+      "qbEyebrow": "QuickBooks Online",
+      "qbTitle": "Connect your books",
+      "qbLede": "Sync invoices and estimates with QuickBooks Online so the number you sent is the number your accountant sees. One-time connect, then a daily sync — or tap Sync now after a busy day. Live Intuit OAuth is not enabled on this release.",
+      "qbReserved": "Connect QuickBooks is reserved for your studio. Add an Intuit developer app, then set",
+      "qbRedirect": "Redirect URI:",
+      "qbBullet1": "Automate bookkeeping after you send from InvoiceFlow Studio.",
+      "qbBullet2": "Keep invoices and estimates consistent with QuickBooks Online.",
+      "qbBullet3": "Accountant stays in QuickBooks; you stay in the studio tool.",
+      "qbCredsPresent": "Credentials are present",
+      "qbCredsMissing": "Credentials are not set yet",
+      "qbConnectReady": "Connect QuickBooks (OAuth coming soon)",
+      "qbConnectSoon": "Connect QuickBooks — coming soon"
+    },
+    "billingPage": {
+      "lede": "You're on {plan}. Starter is limited to 3 invoices and 3 estimates each month. Pro is ${price}/month, unlimited.",
+      "success": "Stripe checkout completed. Refresh if the plan hasn't flipped yet — webhooks may still be catching up.",
+      "demo": "Local demo Pro unlocked for 30 days.",
+      "limit": "Starter includes 3 invoices and 3 estimates per month. Upgrade to Pro for unlimited.",
+      "portal": "Stripe customer portal",
+      "unlockDemo": "Unlock Pro for local demo",
+      "returnStarter": "Return to Starter"
+    },
+    "errors": {
+      "invoiceNotFound": "Invoice not found.",
+      "proposalNotFound": "Proposal not found.",
+      "clientEmailRequired": "Add a client email before sending the share link.",
+      "estimateNotFound": "Estimate not found."
+    },
+    "estimates": "Estimates",
+    "newEstimate": "New estimate",
+    "newEstimateLede": "Line items, markup, tax, and a share link clients can approve from their phone.",
+    "editEstimate": "Edit estimate",
+    "estimateList": {
+      "lede": "Price the job, send a branded link, and track opened, approved, and declined.",
+      "title": "Title",
+      "client": "Client",
+      "status": "Status",
+      "opened": "Opened",
+      "total": "Total",
+      "attached": "{count} attached",
+      "empty": "No estimates match those filters."
+    },
+    "estimateActivity": {
+      "opened": "Opened {when}.",
+      "notOpened": "Not opened yet.",
+      "approved": "Approved online by {name}{when}.",
+      "waiting": "Waiting for an online approval.",
+      "email": "We email your studio address when a client opens or approves — if Resend is not configured, the status still updates here."
+    }
+  },
+  "estimatesPage": {
+    "eyebrow": "Estimates for freelancers & contractors",
+    "headline": "Price the job. Send the estimate. Get the yes.",
+    "lede": "InvoiceFlow Studio is the focused way to write a branded estimate, send a PDF or share link, and know when a client opened or approved it — without turning your week into bookkeeping.",
+    "startFreeCreate": "Start free — create an estimate",
+    "create": "Create an estimate",
+    "freeNote": "Starter includes 3 estimates a month. Works from a phone. No 47-step wizard.",
+    "themes": [
+      {
+        "title": "Price the job right",
+        "body": "Walk the scope once, write it down, and send a number you can stand behind. Accurate estimates keep the work profitable before a single material is ordered."
+      },
+      {
+        "title": "Estimate on the spot",
+        "body": "Build a detailed quote from your phone on the jobsite. Add labor, materials, and notes while the client is still looking at the work — then send the link before you leave."
+      },
+      {
+        "title": "Look like a pro",
+        "body": "Every estimate carries your studio name, colors, and a clean PDF. Clients see a branded document, not a screenshot of a spreadsheet."
+      },
+      {
+        "title": "Price with confidence",
+        "body": "Itemize the work, add markup, and apply tax. The total updates as you type so you know the number before the client does."
+      },
+      {
+        "title": "Get approvals faster",
+        "body": "Clients open the estimate on their phone, review the line items, type their name, and approve online. No print-sign-scan loop."
+      },
+      {
+        "title": "Photos, files, and repeat jobs",
+        "body": "Attach photo and file names from the site, reuse saved line items, and start from a job template so the next similar job is already half written."
+      }
+    ],
+    "buildTitle": "Build a professional estimate",
+    "buildItems": [
+      "Itemized pricing so the client sees labor, materials, and the why.",
+      "Saved items and templates for the jobs you already know how to price.",
+      "Photos and files listed on the estimate so the scope is visual, not just a paragraph.",
+      "Digital signature: type a name, approve online, done.",
+      "Notifications when it is opened or approved (email when a studio address is set; otherwise we mark it on the dashboard).",
+      "Phone-first layout for the driveway, the hallway, or the last five minutes of a site visit."
+    ],
+    "qbEyebrow": "QuickBooks Online",
+    "qbTitle": "Keep the books consistent",
+    "qbLede": "When the job becomes an invoice, the numbers should already match. InvoiceFlow Studio is built to sync invoices and estimates with QuickBooks Online so you are not retyping line items for your accountant.",
+    "qbItems": [
+      "Connect once — we remember the company file.",
+      "Daily automatic sync, or tap Sync now after a big day of jobs.",
+      "Invoices and estimates stay in step so the books match the work.",
+      "Your accountant can work from QuickBooks Online; you keep sending from InvoiceFlow Studio."
+    ],
+    "qbNoteBefore": "Live Intuit OAuth is not on this release. Add an Intuit developer app (",
+    "qbNoteMid": ") and use",
+    "qbNoteAfter": "to reserve Connect QuickBooks. The marketing story is here; the handshake ships when credentials are in.",
+    "qbCta": "Open QuickBooks settings",
+    "notifyTitle": "Know when they look — and when they say yes",
+    "notifyLede": "The public estimate link records a first open and an online approval. If you have a studio email, InvoiceFlow Studio sends a short note. Either way, the dashboard shows Opened and Approved so you can follow up while the job is still warm.",
+    "heroStudio": "Studio North",
+    "heroTitle": "Job estimate",
+    "heroStatus": "Sent",
+    "heroClient": "Hearth Goods · Valid 14 days",
+    "heroLines": [
+      {
+        "label": "Site visit & scope",
+        "amount": "$125"
+      },
+      {
+        "label": "Labor",
+        "amount": "$1,800"
+      },
+      {
+        "label": "Materials allowance",
+        "amount": "$640"
+      },
+      {
+        "label": "Markup + tax",
+        "amount": "$205"
+      }
+    ],
+    "heroTotal": "Estimate total",
+    "heroTotalAmount": "$2,770"
+  }
+}

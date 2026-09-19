@@ -9,10 +9,13 @@ import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/status-badge";
 import { createInvoiceFromTemplate } from "@/app/actions/invoices";
 import { createProposalFromTemplate } from "@/app/actions/proposals";
+import { appCopy } from "@/lib/i18n-request";
+import { formatMessage } from "@/lib/i18n";
 
 export default async function DashboardPage() {
   const user = await requireUser();
   const plan = planFromUser(user);
+  const { dict } = await appCopy();
   const [invoices, proposals, invoiceCount, proposalCount] = await Promise.all([
     prisma.invoice.findMany({
       where: { userId: user.id },
@@ -37,43 +40,48 @@ export default async function DashboardPage() {
     <div className="grid gap-8">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <h1 className="font-display text-4xl">Good — you&apos;re here. Send something.</h1>
+          <h1 className="font-display text-4xl">{dict.app.home.title}</h1>
           <p className="mt-2 text-muted-foreground">
             {plan === "pro"
-              ? "Pro is on. Unlimited invoices and estimates this month."
-              : `${invoiceCount}/${PLANS.free.invoicesPerMonth} invoices and ${proposalCount}/${PLANS.free.proposalsPerMonth} estimates used this month.`}
+              ? dict.app.home.proOn
+              : formatMessage(dict.app.home.usage, {
+                  invoices: invoiceCount,
+                  invoiceLimit: PLANS.free.invoicesPerMonth,
+                  proposals: proposalCount,
+                  proposalLimit: PLANS.free.proposalsPerMonth,
+                })}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button asChild>
-            <Link href="/dashboard/invoices/new">New invoice</Link>
+            <Link href="/dashboard/invoices/new">{dict.app.newInvoice}</Link>
           </Button>
           <Button asChild variant="outline">
-            <Link href="/dashboard/estimates/new">New estimate</Link>
+            <Link href="/dashboard/estimates/new">{dict.app.newEstimate}</Link>
           </Button>
         </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <Stat label="Outstanding (recent)" value={formatCents(outstanding)} />
-        <Stat label="Invoices this month" value={String(invoiceCount)} />
-        <Stat label="Estimates this month" value={String(proposalCount)} />
+        <Stat label={dict.app.home.outstanding} value={formatCents(outstanding)} />
+        <Stat label={dict.app.home.invoicesThisMonth} value={String(invoiceCount)} />
+        <Stat label={dict.app.home.estimatesThisMonth} value={String(proposalCount)} />
       </div>
 
       <section>
-        <h2 className="font-display text-2xl">Start from a template</h2>
-        <div className="mt-4 grid gap-3 md:grid-cols-3">
+        <h2 className="font-display text-2xl">{dict.app.home.startTemplate}</h2>
+        <div className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
           <form action={createInvoiceFromTemplate.bind(null, "design-project-invoice")}>
-            <TemplateCard title="Design Project Invoice" body="Brand suite line items, 14-day terms." />
+            <TemplateCard title={dict.app.home.tplDesignTitle} body={dict.app.home.tplDesignBody} />
           </form>
           <form action={createInvoiceFromTemplate.bind(null, "retainer-invoice")}>
-            <TemplateCard title="Retainer Invoice" body="Hours + async direction, due in 7 days." />
+            <TemplateCard title={dict.app.home.tplRetainerTitle} body={dict.app.home.tplRetainerBody} />
           </form>
           <form action={createProposalFromTemplate.bind(null, "video-edit-proposal")}>
-            <TemplateCard title="Video Edit Estimate" body="Cut, deliverables, investment, approve online." />
+            <TemplateCard title={dict.app.home.tplVideoTitle} body={dict.app.home.tplVideoBody} />
           </form>
           <form action={createProposalFromTemplate.bind(null, "job-estimate")}>
-            <TemplateCard title="Job Estimate" body="Site visit, labor, materials — send from the jobsite." />
+            <TemplateCard title={dict.app.home.tplJobTitle} body={dict.app.home.tplJobBody} />
           </form>
         </div>
       </section>
@@ -81,13 +89,13 @@ export default async function DashboardPage() {
       <section className="grid gap-6 lg:grid-cols-2">
         <div>
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="font-display text-2xl">Invoices</h2>
+            <h2 className="font-display text-2xl">{dict.app.invoices}</h2>
             <Link href="/dashboard/invoices" className="text-sm text-primary">
-              View all
+              {dict.app.viewAll}
             </Link>
           </div>
           <div className="grid gap-2">
-            {invoices.length === 0 ? <Empty text="No invoices yet." /> : null}
+            {invoices.length === 0 ? <Empty text={dict.app.home.noInvoices} /> : null}
             {invoices.map((invoice) => (
               <Link
                 key={invoice.id}
@@ -98,20 +106,20 @@ export default async function DashboardPage() {
                   <p className="font-medium">{invoice.number}</p>
                   <p className="text-sm text-muted-foreground">{invoice.clientName}</p>
                 </div>
-                <StatusBadge status={invoice.status} />
+                <StatusBadge status={invoice.status} labels={dict.app.status} />
               </Link>
             ))}
           </div>
         </div>
         <div>
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="font-display text-2xl">Estimates</h2>
+            <h2 className="font-display text-2xl">{dict.app.estimates}</h2>
             <Link href="/dashboard/estimates" className="text-sm text-primary">
-              View all
+              {dict.app.viewAll}
             </Link>
           </div>
           <div className="grid gap-2">
-            {proposals.length === 0 ? <Empty text="No estimates yet." /> : null}
+            {proposals.length === 0 ? <Empty text={dict.app.home.noEstimates} /> : null}
             {proposals.map((proposal) => (
               <Link
                 key={proposal.id}
@@ -125,7 +133,7 @@ export default async function DashboardPage() {
                     {proposal.validUntil ? ` · ${format(proposal.validUntil, "MMM d")}` : ""}
                   </p>
                 </div>
-                <StatusBadge status={proposal.status} />
+                <StatusBadge status={proposal.status} labels={dict.app.status} />
               </Link>
             ))}
           </div>

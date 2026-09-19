@@ -4,6 +4,8 @@ import { PLANS } from "@/lib/plans";
 import { planFromUser, requireUser } from "@/lib/session";
 import { stripeEnabled, stripeKeyMode, stripeUpgradeButtonLabel } from "@/lib/stripe";
 import { isDevMode } from "@/lib/utils";
+import { appCopy } from "@/lib/i18n-request";
+import { formatMessage } from "@/lib/i18n";
 
 export default async function BillingPage({
   searchParams,
@@ -12,6 +14,7 @@ export default async function BillingPage({
 }) {
   const user = await requireUser();
   const plan = planFromUser(user);
+  const { dict } = await appCopy();
   const { status, error } = await searchParams;
   const stripeReady = stripeEnabled();
   const stripeMode = stripeKeyMode();
@@ -20,21 +23,23 @@ export default async function BillingPage({
   return (
     <div className="grid gap-8">
       <div>
-        <h1 className="font-display text-4xl">Billing</h1>
+        <h1 className="font-display text-4xl">{dict.app.billing}</h1>
         <p className="mt-2 text-muted-foreground">
-          You’re on <span className="capitalize text-foreground">{plan}</span>. Starter is limited to 3 invoices and
-          3 estimates each month. Pro is ${PLANS.pro.monthlyPrice}/month, unlimited.
+          {formatMessage(dict.app.billingPage.lede, {
+            plan: plan === "pro" ? dict.plans.pro.name : dict.plans.free.name,
+            price: PLANS.pro.monthlyPrice,
+          })}
         </p>
       </div>
       {status === "success" ? (
-        <p className="rounded-2xl bg-emerald-100 px-4 py-3 text-sm text-emerald-800">Stripe checkout completed. Refresh if the plan hasn’t flipped yet — webhooks may still be catching up.</p>
+        <p className="rounded-2xl bg-emerald-100 px-4 py-3 text-sm text-emerald-800">{dict.app.billingPage.success}</p>
       ) : null}
       {status === "demo" ? (
-        <p className="rounded-2xl bg-accent/10 px-4 py-3 text-sm">Local demo Pro unlocked for 30 days.</p>
+        <p className="rounded-2xl bg-accent/10 px-4 py-3 text-sm">{dict.app.billingPage.demo}</p>
       ) : null}
       {error === "limit" ? (
         <p className="rounded-2xl bg-primary/10 px-4 py-3 text-sm">
-          Starter includes 3 invoices and 3 estimates per month. Upgrade to Pro for unlimited.
+          {dict.app.billingPage.limit}
         </p>
       ) : error ? (
         <p className="rounded-2xl bg-primary/10 px-4 py-3 text-sm">{error}</p>
@@ -43,10 +48,10 @@ export default async function BillingPage({
       <div className="grid gap-4 md:grid-cols-2">
         {Object.values(PLANS).map((item) => (
           <div key={item.id} className="paper-card rounded-3xl p-6">
-            <h2 className="font-display text-2xl">{item.name}</h2>
-            <p className="mt-1 text-sm text-muted-foreground">{item.blurb}</p>
+            <h2 className="font-display text-2xl">{dict.plans[item.id].name}</h2>
+            <p className="mt-1 text-sm text-muted-foreground">{dict.plans[item.id].blurb}</p>
             <ul className="mt-4 grid gap-1 text-sm">
-              {item.features.map((feature) => (
+              {dict.plans[item.id].features.map((feature) => (
                 <li key={feature}>{feature}</li>
               ))}
             </ul>
@@ -63,21 +68,21 @@ export default async function BillingPage({
         {stripeReady && user.stripeCustomerId ? (
           <form action={openBillingPortal}>
             <Button type="submit" variant="outline">
-              Stripe customer portal
+              {dict.app.billingPage.portal}
             </Button>
           </form>
         ) : null}
         {dev && plan !== "pro" ? (
           <form action={demoUnlockPro}>
             <Button type="submit" variant="secondary">
-              Unlock Pro for local demo
+              {dict.app.billingPage.unlockDemo}
             </Button>
           </form>
         ) : null}
         {dev && plan === "pro" ? (
           <form action={demoDowngrade}>
             <Button type="submit" variant="outline">
-              Return to Starter
+              {dict.app.billingPage.returnStarter}
             </Button>
           </form>
         ) : null}
