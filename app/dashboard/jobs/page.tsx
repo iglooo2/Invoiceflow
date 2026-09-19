@@ -107,7 +107,7 @@ function TabLink({ href, active, label }: { href: string; active: boolean; label
       href={href}
       className={
         active
-          ? "-mb-px border-b-2 border-primary px-1 pb-3 uppercase text-foreground"
+          ? "-mb-px border-b-2 border-primary px-1 pb-3 font-semibold uppercase text-primary"
           : "-mb-px border-b-2 border-transparent px-1 pb-3 uppercase text-muted-foreground hover:text-foreground"
       }
     >

@@ -228,7 +228,10 @@ export function JobForm({
             }))}
             selectedIds={estimateIds}
             selected={selectedEstimates.map((item) => ({ id: item.id, label: item.title }))}
-            onToggleId={(id) => setEstimateIds((current) => toggleId(current, id))}
+            onToggleId={(id) => {
+              setEstimateIds((current) => toggleId(current, id));
+              setPickingEstimates(false);
+            }}
             icon={<FileText className="size-3.5" />}
           />
           <DocumentColumn
@@ -244,7 +247,10 @@ export function JobForm({
             }))}
             selectedIds={invoiceIds}
             selected={selectedInvoices.map((item) => ({ id: item.id, label: item.number }))}
-            onToggleId={(id) => setInvoiceIds((current) => toggleId(current, id))}
+            onToggleId={(id) => {
+              setInvoiceIds((current) => toggleId(current, id));
+              setPickingInvoices(false);
+            }}
             icon={<FileText className="size-3.5" />}
             className="lg:pl-6"
           />
