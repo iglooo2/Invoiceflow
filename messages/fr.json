@@ -114,7 +114,7 @@
     "google": "Continuer avec Google",
     "apple": "Continuer avec Apple",
     "github": "Continuer avec GitHub",
-    "googleHint": "Google Sign-In n’est pas configuré. Ajoutez AUTH_GOOGLE_ID et AUTH_GOOGLE_SECRET comme secrets Worker Cloudflare.",
+    "googleHint": "Google Sign-In n’est pas configuré. Ajoutez AUTH_GOOGLE_ID et AUTH_GOOGLE_SECRET comme secrets Runtime Worker Cloudflare (noms Auth.js). GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET sont acceptés comme alias.",
     "appleHint": "Apple Sign-In n’est pas configuré. Ajoutez AUTH_APPLE_ID et AUTH_APPLE_SECRET comme secrets Worker. Créez le secret avec votre Apple Team ID et clé.",
     "githubHint": "GitHub OAuth apparaît ici lorsque AUTH_GITHUB_ID et AUTH_GITHUB_SECRET sont définis.",
     "demoPrefix": "Démo :",
@@ -127,8 +127,11 @@
       "signInFailed": "Compte créé, mais la connexion a échoué. Essayez de vous connecter.",
       "magicEmail": "Saisissez l’e-mail pour le lien magique.",
       "magicFailed": "Impossible d’envoyer un lien magique. Vérifiez AUTH_RESEND_KEY.",
-      "oauthFailed": "Cette connexion n’a pas abouti. Essayez e-mail et mot de passe, ou vérifiez les secrets Google/Apple du Worker.",
-      "oauthNotConfigured": "Cette méthode de connexion n’est pas configurée sur ce serveur."
+      "oauthFailed": "La connexion Google ou Apple n’a pas abouti. Vérifiez AUTH_GOOGLE_ID / AUTH_GOOGLE_SECRET (ou AUTH_APPLE_ID / AUTH_APPLE_SECRET) comme secrets Runtime du Worker, et l’URL de callback OAuth.",
+      "oauthAccountNotLinked": "Ce compte Google ou Apple est déjà lié à un autre utilisateur InvoiceFlow. Connectez-vous avec e-mail et mot de passe.",
+      "oauthNotConfigured": "Cette méthode de connexion n’est pas configurée sur ce serveur.",
+      "configuration": "Auth n’est pas configuré. Définissez AUTH_SECRET et AUTH_URL=https://invoiceflowstudio.com comme secrets Runtime du Worker Cloudflare (pas seulement des variables de Build).",
+      "signInIncomplete": "Cette connexion n’a pas abouti. Essayez e-mail et mot de passe, ou réessayez."
     }
   },
   "onboarding": {

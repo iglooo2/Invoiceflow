@@ -1,17 +1,14 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { SITE_URL } from "@/lib/site";
+import { resolvedAuthUrl } from "@/lib/auth-env";
+import { readRuntimeSecret } from "@/lib/runtime-env";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
 export function getAppUrl() {
-  return (
-    process.env.NEXT_PUBLIC_APP_URL ||
-    process.env.AUTH_URL ||
-    (process.env.NODE_ENV === "production" ? SITE_URL : "http://localhost:3000")
-  );
+  return readRuntimeSecret("NEXT_PUBLIC_APP_URL") || resolvedAuthUrl();
 }
 
 export function isDevMode() {

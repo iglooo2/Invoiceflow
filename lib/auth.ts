@@ -10,10 +10,16 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
 import {
   appleAuthEnabled,
+  appleClientId,
+  appleClientSecret,
+  applyAuthRuntimeEnv,
   githubAuthEnabled,
   googleAuthEnabled,
+  googleClientId,
+  googleClientSecret,
   readAuthSecret,
   resendEnabled,
+  resolvedAuthSecret,
 } from "@/lib/auth-env";
 import { databaseRuntimeStatus, prisma } from "@/lib/db";
 import { safeErrorLog } from "@/lib/db-errors";
@@ -56,8 +62,8 @@ function buildAuthProviders(): Provider[] {
   if (googleAuthEnabled()) {
     providers.push(
       Google({
-        clientId: readAuthSecret("AUTH_GOOGLE_ID"),
-        clientSecret: readAuthSecret("AUTH_GOOGLE_SECRET"),
+        clientId: googleClientId(),
+        clientSecret: googleClientSecret(),
       }),
     );
   }
@@ -65,8 +71,8 @@ function buildAuthProviders(): Provider[] {
   if (appleAuthEnabled()) {
     providers.push(
       Apple({
-        clientId: readAuthSecret("AUTH_APPLE_ID"),
-        clientSecret: readAuthSecret("AUTH_APPLE_SECRET"),
+        clientId: appleClientId(),
+        clientSecret: appleClientSecret(),
       }),
     );
   }
@@ -96,13 +102,15 @@ function buildAuthProviders(): Provider[] {
 }
 
 function authOptions(): NextAuthConfig {
+  applyAuthRuntimeEnv();
   return {
     adapter: PrismaAdapter(prisma),
     session: { strategy: "jwt" },
     // Required behind Cloudflare (and any reverse proxy). AUTH_URL should still
-    // be https://invoiceflowstudio.com in production.
+    // be https://invoiceflowstudio.com in production. AUTH_TRUST_HOST is also
+    // written onto process.env so Auth.js internals match this flag.
     trustHost: true,
-    secret: readAuthSecret("AUTH_SECRET") || "dev-insecure-secret-change-me",
+    secret: resolvedAuthSecret() || "dev-insecure-secret-change-me",
     pages: {
       signIn: "/login",
       error: "/login",

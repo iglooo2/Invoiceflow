@@ -114,7 +114,7 @@
     "google": "Mit Google weiter",
     "apple": "Mit Apple weiter",
     "github": "Mit GitHub weiter",
-    "googleHint": "Google Sign-In ist nicht konfiguriert. Setze AUTH_GOOGLE_ID und AUTH_GOOGLE_SECRET als Cloudflare-Worker-Secrets.",
+    "googleHint": "Google Sign-In ist nicht konfiguriert. Setze AUTH_GOOGLE_ID und AUTH_GOOGLE_SECRET als Cloudflare-Worker-Runtime-Secrets (Auth.js-Namen). GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET werden als Aliasse akzeptiert.",
     "appleHint": "Apple Sign-In ist nicht konfiguriert. Setze AUTH_APPLE_ID und AUTH_APPLE_SECRET als Worker-Secrets. Erzeuge das Secret mit deiner Apple Team ID und dem Schlüssel.",
     "githubHint": "GitHub OAuth erscheint hier, wenn AUTH_GITHUB_ID und AUTH_GITHUB_SECRET gesetzt sind.",
     "demoPrefix": "Demo:",
@@ -127,8 +127,11 @@
       "signInFailed": "Konto erstellt, aber die Anmeldung ist fehlgeschlagen. Bitte einloggen.",
       "magicEmail": "Gib die E-Mail für den Magic Link ein.",
       "magicFailed": "Magic Link konnte nicht gesendet werden. AUTH_RESEND_KEY prüfen.",
-      "oauthFailed": "Diese Anmeldung wurde nicht abgeschlossen. Versuche E-Mail und Passwort oder prüfe die Google/Apple-Worker-Secrets.",
-      "oauthNotConfigured": "Diese Anmeldemethode ist auf diesem Server nicht konfiguriert."
+      "oauthFailed": "Google- oder Apple-Anmeldung wurde nicht abgeschlossen. Prüfe AUTH_GOOGLE_ID / AUTH_GOOGLE_SECRET (oder AUTH_APPLE_ID / AUTH_APPLE_SECRET) als Worker-Runtime-Secrets und die OAuth-Callback-URL.",
+      "oauthAccountNotLinked": "Dieses Google- oder Apple-Konto ist bereits mit einem anderen InvoiceFlow-Benutzer verknüpft. Melde dich mit E-Mail und Passwort an.",
+      "oauthNotConfigured": "Diese Anmeldemethode ist auf diesem Server nicht konfiguriert.",
+      "configuration": "Auth ist nicht konfiguriert. Setze AUTH_SECRET und AUTH_URL=https://invoiceflowstudio.com als Cloudflare-Worker-Runtime-Secrets (nicht nur Build-Variablen).",
+      "signInIncomplete": "Diese Anmeldung wurde nicht abgeschlossen. Versuche E-Mail und Passwort oder versuche es erneut."
     }
   },
   "onboarding": {

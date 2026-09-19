@@ -22,7 +22,7 @@ export function AuthForms({
   showDemoCredentials,
   initialMode = "signin",
   copy,
-  oauthError,
+  initialError,
 }: {
   githubEnabled: boolean;
   googleEnabled?: boolean;
@@ -32,10 +32,10 @@ export function AuthForms({
   showDemoCredentials: boolean;
   initialMode?: "signin" | "register";
   copy: Dictionary["login"];
-  oauthError?: string | null;
+  initialError?: string | null;
 }) {
   const [mode, setMode] = useState<"signin" | "register">(initialMode);
-  const [error, setError] = useState<string | null>(oauthError ?? null);
+  const [error, setError] = useState<string | null>(initialError ?? null);
 
   return (
     <div className="paper-card rounded-3xl p-6 md:p-8">
@@ -47,7 +47,11 @@ export function AuthForms({
           {copy.createAccount}
         </Button>
       </div>
-      {error ? <p className="mb-4 text-sm text-destructive">{error}</p> : null}
+      {error ? (
+        <p className="mb-4 text-sm text-destructive" role="alert" data-testid="auth-error">
+          {error}
+        </p>
+      ) : null}
 
       {/* Google/Apple always mount on sign-in and register. `enabled` only toggles click vs hint. */}
       <div className="grid gap-3">

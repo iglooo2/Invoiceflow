@@ -12,8 +12,12 @@ NEXT_PUBLIC_APP_URL="http://localhost:8787"
 AUTH_DEV_MODE="false"
 
 # Optional Google / Apple Sign-In (Worker runtime secrets).
+# Auth.js names: AUTH_GOOGLE_ID / AUTH_GOOGLE_SECRET (preferred).
+# GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET are accepted as aliases.
 # AUTH_GOOGLE_ID=""
 # AUTH_GOOGLE_SECRET=""
+# GOOGLE_CLIENT_ID=""
+# GOOGLE_CLIENT_SECRET=""
 # AUTH_APPLE_ID=""
 # AUTH_APPLE_SECRET=""
 # AUTH_APPLE_TEAM=""

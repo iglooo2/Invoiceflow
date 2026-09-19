@@ -114,7 +114,7 @@
     "google": "Continuar con Google",
     "apple": "Continuar con Apple",
     "github": "Continuar con GitHub",
-    "googleHint": "Google Sign-In no está configurado. Añade AUTH_GOOGLE_ID y AUTH_GOOGLE_SECRET como secretos del Worker de Cloudflare.",
+    "googleHint": "Google Sign-In no está configurado. Añade AUTH_GOOGLE_ID y AUTH_GOOGLE_SECRET como secretos Runtime del Worker de Cloudflare (nombres de Auth.js). GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET también se aceptan como alias.",
     "appleHint": "Apple Sign-In no está configurado. Añade AUTH_APPLE_ID y AUTH_APPLE_SECRET como secretos del Worker. Crea el secreto con tu Apple Team ID y clave.",
     "githubHint": "GitHub OAuth aparece aquí cuando AUTH_GITHUB_ID y AUTH_GITHUB_SECRET están configurados.",
     "demoPrefix": "Demo:",
@@ -127,8 +127,11 @@
       "signInFailed": "Cuenta creada, pero el acceso falló. Intenta iniciar sesión.",
       "magicEmail": "Introduce el email para el enlace mágico.",
       "magicFailed": "No se pudo enviar el enlace mágico. Revisa AUTH_RESEND_KEY.",
-      "oauthFailed": "Ese acceso no se completó. Prueba email y contraseña, o revisa los secretos de Google/Apple del Worker.",
-      "oauthNotConfigured": "Ese método de acceso no está configurado en este servidor."
+      "oauthFailed": "El acceso con Google o Apple no se completó. Revisa AUTH_GOOGLE_ID / AUTH_GOOGLE_SECRET (o AUTH_APPLE_ID / AUTH_APPLE_SECRET) como secretos Runtime del Worker, y la URL de callback OAuth.",
+      "oauthAccountNotLinked": "Esa cuenta de Google o Apple ya está vinculada a otro usuario de InvoiceFlow. Inicia sesión con email y contraseña.",
+      "oauthNotConfigured": "Ese método de acceso no está configurado en este servidor.",
+      "configuration": "Auth no está configurado. Define AUTH_SECRET y AUTH_URL=https://invoiceflowstudio.com como secretos Runtime del Worker de Cloudflare (no solo variables de Build).",
+      "signInIncomplete": "Ese acceso no se completó. Prueba email y contraseña, o inténtalo de nuevo."
     }
   },
   "onboarding": {

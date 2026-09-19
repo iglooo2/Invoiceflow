@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { connection } from "next/server";
 import { redirect } from "next/navigation";
 import { appleAuthEnabled, githubAuthEnabled, googleAuthEnabled, resendEnabled } from "@/lib/auth-env";
+import { loginQueryErrorMessage } from "@/lib/auth-errors";
 import { getCurrentUser } from "@/lib/session";
 import { isDevMode } from "@/lib/utils";
 import { MarketingFooter, MarketingHeader } from "@/components/marketing/shell";
@@ -32,10 +33,10 @@ export default async function LoginPage({
   const user = await getCurrentUser();
   if (user) redirect(nextOnboardingPath(user, locale));
   const query = await searchParams;
-  const oauthError =
-    typeof query.error === "string" && query.error
-      ? dict.login.errors.oauthFailed
-      : null;
+  const authError = loginQueryErrorMessage(
+    typeof query.error === "string" ? query.error : null,
+    dict.login.errors,
+  );
   return (
     <div>
       <MarketingHeader signedIn={false} locale={locale} path="/login" copy={dict.nav} />
@@ -55,7 +56,7 @@ export default async function LoginPage({
           callbackUrl={typeof query.callbackUrl === "string" ? query.callbackUrl : "/dashboard"}
           initialMode={typeof query.mode === "string" && query.mode === "register" ? "register" : "signin"}
           copy={dict.login}
-          oauthError={oauthError}
+          initialError={authError}
         />
       </main>
       <MarketingFooter locale={locale} path="/login" copy={dict.nav} />

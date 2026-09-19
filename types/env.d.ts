@@ -13,8 +13,15 @@ declare namespace NodeJS {
     INTUIT_CLIENT_ID?: string;
     INTUIT_CLIENT_SECRET?: string;
     INTUIT_REDIRECT_URI?: string;
+    AUTH_SECRET?: string;
+    AUTH_URL?: string;
+    AUTH_TRUST_HOST?: string;
+    NEXTAUTH_SECRET?: string;
+    NEXTAUTH_URL?: string;
     AUTH_GOOGLE_ID?: string;
     AUTH_GOOGLE_SECRET?: string;
+    GOOGLE_CLIENT_ID?: string;
+    GOOGLE_CLIENT_SECRET?: string;
     AUTH_APPLE_ID?: string;
     AUTH_APPLE_SECRET?: string;
     AUTH_APPLE_TEAM?: string;
