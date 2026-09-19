@@ -119,6 +119,8 @@ test("login always renders Google and Apple buttons; dashboard gates new users",
   assert.match(forms, /copy\.google/);
   assert.match(forms, /copy\.apple/);
   assert.match(forms, /disabled/);
+  assert.doesNotMatch(forms, /\{googleEnabled \?/);
+  assert.doesNotMatch(forms, /\{appleEnabled \?/);
   assert.match(login, /googleEnabled=\{googleAuthEnabled\(\)\}/);
   assert.match(login, /appleEnabled=\{appleAuthEnabled\(\)\}/);
   assert.match(login, /force-dynamic/);

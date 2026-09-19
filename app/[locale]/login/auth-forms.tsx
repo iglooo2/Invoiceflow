@@ -15,8 +15,8 @@ import type { Dictionary } from "@/lib/dictionary";
 
 export function AuthForms({
   githubEnabled,
-  googleEnabled,
-  appleEnabled,
+  googleEnabled = false,
+  appleEnabled = false,
   magicEnabled,
   callbackUrl,
   showDemoCredentials,
@@ -25,8 +25,8 @@ export function AuthForms({
   oauthError,
 }: {
   githubEnabled: boolean;
-  googleEnabled: boolean;
-  appleEnabled: boolean;
+  googleEnabled?: boolean;
+  appleEnabled?: boolean;
   magicEnabled: boolean;
   callbackUrl: string;
   showDemoCredentials: boolean;
@@ -49,33 +49,7 @@ export function AuthForms({
       </div>
       {error ? <p className="mb-4 text-sm text-destructive">{error}</p> : null}
 
-      <form
-        className="grid gap-4"
-        action={async (formData) => {
-          setError(null);
-          const result =
-            mode === "register" ? await registerWithPassword(formData) : await loginWithPassword(formData);
-          if (result?.error) setError(result.error);
-        }}
-      >
-        <input type="hidden" name="callbackUrl" value={callbackUrl} />
-        <div className="grid gap-2">
-          <Label htmlFor="email">{copy.email}</Label>
-          <Input id="email" name="email" type="email" required placeholder="you@studio.com" />
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor="password">{copy.password}</Label>
-          <Input id="password" name="password" type="password" required minLength={8} />
-        </div>
-        <Button type="submit">{mode === "register" ? copy.createAccount : copy.signIn}</Button>
-      </form>
-
-      <div className="my-6 flex items-center gap-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">
-        <span className="h-px flex-1 bg-border" />
-        {copy.orContinue}
-        <span className="h-px flex-1 bg-border" />
-      </div>
-
+      {/* Google/Apple always mount on sign-in and register. `enabled` only toggles click vs hint. */}
       <div className="grid gap-3">
         <OauthButton
           enabled={googleEnabled}
@@ -105,6 +79,33 @@ export function AuthForms({
           <p className="text-xs text-muted-foreground">{copy.githubHint}</p>
         )}
       </div>
+
+      <div className="my-6 flex items-center gap-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">
+        <span className="h-px flex-1 bg-border" />
+        {copy.orContinue}
+        <span className="h-px flex-1 bg-border" />
+      </div>
+
+      <form
+        className="grid gap-4"
+        action={async (formData) => {
+          setError(null);
+          const result =
+            mode === "register" ? await registerWithPassword(formData) : await loginWithPassword(formData);
+          if (result?.error) setError(result.error);
+        }}
+      >
+        <input type="hidden" name="callbackUrl" value={callbackUrl} />
+        <div className="grid gap-2">
+          <Label htmlFor="email">{copy.email}</Label>
+          <Input id="email" name="email" type="email" required placeholder="you@studio.com" />
+        </div>
+        <div className="grid gap-2">
+          <Label htmlFor="password">{copy.password}</Label>
+          <Input id="password" name="password" type="password" required minLength={8} />
+        </div>
+        <Button type="submit">{mode === "register" ? copy.createAccount : copy.signIn}</Button>
+      </form>
 
       {magicEnabled ? (
         <form

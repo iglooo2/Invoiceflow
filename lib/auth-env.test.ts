@@ -105,5 +105,13 @@ test("OAuth enablement reads Cloudflare runtime secrets, not a NEXT_PUBLIC flag"
   assert.match(forms, /data-oauth=\{provider\}/);
   assert.match(forms, /copy\.googleHint/);
   assert.match(forms, /copy\.appleHint/);
+  assert.doesNotMatch(forms, /\{googleEnabled \?/);
+  assert.doesNotMatch(forms, /\{appleEnabled \?/);
+  const googleButtonAt = forms.indexOf('provider="google"');
+  const emailFieldAt = forms.indexOf('htmlFor="email"');
+  assert.ok(
+    googleButtonAt > 0 && googleButtonAt < emailFieldAt,
+    "Google/Apple must render above email/password on login and register",
+  );
   assert.match(actions, /from "@\/lib\/auth-env"/);
 });
