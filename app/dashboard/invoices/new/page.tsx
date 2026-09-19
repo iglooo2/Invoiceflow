@@ -5,7 +5,7 @@ import { InvoiceForm } from "@/components/invoice-form";
 import { createInvoice } from "@/app/actions/invoices";
 import { appCopy } from "@/lib/i18n-request";
 import { dueDateFromPaymentTerms } from "@/lib/studio-settings";
-import { defaultTaxPercent, loadStudioSettings } from "@/lib/studio-settings-store";
+import { defaultContractDetails, defaultTaxPercent, loadStudioSettings } from "@/lib/studio-settings-store";
 
 export default async function NewInvoicePage({
   searchParams,
@@ -19,9 +19,10 @@ export default async function NewInvoicePage({
     where: { userId: user.id },
     orderBy: { name: "asc" },
   });
-  const [{ settings }, taxRate] = await Promise.all([
+  const [{ settings }, taxRate, contractNotes] = await Promise.all([
     loadStudioSettings(user.id),
     defaultTaxPercent(user.id),
+    defaultContractDetails(user.id, "invoice"),
   ]);
   const today = new Date();
   return (
@@ -39,6 +40,7 @@ export default async function NewInvoicePage({
           issueDate: format(today, "yyyy-MM-dd"),
           dueDate: format(dueDateFromPaymentTerms(today, settings.paymentTermsDays), "yyyy-MM-dd"),
           taxRate,
+          notes: contractNotes,
           status: "draft",
           items: [{ description: "", quantity: 1, rate: 0 }],
         }}

@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { isMissingDatabaseSchemaError, prismaWriteFailureMessage, safeErrorLog } from "@/lib/db-errors";
 import { requireUser } from "@/lib/session";
+import { newReferralCode } from "@/lib/referrals";
 import { SETTINGS_SCHEMA_WARNING } from "@/lib/studio-settings";
 import { loadStudioSettings, upsertStudioSettings } from "@/lib/studio-settings-store";
 import {
@@ -14,10 +15,12 @@ import {
   fileToStoredUpload,
   parseAccountForm,
   parseCompanyForm,
+  parseContractForm,
   parseDocumentsForm,
   parseLinksForm,
   parseMarkupForm,
   parsePreferencesForm,
+  parseReferralGenerateForm,
   parseTaxForm,
 } from "@/lib/studio-settings";
 
@@ -250,6 +253,103 @@ export async function deleteTax(formData: FormData) {
   }
   await revalidateSettings();
   redirect("/dashboard/settings/taxes");
+}
+
+async function clearOtherDefaultContracts(
+  userId: string,
+  exceptId: string,
+  flags: { defaultForEstimates: boolean; defaultForInvoices: boolean },
+) {
+  if (flags.defaultForEstimates) {
+    await prisma.contract.updateMany({
+      where: { userId, defaultForEstimates: true, NOT: { id: exceptId } },
+      data: { defaultForEstimates: false },
+    });
+  }
+  if (flags.defaultForInvoices) {
+    await prisma.contract.updateMany({
+      where: { userId, defaultForInvoices: true, NOT: { id: exceptId } },
+      data: { defaultForInvoices: false },
+    });
+  }
+}
+
+export async function saveContract(formData: FormData) {
+  const user = await requireUser();
+  const parsed = parseContractForm(formData);
+  if (!parsed.success) redirect(settingsRedirect("/dashboard/settings/contracts", parsed.error));
+  const now = new Date();
+  const id = parsed.data.id || crypto.randomUUID();
+  try {
+    const existing = parsed.data.id
+      ? await prisma.contract.findFirst({ where: { id: parsed.data.id, userId: user.id }, select: { id: true } })
+      : null;
+    if (existing) {
+      await prisma.contract.update({
+        where: { id: existing.id },
+        data: {
+          name: parsed.data.name,
+          details: parsed.data.details,
+          defaultForEstimates: parsed.data.defaultForEstimates,
+          defaultForInvoices: parsed.data.defaultForInvoices,
+          updatedAt: now,
+        },
+      });
+      await clearOtherDefaultContracts(user.id, existing.id, parsed.data);
+    } else {
+      await prisma.contract.create({
+        data: {
+          id,
+          userId: user.id,
+          name: parsed.data.name,
+          details: parsed.data.details,
+          defaultForEstimates: parsed.data.defaultForEstimates,
+          defaultForInvoices: parsed.data.defaultForInvoices,
+          createdAt: now,
+          updatedAt: now,
+        },
+      });
+      await clearOtherDefaultContracts(user.id, id, parsed.data);
+    }
+  } catch (error) {
+    console.error("saveContract", safeErrorLog(error));
+    const message = isMissingDatabaseSchemaError(error)
+      ? SETTINGS_SCHEMA_WARNING
+      : prismaWriteFailureMessage(error);
+    redirect(settingsRedirect("/dashboard/settings/contracts", message));
+  }
+  await revalidateSettings();
+  redirect(settingsRedirect("/dashboard/settings/contracts", undefined, true));
+}
+
+export async function deleteContract(formData: FormData) {
+  const user = await requireUser();
+  const contractId = String(formData.get("contractId") || "");
+  if (!contractId) redirect(settingsRedirect("/dashboard/settings/contracts", "Contract is missing."));
+  try {
+    await prisma.contract.deleteMany({ where: { id: contractId, userId: user.id } });
+  } catch (error) {
+    console.error("deleteContract", safeErrorLog(error));
+    redirect(settingsRedirect("/dashboard/settings/contracts", prismaWriteFailureMessage(error)));
+  }
+  await revalidateSettings();
+  redirect("/dashboard/settings/contracts");
+}
+
+export async function generateReferralLink(formData: FormData) {
+  const user = await requireUser();
+  const parsed = parseReferralGenerateForm(formData);
+  if (!parsed.success) redirect(settingsRedirect("/dashboard/settings/refer", parsed.error));
+  const loaded = await loadStudioSettings(user.id);
+  const existingCode = loaded.settings.referralCode.trim();
+  const code = existingCode || newReferralCode();
+  const saved = await upsertStudioSettings(user.id, {
+    referralCode: code,
+    referralTermsAcceptedAt: new Date(),
+  });
+  if (!saved.ok) redirect(settingsRedirect("/dashboard/settings/refer", saved.error));
+  await revalidateSettings();
+  redirect(settingsRedirect("/dashboard/settings/refer", undefined, true));
 }
 
 export async function requestQuickbooksConnect() {

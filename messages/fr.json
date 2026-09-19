@@ -9,7 +9,8 @@
     "privacyTitle": "Politique de confidentialité",
     "contactTitle": "Envoyer une demande",
     "estimatesTitle": "Devis",
-    "estimatesDescription": "Chiffrez vos chantiers avec des devis InvoiceFlow Studio — lignes, marge, taxe, approbation en ligne et QuickBooks Online quand vous serez prêts."
+    "estimatesDescription": "Chiffrez vos chantiers avec des devis InvoiceFlow Studio — lignes, marge, taxe, approbation en ligne et QuickBooks Online quand vous serez prêts.",
+    "referralTermsTitle": "Conditions du programme de parrainage"
   },
   "nav": {
     "how": "Comment ça marche",
@@ -345,7 +346,9 @@
         "documents": "Documents",
         "taxes": "Taxes",
         "markup": "Marge des lignes",
-        "quickbooks": "Sync QuickBooks"
+        "quickbooks": "Sync QuickBooks",
+        "contracts": "Contrats",
+        "refer": "Parrainer et gagner"
       },
       "account": {
         "heading": "Informations du compte",
@@ -432,8 +435,8 @@
         "percent": "Marge par défaut %"
       },
       "qbEyebrow": "QuickBooks Online",
-      "qbTitle": "Connectez vos livres",
-      "qbLede": "Synchronisez factures et devis avec QuickBooks Online pour que le chiffre envoyé soit celui que voit votre comptable. Une connexion, puis un sync quotidien — ou touchez Sync maintenant. L’OAuth Intuit en direct n’est pas dans cette version.",
+      "qbTitle": "InvoiceFlow Studio → QuickBooks",
+      "qbLede": "Connectez vos comptes InvoiceFlow Studio → QuickBooks Online pour tenir vos livres à jour automatiquement.",
       "qbReserved": "Connecter QuickBooks est réservé pour votre studio. Créez une app développeur Intuit, puis définissez",
       "qbRedirect": "URI de redirection :",
       "qbBullet1": "Automatisez la compta après l’envoi depuis InvoiceFlow Studio.",
@@ -442,7 +445,44 @@
       "qbCredsPresent": "Les identifiants sont présents",
       "qbCredsMissing": "Les identifiants ne sont pas encore définis",
       "qbConnectReady": "Connecter QuickBooks (OAuth bientôt)",
-      "qbConnectSoon": "Connecter QuickBooks — bientôt"
+      "qbConnectSoon": "Connecter QuickBooks — bientôt",
+      "contracts": {
+        "heading": "Contrats",
+        "empty": "Utilisez « Nouveau contrat » pour ajouter des conditions à joindre aux devis et factures.",
+        "new": "Nouveau contrat",
+        "edit": "Modifier le contrat",
+        "name": "Nom du contrat",
+        "details": "Détails du contrat",
+        "defaultEstimate": "Définir comme contrat de devis par défaut",
+        "defaultInvoice": "Définir comme contrat de facture par défaut",
+        "delete": "Supprimer le contrat"
+      },
+      "refer": {
+        "headline": "Invitez des entrepreneurs et gagnez ${reward} !",
+        "lede": "Gagnez des récompenses pour les entrepreneurs qui s’abonnent à InvoiceFlow Studio Pro pendant {days} jours.",
+        "generate": "Générer votre lien de parrainage",
+        "termsLead": "En cliquant sur Générer votre lien de parrainage, vous acceptez les",
+        "termsLink": "Conditions du programme de parrainage",
+        "termsTail": "Cela vous permettra de générer votre lien unique et de collecter vos gains.",
+        "agree": "J’accepte les Conditions du programme de parrainage",
+        "share": "Partager maintenant",
+        "copy": "Copier le lien",
+        "copied": "Copié",
+        "linkLabel": "Votre lien de parrainage",
+        "earnings": "Gains totaux",
+        "earningsHint": "Solde hebdomadaire. Paiement restant.",
+        "earningsPlaceholder": "$0.00",
+        "generated": "Votre lien de parrainage est prêt à être partagé.",
+        "phoneMore": "Plus",
+        "phoneTitle": "Parrainer",
+        "phoneStatus": "Statut"
+      },
+      "qbUpgrade": "Passer à Pro",
+      "qbLearnMore": "En savoir plus",
+      "qbProHint": "Passez à Pro pour accéder à QuickBooks Sync",
+      "qbBenefit1": "Arrêtez d’exporter manuellement vos données InvoiceFlow Studio",
+      "qbBenefit2": "Arrêtez de chercher d’anciens documents à la saison fiscale",
+      "qbBenefit3": "Gardez votre comptable heureux — et loin de votre dos !"
     },
     "billingPage": {
       "lede": "Vous êtes sur {plan}. Starter est limité à 3 factures et 3 devis par mois. Pro est à ${price}/mois, illimité.",
@@ -562,5 +602,15 @@
     ],
     "heroTotal": "Total du devis",
     "heroTotalAmount": "$2,770"
+  },
+  "referralTerms": {
+    "title": "Conditions du programme de parrainage",
+    "updated": "Dernière mise à jour : 19 septembre 2026. Brouillon MVP — à faire relire avant le lancement.",
+    "paragraphs": [
+      "InvoiceFlow Studio verse une récompense lorsqu’une personne invitée s’abonne à Pro et reste abonnée pendant la période indiquée dans les réglages.",
+      "Les récompenses sont un espace réservé dans cette version. Les gains et paiements ne sont pas encore traités.",
+      "Les liens utilisent invoiceflowstudio.com/r/ suivi de votre code unique. N’utilisez pas de domaines concurrents.",
+      "Nous pouvons modifier, suspendre ou arrêter le programme avec préavis. Les abus, auto-parrainages et faux comptes ne sont pas éligibles."
+    ]
   }
 }

@@ -37,7 +37,7 @@ export function splitLocalePath(pathname: string): { locale: Locale | null; path
   return { locale: maybe, path: rest === "" ? "/" : rest };
 }
 
-const SKIP_PREFIXES = ["/_next", "/api", "/dashboard", "/share"];
+const SKIP_PREFIXES = ["/_next", "/api", "/dashboard", "/share", "/r"];
 const SKIP_EXACT = new Set(["/icon", "/favicon.ico", "/robots.txt", "/sitemap.xml"]);
 
 export function shouldSkipLocale(pathname: string) {
