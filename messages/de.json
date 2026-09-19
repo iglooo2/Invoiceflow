@@ -259,6 +259,7 @@
     "save": "Speichern",
     "remove": "Entfernen",
     "downloadPdf": "PDF herunterladen",
+    "exportCsv": "CSV exportieren",
     "publicView": "Öffentliche Ansicht",
     "emailShareLink": "Link per E-Mail",
     "markPaid": "Als bezahlt markieren",

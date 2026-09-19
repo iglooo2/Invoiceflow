@@ -7,6 +7,7 @@ import {
   estimateDetailPath,
   formatEstimateDate,
 } from "@/lib/estimates";
+import { csvExportHref, parseListFilters } from "@/lib/csv";
 import { ESTIMATE_SCHEMA_WARNING, listEstimatesForUser } from "@/lib/proposal-queries";
 import { appCopy } from "@/lib/i18n-request";
 import { formatMessage } from "@/lib/i18n";
@@ -23,7 +24,8 @@ export default async function EstimatesPage({
 }) {
   const user = await requireUser();
   const { dict } = await appCopy();
-  const { status, q } = await searchParams;
+  const filters = parseListFilters(await searchParams);
+  const { status, q } = filters;
   const copy = dict.app.estimateList;
   let estimates: Awaited<ReturnType<typeof listEstimatesForUser>>["estimates"] = [];
   let usedLegacySchema = false;
@@ -50,9 +52,14 @@ export default async function EstimatesPage({
           <h1 className="font-display text-4xl">{dict.app.estimates}</h1>
           <p className="text-muted-foreground">{copy.lede}</p>
         </div>
-        <Button asChild>
-          <Link href={ESTIMATE_NEW_PATH}>{dict.app.newEstimate}</Link>
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button asChild variant="outline">
+            <a href={csvExportHref("estimates", filters)}>{dict.app.exportCsv}</a>
+          </Button>
+          <Button asChild>
+            <Link href={ESTIMATE_NEW_PATH}>{dict.app.newEstimate}</Link>
+          </Button>
+        </div>
       </div>
       {loadError ? <p className="rounded-2xl bg-primary/10 px-4 py-3 text-sm">{loadError}</p> : null}
       {usedLegacySchema ? (
