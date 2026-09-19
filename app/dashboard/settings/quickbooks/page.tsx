@@ -47,7 +47,7 @@ export default async function QuickbooksSettingsPage({
             <span className="sr-only">{SITE_STUDIO} to QuickBooks</span>
           </div>
           <p className="mt-6 max-w-md text-sm leading-6 text-muted-foreground">{copy.qbLede}</p>
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="btn-row mt-8">
             {pro ? (
               <form action={requestQuickbooksConnect}>
                 <Button type="submit" variant="secondary" size="lg">

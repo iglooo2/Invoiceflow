@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { btnRowClass, Button } from "@/components/ui/button";
 
 export function SettingsToolbar({
   cancelHref = "/dashboard/settings/account",
@@ -14,7 +14,7 @@ export function SettingsToolbar({
   extra?: ReactNode;
 }) {
   return (
-    <div className="mb-4 flex flex-wrap items-center justify-end gap-2">
+    <div className={`${btnRowClass} mb-4 justify-end`}>
       {extra}
       <Button asChild variant="outline" type="button">
         <Link href={cancelHref}>{cancelLabel}</Link>

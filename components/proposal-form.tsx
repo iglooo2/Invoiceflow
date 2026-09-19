@@ -181,8 +181,8 @@ export function ProposalForm({
       <div className="grid gap-3">
         <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
           <h2 className="font-display text-xl">Line items</h2>
-          <div className="flex flex-wrap gap-2">
-            <Select defaultValue="" onChange={(e) => {
+          <div className="btn-row">
+            <Select className="min-w-0 flex-1 sm:min-w-56 sm:flex-none" defaultValue="" onChange={(e) => {
               if (e.target.value === "") return;
               addSavedItem(Number(e.target.value));
               e.target.value = "";
@@ -241,6 +241,7 @@ export function ProposalForm({
               <Button
                 type="button"
                 variant="ghost"
+                size="sm"
                 onClick={() => setSections(sections.filter((_, i) => i !== index))}
                 disabled={sections.length === 1}
               >
@@ -348,7 +349,7 @@ export function ProposalForm({
         <Label htmlFor="notes">Notes</Label>
         <Textarea id="notes" name="notes" defaultValue={initial?.notes ?? ""} />
       </div>
-      <div className="flex justify-end">
+      <div className="btn-row justify-end">
         <Button type="submit">Save estimate</Button>
       </div>
     </form>

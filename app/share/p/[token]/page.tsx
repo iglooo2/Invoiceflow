@@ -63,7 +63,7 @@ export default async function PublicProposalPage({
       ) : null}
       <div className="no-print mx-auto mb-6 flex w-full max-w-3xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         {branded ? <Wordmark /> : <span className="font-display text-xl">{studio.businessName || studio.name}</span>}
-        <div className="flex flex-wrap gap-2">
+        <div className="btn-row">
           <Button asChild variant="outline">
             <a href={`/api/share/p/${token}/pdf`}>Download PDF</a>
           </Button>
