@@ -3,7 +3,7 @@ import { SITE_NAME, SITE_STUDIO } from "@/lib/site";
 
 export function Wordmark({ href = "/", light = false }: { href?: string; light?: boolean }) {
   return (
-    <Link href={href} className="flex items-center gap-2">
+    <Link href={href} className="flex min-w-0 items-center gap-2">
       <span
         className={`grid h-8 w-8 place-items-center rounded-full text-sm font-semibold ${
           light ? "bg-primary-foreground/15 text-primary-foreground" : "bg-primary text-primary-foreground"

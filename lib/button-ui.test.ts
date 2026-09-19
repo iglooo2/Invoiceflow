@@ -38,8 +38,11 @@ test("marketing CTAs and chrome reuse the shared button system", () => {
   assert.equal(landing.includes("-mt-6"), false);
 
   const header = read("components/marketing/shell.tsx");
-  assert.match(header, /flex-wrap/);
+  assert.match(header, /flex-col/);
+  assert.match(header, /sm:flex-row/);
+  assert.match(header, /overflow-x-clip/);
   assert.match(header, /btnRowClass/);
+  assert.match(header, /w-full min-w-0 justify-end sm:w-auto/);
 
   const switcher = read("components/marketing/language-switcher.tsx");
   assert.match(switcher, /buttonVariants\(\{ variant: "outline"/);

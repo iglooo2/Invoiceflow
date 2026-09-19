@@ -19,7 +19,7 @@ export function MarketingHeader({
   copy: Dictionary["nav"];
 }) {
   return (
-    <header className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-x-3 gap-y-2 px-4 py-4">
+    <header className="mx-auto flex w-full min-w-0 max-w-6xl flex-col gap-2 overflow-x-clip px-4 py-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-x-3 sm:gap-y-2">
       <Wordmark href={localizedPath(locale, "/")} />
       <nav className="hidden items-center gap-5 text-sm text-muted-foreground lg:flex">
         <Link href={`${localizedPath(locale, "/")}#how`} className="hover:text-foreground">
@@ -38,7 +38,7 @@ export function MarketingHeader({
           {copy.messageUs}
         </Link>
       </nav>
-      <div className={cn(btnRowClass, "min-w-0 max-w-full justify-end")}>
+      <div className={cn(btnRowClass, "w-full min-w-0 justify-end sm:w-auto")}>
         <LanguageSwitcher locale={locale} path={path} label={copy.language} />
         {signedIn ? (
           <Button asChild>
