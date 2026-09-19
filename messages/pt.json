@@ -263,11 +263,13 @@
     "publicView": "Visão pública",
     "emailShareLink": "Enviar link",
     "markPaid": "Marcar como paga",
+    "markPending": "Marcar como pendente",
     "copyLink": "Copiar link",
     "copied": "Copiado",
     "status": {
       "draft": "Rascunho",
       "sent": "Enviada",
+      "pending": "Pendente",
       "paid": "Paga",
       "overdue": "Atrasada",
       "void": "Anulada",

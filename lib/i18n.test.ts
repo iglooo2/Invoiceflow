@@ -111,6 +111,8 @@ test("login and dashboard common errors exist in every locale", () => {
     assert.ok(dict.nav.estimates.length > 0, locale);
     assert.ok(dict.estimatesPage.headline.length > 0, locale);
     assert.ok(dict.app.status.approved.length > 0, locale);
+    assert.ok(dict.app.status.pending.length > 0, locale);
+    assert.ok(dict.app.markPending.length > 0, locale);
     assert.ok(dict.app.exportCsv.length > 0, locale);
     assert.ok(dict.meta.contactTitle.length > 0, locale);
     assert.ok(dict.contact.submit.length > 0, locale);

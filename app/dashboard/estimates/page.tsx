@@ -4,6 +4,7 @@ import { prismaReadFailureMessage, safeErrorLog } from "@/lib/db-errors";
 import {
   parseAttachmentsJson,
   ESTIMATE_NEW_PATH,
+  ESTIMATE_STATUSES,
   estimateDetailPath,
   formatEstimateDate,
 } from "@/lib/estimates";
@@ -69,10 +70,11 @@ export default async function EstimatesPage({
         <Input name="q" placeholder={dict.app.search} defaultValue={q} />
         <Select name="status" defaultValue={status || ""}>
           <option value="">{dict.app.allStatuses}</option>
-          <option value="draft">{dict.app.status.draft}</option>
-          <option value="sent">{dict.app.status.sent}</option>
-          <option value="accepted">{dict.app.status.approved}</option>
-          <option value="declined">{dict.app.status.declined}</option>
+          {ESTIMATE_STATUSES.map((value) => (
+            <option key={value} value={value}>
+              {value === "accepted" ? dict.app.status.approved : dict.app.status[value]}
+            </option>
+          ))}
         </Select>
         <Button type="submit" variant="outline">
           {dict.app.filter}

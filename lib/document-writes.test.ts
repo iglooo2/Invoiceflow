@@ -191,9 +191,12 @@ test("mark paid and similar mutations take FormData and redirect instead of two-
   assert.match(invoicePage, /name="status" value="paid"/);
 
   assert.match(proposalActions, /export async function respondToProposal\(formData: FormData\)/);
+  assert.match(proposalActions, /export async function markProposalStatus\(formData: FormData\)/);
+  assert.match(proposalActions, /redirect\(estimateDetailPath\(parsed\.data\.proposalId\)\)/);
   assert.doesNotMatch(respondButtons, /\.bind\(null,\s*token,/);
   assert.doesNotMatch(invoicePage, /\.bind\(/);
   assert.doesNotMatch(proposalPage, /\.bind\(/);
   assert.doesNotMatch(estimatePage, /\.bind\(/);
   assert.match(estimatePage, /name="proposalId"/);
+  assert.match(estimatePage, /name="status" value="pending"/);
 });
