@@ -167,6 +167,8 @@ test("billing page labels Upgrade from runtime Stripe mode, not hardcoded test c
   assert.match(page, /stripeKeyMode/);
   assert.doesNotMatch(page, /<Button type="submit">Upgrade with Stripe \(test mode\)<\/Button>/);
   assert.match(page, /encrypted runtime secrets/);
+  assert.doesNotMatch(page, /stripeReady && plan !== "pro"/);
+  assert.match(page, /user\.stripeCustomerId \|\| plan === "pro"/);
 });
 
 test("wrangler keeps dashboard Stripe bindings and never ships a live price id", () => {
@@ -191,6 +193,24 @@ test("missing Stripe customer errors are detected for test-to-live retries", () 
     true,
   );
   assert.equal(isMissingStripeCustomerError(new Error("No such price: price_abc")), false);
+  assert.equal(
+    isMissingStripeCustomerError(
+      Object.assign(new Error("No such payment_method for this customer"), {
+        code: "resource_missing",
+        param: "payment_method",
+      }),
+    ),
+    false,
+  );
+  assert.equal(
+    isMissingStripeCustomerError(
+      Object.assign(new Error("The tax_code is missing. Managed Payments cannot create a session for this customer."), {
+        code: "resource_missing",
+        param: "line_items[0]",
+      }),
+    ),
+    false,
+  );
 });
 
 test("webhook signatures verify with SubtleCrypto instead of Node crypto", async () => {
@@ -215,13 +235,12 @@ test("webhook signatures verify with SubtleCrypto instead of Node crypto", async
 
 test("checkout action retries missing customers and tax-code Managed Payments failures", () => {
   const action = readFileSync(path.join(import.meta.dirname, "../app/actions/billing.ts"), "utf8");
-  assert.match(action, /isMissingStripeCustomerError/);
-  assert.match(action, /createStripeCustomerForUser/);
-  assert.match(action, /email: string \| null/);
+  assert.match(action, /resolveStripeCustomerForUser/);
+  assert.match(action, /replaceStripeCustomerForUser/);
+  assert.match(action, /createProCheckoutSession/);
+  assert.match(action, /createBillingPortalSession/);
   assert.match(action, /if \(!user\.email\)/);
   assert.match(action, /ensureStripeProductSaaSTaxCode/);
-  assert.match(action, /isStripeTaxCodeError/);
-  assert.match(action, /buildProCheckoutSessionParams/);
 });
 
 test("SaaS tax helpers read product ids and only update when tax_code is missing", async () => {

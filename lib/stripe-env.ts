@@ -77,15 +77,28 @@ export function stripeMisconfiguredMessage() {
   return "Stripe is not configured. Set STRIPE_SECRET_KEY and STRIPE_PRO_PRICE_ID as Cloudflare Worker secrets (not only build variables), then redeploy.";
 }
 
-export function stripeErrorBlob(error: unknown) {
-  const log = safeErrorLog(error);
-  const param = String((error as { param?: unknown })?.param ?? "");
-  return `${log.name} ${log.code ?? ""} ${log.message} ${param}`.toLowerCase();
+export function stripeErrorParam(error: unknown) {
+  return String((error as { param?: unknown })?.param ?? "").toLowerCase();
 }
 
+export function stripeErrorBlob(error: unknown) {
+  const log = safeErrorLog(error);
+  return `${log.name} ${log.code ?? ""} ${log.message} ${stripeErrorParam(error)}`.toLowerCase();
+}
+
+/**
+ * Only real missing-customer failures. Do not treat “resource_missing” plus the
+ * word “customer” anywhere in the blob as a leftover cus_ — tax, price, and
+ * payment-method errors often mention the customer and were mapped to the
+ * leftover-test-mode message after stripeCustomerId was already NULL.
+ */
 export function isMissingStripeCustomerError(error: unknown) {
-  const blob = stripeErrorBlob(error);
-  return blob.includes("no such customer") || (blob.includes("resource_missing") && blob.includes("customer"));
+  const log = safeErrorLog(error);
+  const message = log.message.toLowerCase();
+  const param = stripeErrorParam(error);
+  const code = (log.code ?? "").toLowerCase();
+  if (message.includes("no such customer")) return true;
+  return code === "resource_missing" && (param === "customer" || param.endsWith("[customer]"));
 }
 
 export function isMissingStripePriceError(error: unknown) {
@@ -106,6 +119,9 @@ export function isStripeTaxCodeError(error: unknown) {
 export function stripeFailureMessage(error: unknown) {
   const log = safeErrorLog(error);
   const blob = stripeErrorBlob(error);
+  if (blob.includes("needs an email address to subscribe")) {
+    return "Your account needs an email address to subscribe.";
+  }
   if (blob.includes("not configured") || blob.includes("sk_test_...") || blob.includes("price_...")) {
     return stripeMisconfiguredMessage();
   }
