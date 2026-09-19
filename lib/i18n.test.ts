@@ -81,6 +81,15 @@ test("every locale dictionary has the same keys as English", () => {
   }
 });
 
+test("unprefixed login keeps Auth.js error codes after locale redirect", () => {
+  const request = new NextRequest("http://localhost:3000/login?error=CredentialsSignin&mode=register");
+  const response = proxy(request);
+  const location = new URL(response.headers.get("location") ?? "");
+  assert.equal(location.pathname, "/en/login");
+  assert.equal(location.searchParams.get("error"), "CredentialsSignin");
+  assert.equal(location.searchParams.get("mode"), "register");
+});
+
 test("unprefixed login register CTA keeps mode after locale redirect", () => {
   const request = new NextRequest("http://localhost:3000/login?mode=register");
   const response = proxy(request);
@@ -105,6 +114,13 @@ test("login and dashboard common errors exist in every locale", () => {
     const dict = getDictionary(locale);
     assert.ok(dict.login.errors.invalidCredentials.length > 0, locale);
     assert.ok(dict.login.errors.oauthNotConfigured.length > 0, locale);
+    assert.ok(dict.login.errors.configuration.length > 0, locale);
+    assert.ok(dict.login.errors.signInIncomplete.length > 0, locale);
+    assert.ok(dict.login.errors.oauthAccountNotLinked.length > 0, locale);
+    assert.match(dict.login.errors.oauthAccountNotLinked, /email|e-mail|E-Mail|senha|contraseña|Passwort/i);
+    assert.match(dict.login.errors.oauthAccountNotLinked, /link|vincular|lier|verknüpf/i);
+    assert.equal(dict.login.errors.signInIncomplete.includes("Google"), false, locale);
+    assert.equal(dict.login.errors.invalidCredentials.includes("Google"), false, locale);
     assert.ok(dict.onboarding.errors.phone.length > 0, locale);
     assert.ok(dict.app.errors.invoiceNotFound.length > 0, locale);
     assert.ok(dict.app.errors.estimateNotFound.length > 0, locale);
@@ -140,6 +156,8 @@ test("localized landing keeps the studio gallery and register CTA", () => {
   assert.match(page, /landing-canvas/);
   assert.match(page, /startFreeHref/);
   assert.match(login, /query\.mode === "register"/);
+  assert.match(login, /loginQueryErrorMessage/);
+  assert.doesNotMatch(login, /dict\.login\.errors\.oauthFailed/);
   assert.match(forms, /initialMode = "signin"/);
   assert.match(forms, /copy\.google/);
   assert.match(forms, /copy\.apple/);

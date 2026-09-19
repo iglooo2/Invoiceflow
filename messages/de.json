@@ -115,7 +115,7 @@
     "google": "Mit Google weiter",
     "apple": "Mit Apple weiter",
     "github": "Mit GitHub weiter",
-    "googleHint": "Google Sign-In ist nicht konfiguriert. Setze AUTH_GOOGLE_ID und AUTH_GOOGLE_SECRET als Cloudflare-Worker-Secrets.",
+    "googleHint": "Google Sign-In ist nicht konfiguriert. Setze AUTH_GOOGLE_ID und AUTH_GOOGLE_SECRET als Cloudflare-Worker-Runtime-Secrets (Auth.js-Namen). GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET werden als Aliasse akzeptiert.",
     "appleHint": "Apple Sign-In ist nicht konfiguriert. Setze AUTH_APPLE_ID und AUTH_APPLE_SECRET (.p8-Schlüssel oder JWT) als Worker-Secrets. Ist AUTH_APPLE_SECRET die .p8-Datei, setze auch AUTH_APPLE_TEAM und AUTH_APPLE_KEY_ID.",
     "githubHint": "GitHub OAuth erscheint hier, wenn AUTH_GITHUB_ID und AUTH_GITHUB_SECRET gesetzt sind.",
     "demoPrefix": "Demo:",
@@ -128,9 +128,12 @@
       "signInFailed": "Konto erstellt, aber die Anmeldung ist fehlgeschlagen. Bitte einloggen.",
       "magicEmail": "Gib die E-Mail für den Magic Link ein.",
       "magicFailed": "Magic Link konnte nicht gesendet werden. AUTH_RESEND_KEY prüfen.",
-      "oauthFailed": "Diese Anmeldung wurde nicht abgeschlossen. Versuche E-Mail und Passwort oder prüfe die Google/Apple-Worker-Secrets.",
+      "oauthFailed": "Google- oder Apple-Anmeldung wurde nicht abgeschlossen. Prüfe AUTH_GOOGLE_ID / AUTH_GOOGLE_SECRET (oder AUTH_APPLE_ID / AUTH_APPLE_SECRET) als Worker-Runtime-Secrets und die OAuth-Callback-URL.",
+      "oauthAccountNotLinked": "Ein InvoiceFlow-Konto mit dieser E-Mail existiert bereits. Melde dich mit E-Mail und Passwort an (dem Passwort für diese Adresse), oder nutze Google erneut, um die Konten zu verknüpfen.",
       "oauthNotConfigured": "Diese Anmeldemethode ist auf diesem Server nicht konfiguriert.",
-      "appleSecretInvalid": "Apple Sign-In ist falsch konfiguriert. AUTH_APPLE_SECRET muss ein JWT sein oder ein .p8-Schlüssel mit AUTH_APPLE_TEAM und AUTH_APPLE_KEY_ID."
+      "appleSecretInvalid": "Apple Sign-In ist falsch konfiguriert. AUTH_APPLE_SECRET muss ein JWT sein oder ein .p8-Schlüssel mit AUTH_APPLE_TEAM und AUTH_APPLE_KEY_ID.",
+      "configuration": "AUTH_SECRET fehlt zur Worker-Laufzeit. Setze AUTH_SECRET als Cloudflare-Runtime-Secret (nicht nur als Build-Variable) und AUTH_URL=https://invoiceflowstudio.com als Runtime-Variable.",
+      "signInIncomplete": "Diese Anmeldung wurde nicht abgeschlossen. Versuche E-Mail und Passwort oder versuche es erneut."
     }
   },
   "onboarding": {

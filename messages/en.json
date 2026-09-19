@@ -115,7 +115,7 @@
     "google": "Continue with Google",
     "apple": "Continue with Apple",
     "github": "Continue with GitHub",
-    "googleHint": "Google Sign-In is not configured. Add AUTH_GOOGLE_ID and AUTH_GOOGLE_SECRET as Cloudflare Worker secrets.",
+    "googleHint": "Google Sign-In is not configured. Add AUTH_GOOGLE_ID and AUTH_GOOGLE_SECRET as Cloudflare Worker Runtime secrets (Auth.js names). GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET are accepted as aliases.",
     "appleHint": "Apple Sign-In is not configured. Add AUTH_APPLE_ID and AUTH_APPLE_SECRET (the .p8 key or a client-secret JWT) as Cloudflare Worker secrets. If AUTH_APPLE_SECRET is the .p8 file, also set AUTH_APPLE_TEAM and AUTH_APPLE_KEY_ID.",
     "githubHint": "GitHub OAuth appears here when AUTH_GITHUB_ID and AUTH_GITHUB_SECRET are set.",
     "demoPrefix": "Demo:",
@@ -128,9 +128,12 @@
       "signInFailed": "Account created, but sign-in failed. Try logging in.",
       "magicEmail": "Enter the email for your magic link.",
       "magicFailed": "Couldn’t send a magic link. Check AUTH_RESEND_KEY.",
-      "oauthFailed": "That sign-in didn’t complete. Try email and password, or check the Google/Apple Worker secrets.",
+      "oauthFailed": "Google or Apple sign-in didn’t complete. Check AUTH_GOOGLE_ID / AUTH_GOOGLE_SECRET (or AUTH_APPLE_ID / AUTH_APPLE_SECRET) as Worker Runtime secrets, and the OAuth callback URL.",
+      "oauthAccountNotLinked": "An InvoiceFlow account already exists for that email. Sign in with email and password (the password you created for that address), or use Google again so the accounts can be linked.",
       "oauthNotConfigured": "That sign-in method is not configured on this server.",
-      "appleSecretInvalid": "Apple Sign-In is misconfigured. AUTH_APPLE_SECRET must be a client-secret JWT, or a .p8 key with AUTH_APPLE_TEAM and AUTH_APPLE_KEY_ID."
+      "appleSecretInvalid": "Apple Sign-In is misconfigured. AUTH_APPLE_SECRET must be a client-secret JWT, or a .p8 key with AUTH_APPLE_TEAM and AUTH_APPLE_KEY_ID.",
+      "configuration": "AUTH_SECRET is missing at Worker runtime. Add AUTH_SECRET as a Cloudflare Runtime Secret (not only a Build variable) and AUTH_URL=https://invoiceflowstudio.com as a Runtime variable.",
+      "signInIncomplete": "That sign-in didn’t complete. Try email and password, or try again."
     }
   },
   "onboarding": {

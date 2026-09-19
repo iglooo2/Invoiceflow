@@ -7,13 +7,19 @@
 NEXTJS_ENV=development
 DATABASE_URL="postgresql://USER:PASSWORD@HOST/DB?sslmode=require"
 AUTH_SECRET="replace-with-a-long-random-string"
+# Production: AUTH_SECRET + AUTH_URL must be Worker Runtime secrets/vars,
+# not only Cloudflare Build variables.
 AUTH_URL="http://localhost:8787"
 NEXT_PUBLIC_APP_URL="http://localhost:8787"
 AUTH_DEV_MODE="false"
 
 # Optional Google / Apple Sign-In (Worker runtime secrets).
+# Auth.js names: AUTH_GOOGLE_ID / AUTH_GOOGLE_SECRET (preferred).
+# GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET are accepted as aliases.
 # AUTH_GOOGLE_ID=""
 # AUTH_GOOGLE_SECRET=""
+# GOOGLE_CLIENT_ID=""
+# GOOGLE_CLIENT_SECRET=""
 # AUTH_APPLE_ID=""              # Services ID, e.g. com.invoiceflowstudio.web
 # AUTH_APPLE_SECRET=""          # .p8 key contents, or a client-secret JWT
 # AUTH_APPLE_TEAM=""            # required when AUTH_APPLE_SECRET is a .p8 key
