@@ -60,12 +60,12 @@ export default async function BillingPage({
       </div>
 
       <div className="flex flex-wrap gap-2">
-        {stripeReady && plan !== "pro" ? (
+        {stripeReady ? (
           <form action={startProCheckout}>
             <Button type="submit">{stripeUpgradeButtonLabel(stripeMode)}</Button>
           </form>
         ) : null}
-        {stripeReady && user.stripeCustomerId ? (
+        {stripeReady && (user.stripeCustomerId || plan === "pro") ? (
           <form action={openBillingPortal}>
             <Button type="submit" variant="outline">
               {dict.app.billingPage.portal}
