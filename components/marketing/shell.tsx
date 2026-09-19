@@ -11,6 +11,9 @@ export function MarketingHeader({ signedIn }: { signedIn: boolean }) {
         <Link href="/#how" className="hover:text-foreground">
           How it works
         </Link>
+        <Link href="/estimates" className="hover:text-foreground">
+          Estimates
+        </Link>
         <Link href="/pricing" className="hover:text-foreground">
           Pricing
         </Link>
@@ -45,6 +48,7 @@ export function MarketingFooter() {
         <Wordmark />
         <p className="text-xs">{SITE_STUDIO} · {SITE_DOMAIN}</p>
         <div className="flex flex-wrap gap-4">
+          <Link href="/estimates">Estimates</Link>
           <Link href="/pricing">Pricing</Link>
           <Link href="/terms">Terms</Link>
           <Link href="/privacy">Privacy</Link>

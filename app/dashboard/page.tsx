@@ -40,8 +40,8 @@ export default async function DashboardPage() {
           <h1 className="font-display text-4xl">Good — you&apos;re here. Send something.</h1>
           <p className="mt-2 text-muted-foreground">
             {plan === "pro"
-              ? "Pro is on. Unlimited invoices and proposals this month."
-              : `${invoiceCount}/${PLANS.free.invoicesPerMonth} invoices and ${proposalCount}/${PLANS.free.proposalsPerMonth} proposals used this month.`}
+              ? "Pro is on. Unlimited invoices and estimates this month."
+              : `${invoiceCount}/${PLANS.free.invoicesPerMonth} invoices and ${proposalCount}/${PLANS.free.proposalsPerMonth} estimates used this month.`}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -49,7 +49,7 @@ export default async function DashboardPage() {
             <Link href="/dashboard/invoices/new">New invoice</Link>
           </Button>
           <Button asChild variant="outline">
-            <Link href="/dashboard/proposals/new">New proposal</Link>
+            <Link href="/dashboard/estimates/new">New estimate</Link>
           </Button>
         </div>
       </div>
@@ -57,7 +57,7 @@ export default async function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-3">
         <Stat label="Outstanding (recent)" value={formatCents(outstanding)} />
         <Stat label="Invoices this month" value={String(invoiceCount)} />
-        <Stat label="Proposals this month" value={String(proposalCount)} />
+        <Stat label="Estimates this month" value={String(proposalCount)} />
       </div>
 
       <section>
@@ -70,7 +70,10 @@ export default async function DashboardPage() {
             <TemplateCard title="Retainer Invoice" body="Hours + async direction, due in 7 days." />
           </form>
           <form action={createProposalFromTemplate.bind(null, "video-edit-proposal")}>
-            <TemplateCard title="Video Edit Proposal" body="Cut, deliverables, investment, accept/decline." />
+            <TemplateCard title="Video Edit Estimate" body="Cut, deliverables, investment, approve online." />
+          </form>
+          <form action={createProposalFromTemplate.bind(null, "job-estimate")}>
+            <TemplateCard title="Job Estimate" body="Site visit, labor, materials — send from the jobsite." />
           </form>
         </div>
       </section>
@@ -102,17 +105,17 @@ export default async function DashboardPage() {
         </div>
         <div>
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="font-display text-2xl">Proposals</h2>
-            <Link href="/dashboard/proposals" className="text-sm text-primary">
+            <h2 className="font-display text-2xl">Estimates</h2>
+            <Link href="/dashboard/estimates" className="text-sm text-primary">
               View all
             </Link>
           </div>
           <div className="grid gap-2">
-            {proposals.length === 0 ? <Empty text="No proposals yet." /> : null}
+            {proposals.length === 0 ? <Empty text="No estimates yet." /> : null}
             {proposals.map((proposal) => (
               <Link
                 key={proposal.id}
-                href={`/dashboard/proposals/${proposal.id}`}
+                href={`/dashboard/estimates/${proposal.id}`}
                 className="flex items-center justify-between rounded-2xl border border-border bg-card px-4 py-3"
               >
                 <div>

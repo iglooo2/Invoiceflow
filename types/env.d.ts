@@ -10,5 +10,8 @@ declare namespace NodeJS {
      */
     PRISMA_PROVIDER?: string;
     DATABASE_URL?: string;
+    INTUIT_CLIENT_ID?: string;
+    INTUIT_CLIENT_SECRET?: string;
+    INTUIT_REDIRECT_URI?: string;
   }
 }

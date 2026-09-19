@@ -6,6 +6,7 @@ import { addDays } from "date-fns";
 import { databaseRuntimeStatus, prisma } from "@/lib/db";
 import { documentWriteFailureMessage, errorRedirect, safeErrorLog } from "@/lib/db-errors";
 import { insertProposalWithSections, replaceProposalSections } from "@/lib/document-writes";
+import { ESTIMATE_LIST_PATH, ESTIMATE_NEW_PATH, estimateDetailPath, estimateEditPath } from "@/lib/estimates";
 import { parseProposalDecisionForm, parseProposalForm, parseProposalIdForm } from "@/lib/proposal-input";
 import { planFromUser, requireUser } from "@/lib/session";
 import { assertCanCreate, newPublicToken, redirectIfLimitReached } from "@/lib/documents";
@@ -18,10 +19,18 @@ async function revalidateProposalPaths(proposalId?: string) {
   try {
     revalidatePath("/dashboard");
     revalidatePath("/dashboard/proposals");
-    if (proposalId) revalidatePath(`/dashboard/proposals/${proposalId}`);
+    revalidatePath(ESTIMATE_LIST_PATH);
+    if (proposalId) {
+      revalidatePath(`/dashboard/proposals/${proposalId}`);
+      revalidatePath(estimateDetailPath(proposalId));
+    }
   } catch (error) {
     console.error("proposal revalidatePath", safeErrorLog(error));
   }
+}
+
+function ownerEmail(user: { businessEmail?: string | null; email?: string | null }) {
+  return user.businessEmail || user.email || null;
 }
 
 export async function createProposal(formData: FormData): Promise<ProposalActionResult | void> {
@@ -48,6 +57,9 @@ export async function createProposal(formData: FormData): Promise<ProposalAction
         clientName: parsed.data.clientName,
         clientEmail: parsed.data.clientEmail,
         clientCompany: parsed.data.clientCompany,
+        taxRate: parsed.data.taxRate,
+        markupRate: parsed.data.markupRate,
+        attachments: parsed.data.attachments,
       },
       parsed.data.sections,
     );
@@ -58,7 +70,7 @@ export async function createProposal(formData: FormData): Promise<ProposalAction
     return { error: documentWriteFailureMessage(error) };
   }
   await revalidateProposalPaths();
-  redirect(`/dashboard/proposals/${proposalId}`);
+  redirect(estimateDetailPath(proposalId));
 }
 
 export async function updateProposal(
@@ -70,7 +82,7 @@ export async function updateProposal(
     const existing = await prisma.proposal.findFirst({
       where: { id: proposalId, userId: user.id },
     });
-    if (!existing) return { error: "Proposal not found." };
+    if (!existing) return { error: "Estimate not found." };
     const parsed = parseProposalForm(formData);
     if (!parsed.success) return { error: parsed.error };
     await replaceProposalSections(
@@ -85,6 +97,9 @@ export async function updateProposal(
         clientName: parsed.data.clientName,
         clientEmail: parsed.data.clientEmail,
         clientCompany: parsed.data.clientCompany,
+        taxRate: parsed.data.taxRate,
+        markupRate: parsed.data.markupRate,
+        attachments: parsed.data.attachments,
       },
       parsed.data.sections,
     );
@@ -94,14 +109,14 @@ export async function updateProposal(
     return { error: documentWriteFailureMessage(error) };
   }
   await revalidateProposalPaths(proposalId);
-  redirect(`/dashboard/proposals/${proposalId}`);
+  redirect(estimateDetailPath(proposalId));
 }
 
 export async function deleteProposal(formData: FormData) {
   const user = await requireUser();
   const parsed = parseProposalIdForm(formData);
   if (!parsed.success) {
-    redirect(errorRedirect("/dashboard/proposals", parsed.error));
+    redirect(errorRedirect(ESTIMATE_LIST_PATH, parsed.error));
   }
   const proposalId = parsed.data.proposalId;
   try {
@@ -109,10 +124,10 @@ export async function deleteProposal(formData: FormData) {
   } catch (error) {
     unstable_rethrow(error);
     console.error("deleteProposal failed", safeErrorLog(error), databaseRuntimeStatus());
-    redirect(errorRedirect(`/dashboard/proposals/${proposalId}`, documentWriteFailureMessage(error)));
+    redirect(errorRedirect(estimateDetailPath(proposalId), documentWriteFailureMessage(error)));
   }
   await revalidateProposalPaths();
-  redirect("/dashboard/proposals");
+  redirect(ESTIMATE_LIST_PATH);
 }
 
 export async function createProposalFromTemplate(slug: string) {
@@ -148,11 +163,11 @@ export async function createProposalFromTemplate(slug: string) {
       })),
     );
     await revalidateProposalPaths();
-    redirect(`/dashboard/proposals/${proposal.id}/edit`);
+    redirect(estimateEditPath(proposal.id));
   } catch (error) {
     unstable_rethrow(error);
     console.error("createProposalFromTemplate failed", safeErrorLog(error), databaseRuntimeStatus());
-    redirect(errorRedirect("/dashboard/proposals/new", documentWriteFailureMessage(error)));
+    redirect(errorRedirect(ESTIMATE_NEW_PATH, documentWriteFailureMessage(error)));
   }
 }
 
@@ -160,25 +175,25 @@ export async function emailProposal(formData: FormData) {
   const user = await requireUser();
   const parsed = parseProposalIdForm(formData);
   if (!parsed.success) {
-    redirect(errorRedirect("/dashboard/proposals", parsed.error));
+    redirect(errorRedirect(ESTIMATE_LIST_PATH, parsed.error));
   }
   const proposalId = parsed.data.proposalId;
-  const detailPath = `/dashboard/proposals/${proposalId}`;
+  const detailPath = estimateDetailPath(proposalId);
   try {
     const proposal = await prisma.proposal.findFirst({
       where: { id: proposalId, userId: user.id },
     });
     if (!proposal) {
-      redirect(errorRedirect("/dashboard/proposals", "Proposal not found."));
+      redirect(errorRedirect(ESTIMATE_LIST_PATH, "Estimate not found."));
     }
     if (!proposal.clientEmail) {
       redirect(errorRedirect(detailPath, "Add a client email before sending the share link."));
     }
     await sendDocumentEmail({
       to: proposal.clientEmail,
-      subject: `${proposal.title} — proposal from ${user.businessName || user.name || "your freelancer"}`,
+      subject: `${proposal.title} — estimate from ${user.businessName || user.name || "your freelancer"}`,
       heading: proposal.title,
-      body: "Open the proposal to review, then accept or decline.",
+      body: "Open the estimate to review the price, then approve or decline online.",
       link: publicProposalUrl(proposal.publicToken),
     });
     if (proposal.status === "draft") {
@@ -193,6 +208,34 @@ export async function emailProposal(formData: FormData) {
   redirect(detailPath);
 }
 
+export async function markEstimateOpened(token: string) {
+  try {
+    const proposal = await prisma.proposal.findUnique({
+      where: { publicToken: token },
+      include: { user: true },
+    });
+    if (!proposal || proposal.viewedAt) return;
+    await prisma.proposal.update({
+      where: { id: proposal.id },
+      data: { viewedAt: new Date() },
+    });
+    const to = ownerEmail(proposal.user);
+    if (to) {
+      await sendDocumentEmail({
+        to,
+        subject: `${proposal.title} was opened`,
+        heading: proposal.title,
+        body: `${proposal.clientName} opened your estimate.`,
+        link: publicProposalUrl(proposal.publicToken),
+      });
+    }
+    revalidatePath(estimateDetailPath(proposal.id));
+    revalidatePath(ESTIMATE_LIST_PATH);
+  } catch (error) {
+    console.error("markEstimateOpened failed", safeErrorLog(error));
+  }
+}
+
 export async function respondToProposal(formData: FormData) {
   const parsed = parseProposalDecisionForm(formData);
   const token = parsed.success ? parsed.data.token : String(formData.get("token") || "");
@@ -201,15 +244,35 @@ export async function respondToProposal(formData: FormData) {
     redirect(errorRedirect(sharePath === "/" ? "/dashboard" : sharePath, parsed.error));
   }
   try {
-    const proposal = await prisma.proposal.findUnique({ where: { publicToken: parsed.data.token } });
+    const proposal = await prisma.proposal.findUnique({
+      where: { publicToken: parsed.data.token },
+      include: { user: true },
+    });
     if (!proposal) {
-      redirect(errorRedirect(sharePath, "Proposal not found."));
+      redirect(errorRedirect(sharePath, "Estimate not found."));
     }
     if (proposal.status !== "accepted" && proposal.status !== "declined") {
       await prisma.proposal.update({
         where: { id: proposal.id },
-        data: { status: parsed.data.decision },
+        data: {
+          status: parsed.data.decision,
+          signedName: parsed.data.decision === "accepted" ? parsed.data.signedName ?? null : proposal.signedName,
+          signedAt: parsed.data.decision === "accepted" ? new Date() : proposal.signedAt,
+        },
       });
+      const to = ownerEmail(proposal.user);
+      if (to) {
+        const approved = parsed.data.decision === "accepted";
+        await sendDocumentEmail({
+          to,
+          subject: approved ? `${proposal.title} was approved` : `${proposal.title} was declined`,
+          heading: proposal.title,
+          body: approved
+            ? `${parsed.data.signedName || proposal.clientName} approved your estimate online.`
+            : `${proposal.clientName} declined this estimate.`,
+          link: publicProposalUrl(proposal.publicToken),
+        });
+      }
     }
   } catch (error) {
     unstable_rethrow(error);

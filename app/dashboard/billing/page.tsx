@@ -23,7 +23,7 @@ export default async function BillingPage({
         <h1 className="font-display text-4xl">Billing</h1>
         <p className="mt-2 text-muted-foreground">
           You’re on <span className="capitalize text-foreground">{plan}</span>. Starter is limited to 3 invoices and
-          3 proposals each month. Pro is ${PLANS.pro.monthlyPrice}/month, unlimited.
+          3 estimates each month. Pro is ${PLANS.pro.monthlyPrice}/month, unlimited.
         </p>
       </div>
       {status === "success" ? (
@@ -34,7 +34,7 @@ export default async function BillingPage({
       ) : null}
       {error === "limit" ? (
         <p className="rounded-2xl bg-primary/10 px-4 py-3 text-sm">
-          Starter includes 3 invoices and 3 proposals per month. Upgrade to Pro for unlimited.
+          Starter includes 3 invoices and 3 estimates per month. Upgrade to Pro for unlimited.
         </p>
       ) : error ? (
         <p className="rounded-2xl bg-primary/10 px-4 py-3 text-sm">{error}</p>

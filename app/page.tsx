@@ -32,7 +32,7 @@ export default async function HomePage() {
               </Button>
             </div>
             <p className="mt-4 text-sm text-muted-foreground">
-              Free: 3 invoices and 3 proposals a month. No accounting suite. No 47-step wizard.
+              Free: 3 invoices and 3 estimates a month. No accounting suite. No 47-step wizard.
             </p>
           </div>
           <HeroInvoice />

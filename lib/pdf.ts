@@ -1,4 +1,5 @@
-import { formatCents, invoiceTotals, proposalTotalCents } from "@/lib/money";
+import { parseAttachmentsJson } from "@/lib/estimates";
+import { estimateTotals, formatCents, invoiceTotals } from "@/lib/money";
 
 /**
  * Tiny PDF 1.4 writer for Cloudflare Workers.
@@ -442,12 +443,19 @@ export async function buildProposalPdf(options: {
     clientName: string;
     clientEmail: string | null;
     clientCompany: string | null;
+    taxRate?: number;
+    markupRate?: number;
+    signedName?: string | null;
+    attachments?: { name: string }[] | string | null;
     sections: { heading: string; body: string; amount: number | null }[];
   };
   branded: boolean;
 }) {
   const { proposal, studio, branded } = options;
-  const total = proposalTotalCents(proposal.sections);
+  const totals = estimateTotals(proposal.sections, proposal.taxRate ?? 0, proposal.markupRate ?? 0);
+  const attachments = Array.isArray(proposal.attachments)
+    ? proposal.attachments
+    : parseAttachmentsJson(proposal.attachments);
   const pages: PageCanvas[] = [];
 
   const paintChrome = (page: PageCanvas) => {
@@ -457,7 +465,7 @@ export async function buildProposalPdf(options: {
       size: 14,
       color: proposalCream,
     });
-    page.text("PROPOSAL", 410, 762, { font: "F3", size: 18, color: proposalCream });
+    page.text("ESTIMATE", 410, 762, { font: "F3", size: 18, color: proposalCream });
     if (branded) {
       page.text("Made with InvoiceFlow Studio — invoiceflowstudio.com", MARGIN_X, 36, {
         size: 8,
@@ -513,9 +521,35 @@ export async function buildProposalPdf(options: {
     y -= 10;
   }
 
-  ensureRoom(20);
+  ensureRoom(56);
+  page.text("Subtotal", MARGIN_X, y, { font: "F2", size: 10, color: muted });
+  page.text(formatCents(totals.subtotalCents, proposal.currency), 140, y, { font: "F2", size: 10 });
+  if (totals.markupCents > 0) {
+    y -= 14;
+    page.text(`Markup (${proposal.markupRate ?? 0}%)`, MARGIN_X, y, { font: "F2", size: 10, color: muted });
+    page.text(formatCents(totals.markupCents, proposal.currency), 140, y, { font: "F2", size: 10 });
+  }
+  if (totals.taxCents > 0) {
+    y -= 14;
+    page.text(`Tax (${proposal.taxRate ?? 0}%)`, MARGIN_X, y, { font: "F2", size: 10, color: muted });
+    page.text(formatCents(totals.taxCents, proposal.currency), 140, y, { font: "F2", size: 10 });
+  }
+  y -= 16;
   page.text("Investment", MARGIN_X, y, { font: "F2", size: 10, color: muted });
-  page.text(formatCents(total, proposal.currency), 140, y, { font: "F2", size: 12 });
+  page.text(formatCents(totals.totalCents, proposal.currency), 140, y, { font: "F2", size: 12 });
+  if (proposal.signedName) {
+    y -= 18;
+    page.text(`Approved by ${proposal.signedName}`, MARGIN_X, y, { size: 9, color: muted });
+  }
+  if (attachments.length) {
+    y -= 18;
+    page.text("Attached", MARGIN_X, y, { font: "F2", size: 9, color: muted });
+    for (const file of attachments.slice(0, 6)) {
+      y -= 12;
+      ensureRoom(12);
+      page.text(file.name, MARGIN_X, y, { size: 9 });
+    }
+  }
 
   if (proposal.notes) {
     y -= 28;

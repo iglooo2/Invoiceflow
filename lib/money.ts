@@ -4,6 +4,10 @@ export type MoneyBreakdown = {
   totalCents: number;
 };
 
+export type EstimateMoneyBreakdown = MoneyBreakdown & {
+  markupCents: number;
+};
+
 export function lineTotalCents(quantity: number, rateDollars: number) {
   if (!Number.isFinite(quantity) || !Number.isFinite(rateDollars)) return 0;
   return Math.round(quantity * rateDollars * 100);
@@ -31,6 +35,25 @@ export function proposalTotalCents(sections: { amount?: number | null }[]) {
     if (section.amount == null || !Number.isFinite(section.amount)) return sum;
     return sum + Math.round(section.amount * 100);
   }, 0);
+}
+
+export function estimateTotals(
+  sections: { amount?: number | null }[],
+  taxRatePercent = 0,
+  markupRatePercent = 0,
+): EstimateMoneyBreakdown {
+  const subtotalCents = proposalTotalCents(sections);
+  const safeMarkup = Number.isFinite(markupRatePercent) ? Math.max(0, markupRatePercent) : 0;
+  const markupCents = Math.round(subtotalCents * (safeMarkup / 100));
+  const afterMarkup = subtotalCents + markupCents;
+  const safeTax = Number.isFinite(taxRatePercent) ? Math.max(0, taxRatePercent) : 0;
+  const taxCents = Math.round(afterMarkup * (safeTax / 100));
+  return {
+    subtotalCents,
+    markupCents,
+    taxCents,
+    totalCents: afterMarkup + taxCents,
+  };
 }
 
 export function formatCents(cents: number, currency = "USD") {

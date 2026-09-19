@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/session";
 
@@ -19,4 +20,10 @@ export async function updateStudio(formData: FormData) {
   });
   revalidatePath("/dashboard/settings");
   revalidatePath("/dashboard");
+}
+
+export async function requestQuickbooksConnect() {
+  await requireUser();
+  revalidatePath("/dashboard/settings");
+  redirect("/dashboard/settings?qb=coming-soon");
 }

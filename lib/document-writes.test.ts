@@ -180,6 +180,7 @@ test("mark paid and similar mutations take FormData and redirect instead of two-
   const proposalActions = readFileSync(path.join(root, "app/actions/proposals.ts"), "utf8");
   const invoicePage = readFileSync(path.join(root, "app/dashboard/invoices/[id]/page.tsx"), "utf8");
   const proposalPage = readFileSync(path.join(root, "app/dashboard/proposals/[id]/page.tsx"), "utf8");
+  const estimatePage = readFileSync(path.join(root, "app/dashboard/estimates/[id]/page.tsx"), "utf8");
   const respondButtons = readFileSync(path.join(root, "app/share/p/[token]/respond-buttons.tsx"), "utf8");
 
   assert.match(invoiceActions, /export async function markInvoiceStatus\(formData: FormData\)/);
@@ -193,4 +194,6 @@ test("mark paid and similar mutations take FormData and redirect instead of two-
   assert.doesNotMatch(respondButtons, /\.bind\(null,\s*token,/);
   assert.doesNotMatch(invoicePage, /\.bind\(/);
   assert.doesNotMatch(proposalPage, /\.bind\(/);
+  assert.doesNotMatch(estimatePage, /\.bind\(/);
+  assert.match(estimatePage, /name="proposalId"/);
 });

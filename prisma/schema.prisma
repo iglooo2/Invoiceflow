@@ -145,6 +145,12 @@ model Proposal {
   clientName    String
   clientEmail   String?
   clientCompany String?
+  taxRate       Float     @default(0)
+  markupRate    Float     @default(0)
+  viewedAt      DateTime?
+  signedName    String?
+  signedAt      DateTime?
+  attachments   String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 

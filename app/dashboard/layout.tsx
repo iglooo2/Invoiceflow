@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 const links = [
   ["Overview", "/dashboard"],
   ["Invoices", "/dashboard/invoices"],
-  ["Proposals", "/dashboard/proposals"],
+  ["Estimates", "/dashboard/estimates"],
   ["Clients", "/dashboard/clients"],
   ["Billing", "/dashboard/billing"],
   ["Settings", "/dashboard/settings"],
