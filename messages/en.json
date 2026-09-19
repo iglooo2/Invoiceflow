@@ -1,0 +1,128 @@
+{
+  "meta": {
+    "description": "Fast, beautiful invoices and proposals for designers, video editors, and writers who hate making them by hand.",
+    "pricingTitle": "Pricing",
+    "loginTitle": "Sign in",
+    "termsTitle": "Terms of Service",
+    "privacyTitle": "Privacy Policy"
+  },
+  "nav": {
+    "how": "How it works",
+    "pricing": "Pricing",
+    "templates": "Templates",
+    "signIn": "Sign in",
+    "startFree": "Start free",
+    "dashboard": "Dashboard",
+    "messageUs": "Message us",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "language": "Language"
+  },
+  "home": {
+    "eyebrow": "For freelance creatives",
+    "headline": "Invoices that look like your work. Sent before the coffee cools.",
+    "lede": "InvoiceFlow Studio is the focused tool for designers, editors, and writers who would rather ship work than wrestle Word docs. Pick a template, send a gorgeous PDF or link, and see what’s paid — at invoiceflowstudio.com.",
+    "createInvoice": "Create your first invoice",
+    "seePricing": "See pricing",
+    "freeNote": "Free: 3 invoices and 3 proposals a month. No accounting suite. No 47-step wizard.",
+    "how": [
+      {
+        "title": "Start from a studio template",
+        "body": "Design project, retainer, or video edit — not a blank spreadsheet pretending to be a brand."
+      },
+      {
+        "title": "Send PDF or a public link",
+        "body": "Clients open a clean page on their phone. You download a PDF that doesn’t look like 2009."
+      },
+      {
+        "title": "Track paid, sent, and overdue",
+        "body": "A simple list. Filters. That’s it. QuickBooks can wait until you actually need QuickBooks."
+      }
+    ],
+    "templatesTitle": "Templates you’ll actually use",
+    "templatesLede": "Seeded for the people this product is for: independent designers, video editors, and writers.",
+    "templates": [
+      {
+        "title": "Design Project Invoice",
+        "body": "Discovery, identity system, logo suite, guidelines. 50% to start."
+      },
+      {
+        "title": "Retainer Invoice",
+        "body": "Hours plus async art direction. Pay-by-the-5th language included."
+      },
+      {
+        "title": "Video Edit Proposal",
+        "body": "The cut, deliverables, investment — accept or decline from the link."
+      }
+    ],
+    "startStarter": "Start on Starter",
+    "goPro": "Go Pro",
+    "freePrice": "Free",
+    "perMonthShort": "/mo"
+  },
+  "pricing": {
+    "headline": "Simple pricing for a simple job.",
+    "lede": "InvoiceFlow Studio is not an accounting suite. It’s the fastest way to send a beautiful invoice or proposal and know whether it got paid — at invoiceflowstudio.com.",
+    "perMonth": "/ month",
+    "useStarter": "Use Starter",
+    "upgradePro": "Upgrade to Pro"
+  },
+  "plans": {
+    "free": {
+      "name": "Starter",
+      "blurb": "Enough to stop sending ugly Word docs this month.",
+      "features": [
+        "3 invoices / month",
+        "3 proposals / month",
+        "PDF download + shareable client links",
+        "Studio templates",
+        "InvoiceFlow mark on public pages"
+      ]
+    },
+    "pro": {
+      "name": "Pro",
+      "blurb": "Unlimited invoices and proposals for a working studio.",
+      "features": [
+        "Unlimited invoices & proposals",
+        "PDF download + shareable client links",
+        "Custom studio details on every document",
+        "No InvoiceFlow mark on client views",
+        "Stripe billing portal"
+      ]
+    }
+  },
+  "login": {
+    "headline": "Get back to the work. We’ll handle the PDF.",
+    "lede": "Email and password work with zero API keys. Add GitHub or Resend when you’re ready for production auth.",
+    "signIn": "Sign in",
+    "createAccount": "Create account",
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "magicLabel": "Or email a magic link",
+    "sendMagic": "Send magic link",
+    "github": "Continue with GitHub",
+    "githubHint": "GitHub OAuth appears here when AUTH_GITHUB_ID and AUTH_GITHUB_SECRET are set.",
+    "demoPrefix": "Demo:"
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "updated": "Last updated September 15, 2026. This is an MVP stub — have counsel review before production use.",
+    "paragraphs": [
+      "InvoiceFlow Studio (invoiceflowstudio.com) is a tool for creating, sending, and tracking invoices and proposals. It is not a bank, accountant, tax advisor, or payment processor for your client invoices in this MVP.",
+      "You own the content you upload. You are responsible for the accuracy of invoices, tax, and client communications. We may suspend accounts that abuse the service.",
+      "Subscriptions (Pro) renew monthly via Stripe until cancelled. Free-plan limits are enforced in software and may change with notice.",
+      "The software is provided “as is” without warranties. Limit of liability is the amount you paid us in the prior three months."
+    ]
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "updated": "Last updated September 15, 2026. Stub for the MVP — replace with a reviewed policy before launch.",
+    "paragraphs": [
+      "We collect account email, studio profile details, invoices, proposals, and billing metadata needed to run the product.",
+      "Auth may use email/password, GitHub OAuth, and optional Resend magic links. Payments go through Stripe; we store customer and subscription IDs, not full card numbers.",
+      "Public share links are unguessable tokens. Anyone with the link can view the document. Don’t send tokens you want to keep private.",
+      "Contact the operator at invoiceflowstudio.com to request export or deletion of your account data."
+    ]
+  }
+}

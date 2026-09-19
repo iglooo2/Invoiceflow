@@ -4,6 +4,8 @@ export const SITE_DOMAIN = "invoiceflowstudio.com";
 export const SITE_URL = `https://${SITE_DOMAIN}`;
 export const SITE_DESCRIPTION =
   "Fast, beautiful invoices and proposals for designers, video editors, and writers who hate making them by hand.";
+export const CONTACT_EMAIL = "galit.igor@yahoo.com";
+export const CONTACT_MAILTO = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("InvoiceFlow Studio inquiry")}`;
 
 export function isPostgresUrl(url = process.env["DATABASE_URL"] ?? "") {
   return /^postgres(ql)?:/i.test(url.trim());
