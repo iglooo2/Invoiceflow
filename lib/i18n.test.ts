@@ -80,6 +80,14 @@ test("every locale dictionary has the same keys as English", () => {
   }
 });
 
+test("unprefixed login register CTA keeps mode after locale redirect", () => {
+  const request = new NextRequest("http://localhost:3000/login?mode=register");
+  const response = proxy(request);
+  const location = new URL(response.headers.get("location") ?? "");
+  assert.equal(location.pathname, "/en/login");
+  assert.equal(location.searchParams.get("mode"), "register");
+});
+
 test("unauthenticated dashboard redirects to the cookie locale login, not /en", () => {
   const request = new NextRequest("http://localhost:3000/dashboard", {
     headers: { cookie: `${LOCALE_COOKIE}=es` },
@@ -116,6 +124,23 @@ test("language switcher is a compact dropdown, not a row of locale chips", () =>
   assert.match(source, /RadioGroup/);
   assert.match(source, /persist === "cookie"/);
   assert.equal(source.includes('flex flex-wrap items-center gap-2'), false);
+});
+
+test("localized landing keeps the studio gallery and register CTA", () => {
+  const page = readFileSync(path.join(import.meta.dirname, "../app/[locale]/page.tsx"), "utf8");
+  const login = readFileSync(path.join(import.meta.dirname, "../app/[locale]/login/page.tsx"), "utf8");
+  const forms = readFileSync(path.join(import.meta.dirname, "../app/[locale]/login/auth-forms.tsx"), "utf8");
+  assert.match(page, /StudioProduct/);
+  assert.match(page, /landing-canvas/);
+  assert.match(page, /startFreeHref/);
+  assert.match(login, /query\.mode === "register"/);
+  assert.match(forms, /initialMode = "signin"/);
+  for (const locale of LOCALES) {
+    const dict = getDictionary(locale);
+    assert.ok(dict.home.startCta.length > 0, locale);
+    assert.ok(dict.home.openStudio.length > 0, locale);
+    assert.match(dict.home.headline, /\n/);
+  }
 });
 
 test("Message us stays a translated label and never prints the contact address", () => {

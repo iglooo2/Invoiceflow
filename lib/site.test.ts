@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { CONTACT_EMAIL, CONTACT_PATH, isNeonUrl, isPostgresUrl } from "./site";
+import { CONTACT_EMAIL, CONTACT_PATH, isNeonUrl, isPostgresUrl, startFreeHref } from "./site";
 
 test("detects postgres urls", () => {
   assert.equal(isPostgresUrl("postgresql://u:p@host/db"), true);
@@ -13,6 +13,13 @@ test("detects postgres urls", () => {
 test("detects neon hosts", () => {
   assert.equal(isNeonUrl("postgresql://u:p@ep-foo.us-east-1.aws.neon.tech/db"), true);
   assert.equal(isNeonUrl("postgresql://u:p@db.supabase.co/postgres"), false);
+});
+
+test("routes the marketing CTA to signup or the dashboard", () => {
+  assert.equal(startFreeHref(false), "/login?mode=register");
+  assert.equal(startFreeHref(false, "es"), "/es/login?mode=register");
+  assert.equal(startFreeHref(true), "/dashboard");
+  assert.equal(startFreeHref(true, "fr"), "/dashboard");
 });
 
 test("Message us links to the contact page and never prints the inbox address", () => {

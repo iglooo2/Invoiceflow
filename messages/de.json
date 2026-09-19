@@ -1,6 +1,6 @@
 {
   "meta": {
-    "description": "Schnelle Rechnungen und Kostenvoranschläge für Freelancer und Auftragnehmer, die lieber arbeiten als Tabellen zu quälen.",
+    "description": "Schluss mit Word-Docs. Wähle eine Vorlage, die zu deiner Arbeit passt — schnelle Rechnungen und Angebote für Designer, Editoren und Texter.",
     "pricingTitle": "Preise",
     "loginTitle": "Anmelden",
     "termsTitle": "Nutzungsbedingungen",
@@ -23,11 +23,13 @@
     "estimates": "Voranschläge"
   },
   "home": {
-    "eyebrow": "Für freiberufliche Kreative",
-    "headline": "Rechnungen, die nach deiner Arbeit aussehen. Losgeschickt, bevor der Kaffee kalt wird.",
-    "lede": "InvoiceFlow Studio ist das fokussierte Tool für Designer, Editoren und Texter, die lieber Arbeit ausliefern als mit Word kämpfen. Wähle eine Vorlage, sende ein schönes PDF oder einen Link und sieh, was bezahlt ist — auf invoiceflowstudio.com.",
+    "eyebrow": "InvoiceFlow Studio",
+    "headline": "Schluss mit Word-Docs.\nWähle eine Vorlage, die zu deiner Arbeit passt.",
+    "lede": "Das fokussierte Tool für Designer, Editoren und Texter, die lieber Arbeit ausliefern als mit einer .docx kämpfen. Wähle eine Studio-Vorlage, sende ein PDF oder einen Kundenlink und sieh, was bezahlt ist.",
     "createInvoice": "Erste Rechnung erstellen",
     "seePricing": "Preise ansehen",
+    "startCta": "Kostenlos starten (3 Rechnungen/Mo.)",
+    "openStudio": "Studio öffnen",
     "freeNote": "Kostenlos: 3 Rechnungen und 3 Voranschläge im Monat. Keine Buchhaltungssuite. Kein 47-Schritt-Assistent.",
     "how": [
       {

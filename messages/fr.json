@@ -1,6 +1,6 @@
 {
   "meta": {
-    "description": "Factures et devis rapides pour indépendants et artisans qui préfèrent faire le travail plutôt que se battre avec un tableur.",
+    "description": "Laissez tomber les docs Word. Choisissez un modèle à l’image de votre travail — factures et propositions rapides pour designers, monteurs et rédacteurs.",
     "pricingTitle": "Tarifs",
     "loginTitle": "Connexion",
     "termsTitle": "Conditions d’utilisation",
@@ -23,11 +23,13 @@
     "estimates": "Devis"
   },
   "home": {
-    "eyebrow": "Pour les créatifs freelance",
-    "headline": "Des factures à l’image de votre travail. Envoyées avant que le café refroidisse.",
-    "lede": "InvoiceFlow Studio est l’outil ciblé pour les designers, monteurs et rédacteurs qui préfèrent livrer plutôt que se battre avec Word. Choisissez un modèle, envoyez un PDF ou un lien soigné, et voyez ce qui est payé — sur invoiceflowstudio.com.",
+    "eyebrow": "InvoiceFlow Studio",
+    "headline": "Laissez tomber les docs Word.\nChoisissez un modèle à l’image de votre travail.",
+    "lede": "L’outil ciblé pour les designers, monteurs et rédacteurs qui préfèrent livrer plutôt que se battre avec un .docx. Choisissez un modèle studio, envoyez un PDF ou un lien client, et sachez ce qui est payé.",
     "createInvoice": "Créer votre première facture",
     "seePricing": "Voir les tarifs",
+    "startCta": "Commencer gratuitement (3 factures/mois)",
+    "openStudio": "Ouvrir votre studio",
     "freeNote": "Gratuit : 3 factures et 3 devis par mois. Pas de suite comptable. Pas d’assistant en 47 étapes.",
     "how": [
       {

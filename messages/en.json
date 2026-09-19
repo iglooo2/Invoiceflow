@@ -1,6 +1,6 @@
 {
   "meta": {
-    "description": "Fast invoices and estimates for freelancers and contractors who would rather do the work than wrestle a spreadsheet.",
+    "description": "Ditch the Word docs. Pick a template that matches your work — fast invoices and proposals for designers, editors, and writers.",
     "pricingTitle": "Pricing",
     "loginTitle": "Sign in",
     "termsTitle": "Terms of Service",
@@ -23,16 +23,18 @@
     "estimates": "Estimates"
   },
   "home": {
-    "eyebrow": "For freelance creatives",
-    "headline": "Invoices that look like your work. Sent before the coffee cools.",
-    "lede": "InvoiceFlow Studio is the focused tool for designers, editors, and writers who would rather ship work than wrestle Word docs. Pick a template, send a gorgeous PDF or link, and see what’s paid — at invoiceflowstudio.com.",
+    "eyebrow": "InvoiceFlow Studio",
+    "headline": "Ditch the Word Docs.\nPick a template that matches your work.",
+    "lede": "The focused tool for designers, editors, and writers who would rather ship work than wrestle a .docx. Choose a studio template, send a PDF or a client link, and know what’s paid.",
     "createInvoice": "Create your first invoice",
     "seePricing": "See pricing",
+    "startCta": "Start for Free (3 Invoices/mo)",
+    "openStudio": "Open your studio",
     "freeNote": "Free: 3 invoices and 3 estimates a month. No accounting suite. No 47-step wizard.",
     "how": [
       {
         "title": "Start from a studio template",
-        "body": "Design project, retainer, or video edit — not a blank spreadsheet pretending to be a brand."
+        "body": "Minimalist invoices, creative proposals, retainers — not a blank spreadsheet pretending to be a brand."
       },
       {
         "title": "Send PDF or a public link",

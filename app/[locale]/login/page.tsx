@@ -39,6 +39,7 @@ export default async function LoginPage({
           magicEnabled={resendEnabled()}
           showDemoCredentials={isDevMode()}
           callbackUrl={typeof query.callbackUrl === "string" ? query.callbackUrl : "/dashboard"}
+          initialMode={typeof query.mode === "string" && query.mode === "register" ? "register" : "signin"}
           copy={dict.login}
         />
       </main>

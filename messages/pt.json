@@ -1,6 +1,6 @@
 {
   "meta": {
-    "description": "Faturas e orçamentos rápidos para freelancers e empreiteiros que preferem fazer o serviço a brigar com uma planilha.",
+    "description": "Deixe os docs do Word de lado. Escolha um modelo que combine com o seu trabalho — faturas e propostas rápidas para designers, editores e redatores.",
     "pricingTitle": "Preços",
     "loginTitle": "Entrar",
     "termsTitle": "Termos de serviço",
@@ -23,11 +23,13 @@
     "estimates": "Orçamentos"
   },
   "home": {
-    "eyebrow": "Para criativos freelancer",
-    "headline": "Faturas com a cara do seu trabalho. Enviadas antes do café esfriar.",
-    "lede": "InvoiceFlow Studio é a ferramenta objetiva para designers, editores e redatores que preferem entregar trabalho a brigar com o Word. Escolha um modelo, envie um PDF ou um link caprichado e veja o que foi pago — em invoiceflowstudio.com.",
+    "eyebrow": "InvoiceFlow Studio",
+    "headline": "Deixe os docs do Word de lado.\nEscolha um modelo que combine com o seu trabalho.",
+    "lede": "A ferramenta objetiva para designers, editores e redatores que preferem entregar trabalho a brigar com um .docx. Escolha um modelo de estúdio, envie um PDF ou um link para o cliente e saiba o que foi pago.",
     "createInvoice": "Criar sua primeira fatura",
     "seePricing": "Ver preços",
+    "startCta": "Começar grátis (3 faturas/mês)",
+    "openStudio": "Abrir seu estúdio",
     "freeNote": "Grátis: 3 faturas e 3 orçamentos por mês. Sem suíte contábil. Sem assistente de 47 passos.",
     "how": [
       {

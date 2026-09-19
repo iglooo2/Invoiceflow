@@ -3,7 +3,7 @@ import { Wordmark } from "@/components/brand";
 import { LanguageSwitcher } from "@/components/marketing/language-switcher";
 import { Button } from "@/components/ui/button";
 import type { Dictionary } from "@/lib/dictionary";
-import { CONTACT_PATH, SITE_DOMAIN, SITE_STUDIO } from "@/lib/site";
+import { CONTACT_PATH, SITE_DOMAIN, SITE_STUDIO, startFreeHref } from "@/lib/site";
 import { localizedPath, type Locale } from "@/lib/i18n";
 
 export function MarketingHeader({
@@ -49,7 +49,7 @@ export function MarketingHeader({
               <Link href={localizedPath(locale, "/login")}>{copy.signIn}</Link>
             </Button>
             <Button asChild>
-              <Link href={localizedPath(locale, "/login")}>{copy.startFree}</Link>
+              <Link href={startFreeHref(false, locale)}>{copy.startFree}</Link>
             </Button>
           </>
         )}

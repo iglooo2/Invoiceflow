@@ -1,6 +1,6 @@
 {
   "meta": {
-    "description": "Facturas y presupuestos rápidos para autónomos y contratistas que prefieren hacer el trabajo antes que pelearse con una hoja de cálculo.",
+    "description": "Olvídate de los Word. Elige una plantilla que encaje con tu trabajo — facturas y propuestas rápidas para diseñadores, editores y redactores.",
     "pricingTitle": "Precios",
     "loginTitle": "Iniciar sesión",
     "termsTitle": "Términos del servicio",
@@ -23,11 +23,13 @@
     "estimates": "Presupuestos"
   },
   "home": {
-    "eyebrow": "Para creativos freelance",
-    "headline": "Facturas que se parecen a tu trabajo. Enviadas antes de que se enfríe el café.",
-    "lede": "InvoiceFlow Studio es la herramienta enfocada para diseñadores, editores y redactores que prefieren entregar trabajo antes que pelearse con un Word. Elige una plantilla, envía un PDF o un enlace impecable y mira qué está pagado — en invoiceflowstudio.com.",
+    "eyebrow": "InvoiceFlow Studio",
+    "headline": "Olvídate de los Word.\nElige una plantilla que encaje con tu trabajo.",
+    "lede": "La herramienta enfocada para diseñadores, editores y redactores que prefieren entregar trabajo a pelearse con un .docx. Elige una plantilla de estudio, envía un PDF o un enlace al cliente y sabe qué está pagado.",
     "createInvoice": "Crea tu primera factura",
     "seePricing": "Ver precios",
+    "startCta": "Empieza gratis (3 facturas/mes)",
+    "openStudio": "Abre tu estudio",
     "freeNote": "Gratis: 3 facturas y 3 presupuestos al mes. Sin suite contable. Sin un asistente de 47 pasos.",
     "how": [
       {
