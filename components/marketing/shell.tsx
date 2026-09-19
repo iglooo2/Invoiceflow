@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Wordmark } from "@/components/brand";
 import { Button } from "@/components/ui/button";
-import { SITE_DOMAIN, SITE_STUDIO } from "@/lib/site";
+import { CONTACT_MAILTO, SITE_DOMAIN, SITE_STUDIO } from "@/lib/site";
 
 export function MarketingHeader({ signedIn }: { signedIn: boolean }) {
   return (
@@ -48,6 +48,7 @@ export function MarketingFooter() {
           <Link href="/pricing">Pricing</Link>
           <Link href="/terms">Terms</Link>
           <Link href="/privacy">Privacy</Link>
+          <a href={CONTACT_MAILTO}>Message us</a>
           <Link href="/login">Sign in</Link>
         </div>
       </div>
