@@ -21,6 +21,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     [dict.app.overview, "/dashboard"],
     [dict.app.invoices, "/dashboard/invoices"],
     [dict.app.estimates, "/dashboard/estimates"],
+    [dict.app.jobs, "/dashboard/jobs"],
     [dict.app.clients, "/dashboard/clients"],
     [dict.app.billing, "/dashboard/billing"],
     [dict.app.settings, "/dashboard/settings"],

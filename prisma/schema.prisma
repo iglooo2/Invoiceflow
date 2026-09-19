@@ -44,6 +44,7 @@ model User {
   clients         Client[]
   invoices        Invoice[]
   proposals       Proposal[]
+  jobs            Job[]
   studioSettings  StudioSettings?
   taxRates        TaxRate[]
   contracts       Contract[]
@@ -184,6 +185,7 @@ model Client {
   user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   invoices  Invoice[]
   proposals Proposal[]
+  jobs      Job[]
 }
 
 model Invoice {
@@ -206,9 +208,10 @@ model Invoice {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  user   User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  client Client?       @relation(fields: [clientId], references: [id], onDelete: SetNull)
-  items  InvoiceItem[]
+  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  client   Client?       @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  items    InvoiceItem[]
+  jobLinks JobInvoice[]
 
   @@unique([userId, number])
   @@index([userId, status])
@@ -251,6 +254,7 @@ model Proposal {
   user     User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   client   Client?           @relation(fields: [clientId], references: [id], onDelete: SetNull)
   sections ProposalSection[]
+  jobLinks JobEstimate[]
 
   @@index([userId, status])
   @@index([userId, createdAt])
@@ -274,4 +278,68 @@ model DocumentTemplate {
   kind        String
   description String
   payload     Json
+}
+
+/// Jobs group a client, dates, notes, and linked estimates/invoices.
+/// Production Neon needs `npm run db:push:prod` (or prisma/add-job-tables.sql).
+model Job {
+  id        String    @id @default(cuid())
+  userId    String
+  clientId  String?
+  title     String
+  jobNumber String
+  address   String?
+  startDate DateTime?
+  endDate   DateTime?
+  status    String    @default("active")
+  notes     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  client    Client?       @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  estimates JobEstimate[]
+  invoices  JobInvoice[]
+  visits    JobVisit[]
+
+  @@unique([userId, jobNumber])
+  @@index([userId, status])
+  @@index([userId, createdAt])
+}
+
+model JobEstimate {
+  id         String @id @default(cuid())
+  jobId      String
+  estimateId String
+
+  job      Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  estimate Proposal @relation(fields: [estimateId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, estimateId])
+  @@index([estimateId])
+}
+
+model JobInvoice {
+  id        String @id @default(cuid())
+  jobId     String
+  invoiceId String
+
+  job     Job     @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, invoiceId])
+  @@index([invoiceId])
+}
+
+/// Lightweight visit stub — date + notes. Not a full calendar.
+model JobVisit {
+  id          String    @id @default(cuid())
+  jobId       String
+  notes       String    @default("")
+  scheduledAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  job Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId])
 }

@@ -34,6 +34,15 @@ test("User onboarding columns stay in the source schema", () => {
   assert.match(source, /onboardingComplete Boolean @default\(true\)/);
 });
 
+test("Job tables stay in the source schema", () => {
+  assert.match(source, /model Job \{/);
+  assert.match(source, /jobNumber String/);
+  assert.match(source, /model JobEstimate \{/);
+  assert.match(source, /model JobInvoice \{/);
+  assert.match(source, /model JobVisit \{/);
+  assert.match(source, /jobs\s+Job\[\]/);
+});
+
 test("Contract and referral columns stay off the User query surface", () => {
   assert.match(source, /model Contract \{/);
   assert.match(source, /defaultForEstimates\s+Boolean/);

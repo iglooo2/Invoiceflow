@@ -10,7 +10,7 @@ This is a focused Micro-SaaS MVP, not an accounting suite. Create from studio te
 
 - Marketing landing + pricing + `/estimates` + Terms/Privacy stubs
 - Auth: email/password (works with zero API keys), Google and Apple Sign-In (buttons always visible; disabled until secrets are set), optional GitHub OAuth, optional Resend magic link. New accounts finish a two-step InvoiceFlow Studio onboarding (name + phone, then business details) before the dashboard.
-- Dashboard: invoices, estimates, clients, studio settings, billing
+- Dashboard: invoices, estimates, jobs, clients, studio settings, billing
 - Invoice editor (client, line items, tax, notes, due date, status)
 - Estimate editor (line items, markup, tax, attachments list, online approve with a typed name)
 - PDF download + public share pages (opened + approved notifications)
@@ -177,6 +177,38 @@ That creates:
 | `"Contract"` | named contract language per user, with default-for-estimate / default-for-invoice flags |
 
 SQL-only equivalent: `prisma/add-settings-columns.sql` (same direct URL, not `*-pooler.*`). Logo / license / insurance files are stored as data URLs up to 400 KB; they are not uploaded to R2.
+
+### Jobs tables (after this release)
+
+Jobs (`/dashboard/jobs`) persist on **`Job`** plus join tables **`JobEstimate`**, **`JobInvoice`**, and a lightweight **`JobVisit`** stub. They sit off `User` so a delayed `db:push:prod` will not crash invoices, estimates, or billing.
+
+Until the tables exist, the Jobs list shows an in-page warning instead of a Cloudflare error page.
+
+**Unblock:** same as Estimates — from a laptop, against the Neon **direct / unpooled** URL:
+
+```bash
+npm run db:push:prod
+```
+
+That creates:
+
+| Table | Purpose |
+|---|---|
+| `"Job"` | title, optional `clientId`, `jobNumber`, address, start/end dates, `active`/`complete` status, notes |
+| `"JobEstimate"` | links a job to an existing estimate (`Proposal`) |
+| `"JobInvoice"` | links a job to an existing invoice |
+| `"JobVisit"` | date + notes stub (not a full calendar) |
+
+SQL-only equivalent: `prisma/add-job-tables.sql` (same direct URL, not `*-pooler.*`).
+
+```sql
+-- See prisma/add-job-tables.sql for the full idempotent patch.
+CREATE TABLE IF NOT EXISTS "Job" ( ... );
+CREATE TABLE IF NOT EXISTS "JobEstimate" ( ... );
+CREATE TABLE IF NOT EXISTS "JobInvoice" ( ... );
+CREATE TABLE IF NOT EXISTS "JobVisit" ( ... );
+```
+
 
 User fields already used on PDFs (`businessName`, `businessEmail`, `businessPhone`, `businessAddress`, `website`, `name`, `email`, `passwordHash`) are still updated from Settings. `businessAddress` is composed from the structured address fields on save.
 
