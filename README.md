@@ -189,8 +189,9 @@ Changing live Stripe secrets on **Runtime** does **not** require a rebuild. Afte
 3. Set Worker **runtime** secrets: `STRIPE_SECRET_KEY=sk_live_…`, `STRIPE_PRO_PRICE_ID=<live price>`, `STRIPE_WEBHOOK_SECRET` from a Live endpoint at `https://invoiceflowstudio.com/api/stripe/webhook`.
 4. You do not need `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` for Checkout.
 5. Accounts that already clicked Upgrade under test keys may have a test `cus_…` stored. Checkout now creates a new customer if Stripe returns “No such customer”.
+6. Live accounts often have **Managed Payments** on by default. Checkout writes Stripe tax code `txcd_10103001` (SaaS — business use) onto the Pro product when it is missing. If Stripe still rejects the session, Checkout retries with `managed_payments[enabled]=false` so Upgrade can complete without a Dashboard tax-code edit.
 
-If Checkout still fails, Billing shows a mapped error (bad key, wrong-mode price, leftover customer, network) or the fallback **Couldn’t complete the Stripe request (Name Code)** from `stripeFailureMessage` — check Worker logs for the raw Stripe error.
+If Checkout still fails, Billing shows a mapped error (bad key, wrong-mode price, leftover customer, missing tax code, network) or the fallback **Couldn’t complete the Stripe request (Name Code)** from `stripeFailureMessage` — check Worker logs for the raw Stripe error.
 
 ### Local test-mode steps
 

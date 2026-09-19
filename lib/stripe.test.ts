@@ -15,6 +15,7 @@ import {
   isPlaceholderStripePriceId,
   isPlaceholderStripeSecret,
   isPlaceholderStripeWebhookSecret,
+  isStripeTaxCodeError,
   pickConfiguredSecret,
   readStripeProPriceId,
   readStripeSecretKey,
@@ -24,6 +25,13 @@ import {
   stripeMisconfiguredMessage,
   stripeUpgradeButtonLabel,
 } from "./stripe-env";
+import {
+  STRIPE_SAAS_TAX_CODE,
+  buildProCheckoutSessionParams,
+  ensureStripeProductSaaSTaxCode,
+  existingProductTaxCode,
+  productIdFromPrice,
+} from "./stripe-checkout";
 
 test("treats .env.example Stripe placeholders as missing", () => {
   assert.equal(isPlaceholderStripeSecret(""), true);
@@ -124,6 +132,21 @@ test("stripeFailureMessage maps misconfig and API failures without leaking secre
   const leaked = stripeFailureMessage(new Error("postgresql://invoice:s3cret@ep-foo.neon.tech/db"));
   assert.equal(leaked.includes("s3cret"), false);
   assert.match(stripeFailureMessage(new Error("unexpected stripe boom")), /Couldn’t complete the Stripe request/);
+  assert.match(
+    stripeFailureMessage(
+      new Error("The product tax code is missing. Managed Payments is enabled by default for this account."),
+    ),
+    /tax code/,
+  );
+});
+
+test("isStripeTaxCodeError matches Managed Payments tax-code rejections", () => {
+  assert.equal(
+    isStripeTaxCodeError(new Error("The product tax code is missing. Managed Payments is enabled by default.")),
+    true,
+  );
+  assert.equal(isStripeTaxCodeError(new Error("line_items[0]: tax_code is required")), true);
+  assert.equal(isStripeTaxCodeError(new Error("No such customer: cus_test")), false);
 });
 
 test("stripeKeyMode follows secret prefix, not AUTH or publishable env", () => {
@@ -174,11 +197,73 @@ test("webhook signatures verify with SubtleCrypto instead of Node crypto", async
   assert.equal(event.id, "evt_test");
 });
 
-test("checkout action retries when Stripe reports a missing customer", () => {
+test("checkout action retries missing customers and tax-code Managed Payments failures", () => {
   const action = readFileSync(path.join(import.meta.dirname, "../app/actions/billing.ts"), "utf8");
   assert.match(action, /isMissingStripeCustomerError/);
   assert.match(action, /createStripeCustomerForUser/);
-  assert.match(action, /checkout\.sessions\.create/);
+  assert.match(action, /ensureStripeProductSaaSTaxCode/);
+  assert.match(action, /isStripeTaxCodeError/);
+  assert.match(action, /buildProCheckoutSessionParams/);
+});
+
+test("SaaS tax helpers read product ids and only update when tax_code is missing", async () => {
+  assert.equal(STRIPE_SAAS_TAX_CODE, "txcd_10103001");
+  assert.equal(productIdFromPrice({ product: "prod_abc" }), "prod_abc");
+  assert.equal(productIdFromPrice({ product: { id: "prod_exp" } }), "prod_exp");
+  assert.equal(existingProductTaxCode({ tax_code: "txcd_10103001" }), "txcd_10103001");
+  assert.equal(existingProductTaxCode({ tax_code: null }), "");
+
+  let updatedTaxCode = "";
+  const stripe = {
+    prices: {
+      retrieve: async () => ({ product: { id: "prod_pro", tax_code: null } }),
+    },
+    products: {
+      update: async (_id: string, params: { tax_code: string }) => {
+        updatedTaxCode = params.tax_code;
+        return { id: "prod_pro", tax_code: params.tax_code };
+      },
+    },
+  };
+  const first = await ensureStripeProductSaaSTaxCode(stripe, "price_live");
+  assert.equal(first.updated, true);
+  assert.equal(first.taxCode, STRIPE_SAAS_TAX_CODE);
+  assert.equal(updatedTaxCode, STRIPE_SAAS_TAX_CODE);
+
+  const alreadyCoded = {
+    prices: {
+      retrieve: async () => ({ product: { id: "prod_pro", tax_code: "txcd_10103000" } }),
+    },
+    products: {
+      update: async () => {
+        throw new Error("should not update a product that already has a tax code");
+      },
+    },
+  };
+  const second = await ensureStripeProductSaaSTaxCode(alreadyCoded, "price_live");
+  assert.equal(second.updated, false);
+  assert.equal(second.taxCode, "txcd_10103000");
+});
+
+test("checkout session params omit managed_payments unless opting out", () => {
+  const first = buildProCheckoutSessionParams({
+    customerId: "cus_live",
+    priceId: "price_live",
+    userId: "user_1",
+    appUrl: "https://invoiceflowstudio.com",
+  });
+  assert.equal(first.mode, "subscription");
+  assert.equal(first.line_items?.[0]?.price, "price_live");
+  assert.equal(first.managed_payments, undefined);
+
+  const fallback = buildProCheckoutSessionParams({
+    customerId: "cus_live",
+    priceId: "price_live",
+    userId: "user_1",
+    appUrl: "https://invoiceflowstudio.com",
+    managedPaymentsEnabled: false,
+  });
+  assert.equal(fallback.managed_payments?.enabled, false);
 });
 
 test("webhook route stays on the default Worker runtime and verifies async", () => {

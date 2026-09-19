@@ -7,9 +7,12 @@ import { prisma } from "@/lib/db";
 import { errorRedirect, safeErrorLog } from "@/lib/db-errors";
 import { requireUser } from "@/lib/session";
 import {
+  buildProCheckoutSessionParams,
+  ensureStripeProductSaaSTaxCode,
   getStripe,
   getStripeProPriceId,
   isMissingStripeCustomerError,
+  isStripeTaxCodeError,
   stripeEnabled,
   stripeFailureMessage,
   stripeMisconfiguredMessage,
@@ -59,25 +62,45 @@ export async function startProCheckout() {
       customerId = await createStripeCustomerForUser(user);
     }
 
-    const checkoutParams = {
-      mode: "subscription" as const,
-      customer: customerId,
-      line_items: [{ price: priceId, quantity: 1 }],
-      success_url: `${getAppUrl()}/dashboard/billing?status=success`,
-      cancel_url: `${getAppUrl()}/dashboard/billing?status=cancelled`,
-      allow_promotion_codes: true,
-      metadata: { userId: user.id },
-    };
+    try {
+      await ensureStripeProductSaaSTaxCode(stripe, priceId);
+    } catch (error) {
+      unstable_rethrow(error);
+      console.error("ensureStripeProductSaaSTaxCode failed", safeErrorLog(error));
+    }
+
+    const createSession = (customer: string, managedPaymentsEnabled?: boolean) =>
+      stripe.checkout.sessions.create(
+        buildProCheckoutSessionParams({
+          customerId: customer,
+          priceId,
+          userId: user.id,
+          appUrl: getAppUrl(),
+          managedPaymentsEnabled,
+        }),
+      );
 
     let session;
     try {
-      session = await stripe.checkout.sessions.create(checkoutParams);
+      session = await createSession(customerId);
     } catch (error) {
       unstable_rethrow(error);
       // Test-mode cus_… ids are invisible to live keys (and the reverse).
-      if (!customerId || !isMissingStripeCustomerError(error)) throw error;
-      customerId = await createStripeCustomerForUser(user);
-      session = await stripe.checkout.sessions.create({ ...checkoutParams, customer: customerId });
+      if (customerId && isMissingStripeCustomerError(error)) {
+        customerId = await createStripeCustomerForUser(user);
+        try {
+          session = await createSession(customerId);
+        } catch (retryError) {
+          unstable_rethrow(retryError);
+          if (!isStripeTaxCodeError(retryError)) throw retryError;
+          session = await createSession(customerId, false);
+        }
+      } else if (isStripeTaxCodeError(error)) {
+        // Account default is Managed Payments; session can opt out if tax still fails.
+        session = await createSession(customerId, false);
+      } else {
+        throw error;
+      }
     }
 
     if (!session.url) {

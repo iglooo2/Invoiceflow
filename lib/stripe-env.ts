@@ -93,6 +93,16 @@ export function isMissingStripePriceError(error: unknown) {
   return blob.includes("no such price") || (blob.includes("resource_missing") && blob.includes("price"));
 }
 
+export function isStripeTaxCodeError(error: unknown) {
+  const blob = stripeErrorBlob(error);
+  return (
+    blob.includes("tax_code") ||
+    blob.includes("tax code") ||
+    blob.includes("product tax") ||
+    blob.includes("managed payments")
+  );
+}
+
 export function stripeFailureMessage(error: unknown) {
   const log = safeErrorLog(error);
   const blob = stripeErrorBlob(error);
@@ -101,6 +111,9 @@ export function stripeFailureMessage(error: unknown) {
   }
   if (blob.includes("invalid api key") || blob.includes("invalid_api_key") || blob.includes("no api key provided")) {
     return "Stripe rejected the API key. Check STRIPE_SECRET_KEY on the Worker, then retry.";
+  }
+  if (isStripeTaxCodeError(error)) {
+    return "Stripe rejected Checkout because the product is missing a tax code (Managed Payments). Retry upgrade — we assign the SaaS business tax code automatically, or Checkout continues without Managed Payments.";
   }
   if (isMissingStripeCustomerError(error)) {
     return "The saved Stripe customer id is missing in this mode (often a leftover test-mode customer after switching to live keys). Retry upgrade to create a new customer.";

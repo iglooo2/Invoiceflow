@@ -4,6 +4,7 @@ import { readStripeProPriceId, readStripeSecretKey, readStripeWebhookSecret } fr
 
 export {
   isMissingStripeCustomerError,
+  isStripeTaxCodeError,
   stripeEnabled,
   stripeFailureMessage,
   stripeKeyMode,
@@ -13,6 +14,11 @@ export {
   readStripeSecretKey,
   readStripeWebhookSecret,
 } from "./stripe-env";
+export {
+  STRIPE_SAAS_TAX_CODE,
+  buildProCheckoutSessionParams,
+  ensureStripeProductSaaSTaxCode,
+} from "./stripe-checkout";
 export { createStripeClient, stripeWebhookCryptoProvider } from "./stripe-client";
 
 let stripeClient: ReturnType<typeof createStripeClient> | null = null;
