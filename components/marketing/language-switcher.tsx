@@ -3,8 +3,6 @@
 import { useRouter } from "next/navigation";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { Check, ChevronDown } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { isLocale, LOCALES, LOCALE_LABELS, localizedPath, type Locale } from "@/lib/i18n";
 
 export function LanguageSwitcher({
@@ -24,10 +22,7 @@ export function LanguageSwitcher({
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger
-        className={cn(
-          buttonVariants({ variant: "outline", size: "sm" }),
-          "h-10 min-w-11 gap-1.5 px-3 text-xs",
-        )}
+        className="inline-flex h-10 min-w-11 items-center justify-center gap-1.5 rounded-full border border-border bg-transparent px-3 text-xs font-medium whitespace-nowrap transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         aria-label={`${label}: ${current.native}`}
       >
         <span className="sm:hidden">{current.short}</span>
