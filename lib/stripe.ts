@@ -21,6 +21,7 @@ export {
 } from "./stripe-checkout";
 export {
   BILLING_EMAIL_REQUIRED,
+  asStripeBillingClient,
   createBillingPortalSession,
   createProCheckoutSession,
   replaceStripeCustomerForUser,

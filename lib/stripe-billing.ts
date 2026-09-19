@@ -21,7 +21,7 @@ export type BillingUserStore = {
   };
 };
 
-export type StripeBillingCustomer = { id: string; deleted?: boolean };
+export type StripeBillingCustomer = { id?: string | null; deleted?: unknown };
 
 export type StripeBillingClient = {
   customers: {
@@ -38,15 +38,27 @@ export type StripeBillingClient = {
       create: (params: ReturnType<typeof buildProCheckoutSessionParams>) => Promise<{ url?: string | null }>;
     };
   };
+  billingPortal: {
+    sessions: {
+      create: (params: { customer: string; return_url: string }) => Promise<{ url: string }>;
+    };
+  };
 };
+
+/** Real Stripe SDK objects are wider than the test double. */
+export function asStripeBillingClient(stripe: object): StripeBillingClient {
+  return stripe as StripeBillingClient;
+}
 
 export function savedStripeCustomerId(value: unknown): string | null {
   const id = stripeId(value);
   return id?.startsWith("cus_") ? id : null;
 }
 
-export function isUsableStripeCustomer(customer: StripeBillingCustomer | null | undefined) {
-  return Boolean(customer?.id?.startsWith("cus_") && !customer.deleted);
+export function isUsableStripeCustomer(
+  customer: StripeBillingCustomer | null | undefined,
+): customer is StripeBillingCustomer & { id: string } {
+  return Boolean(typeof customer?.id === "string" && customer.id.startsWith("cus_") && !customer.deleted);
 }
 
 async function saveCustomerId(db: BillingUserStore, userId: string, stripeCustomerId: string | null) {
@@ -189,7 +201,7 @@ export async function createProCheckoutSession(input: {
 }
 
 export async function createBillingPortalSession(input: {
-  stripe: { billingPortal: { sessions: { create: (params: { customer: string; return_url: string }) => Promise<{ url: string }> } } };
+  stripe: StripeBillingClient;
   customerId: string;
   returnUrl: string;
   replaceCustomer: () => Promise<{ customerId: string }>;

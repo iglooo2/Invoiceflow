@@ -8,6 +8,7 @@ import { errorRedirect, safeErrorLog } from "@/lib/db-errors";
 import { requireUser } from "@/lib/session";
 import {
   BILLING_EMAIL_REQUIRED,
+  asStripeBillingClient,
   createBillingPortalSession,
   createProCheckoutSession,
   replaceStripeCustomerForUser,
@@ -47,14 +48,15 @@ export async function startProCheckout() {
       console.error("ensureStripeProductSaaSTaxCode failed", safeErrorLog(error));
     }
 
-    const resolved = await resolveStripeCustomerForUser({ user, stripe, db: prisma });
+    const billing = asStripeBillingClient(stripe);
+    const resolved = await resolveStripeCustomerForUser({ user, stripe: billing, db: prisma });
     const session = await createProCheckoutSession({
-      stripe,
+      stripe: billing,
       customerId: resolved.customerId,
       priceId,
       userId: user.id,
       appUrl: getAppUrl(),
-      replaceCustomer: () => replaceStripeCustomerForUser({ user, stripe, db: prisma }),
+      replaceCustomer: () => replaceStripeCustomerForUser({ user, stripe: billing, db: prisma }),
     });
 
     if (!session.url) {
@@ -78,12 +80,13 @@ export async function openBillingPortal() {
     if (!user.email && !savedStripeCustomerId(user.stripeCustomerId)) {
       redirectBillingError(BILLING_EMAIL_REQUIRED);
     }
-    const resolved = await resolveStripeCustomerForUser({ user, stripe, db: prisma });
+    const billing = asStripeBillingClient(stripe);
+    const resolved = await resolveStripeCustomerForUser({ user, stripe: billing, db: prisma });
     const portal = await createBillingPortalSession({
-      stripe,
+      stripe: billing,
       customerId: resolved.customerId,
       returnUrl: `${getAppUrl()}/dashboard/billing`,
-      replaceCustomer: () => replaceStripeCustomerForUser({ user, stripe, db: prisma }),
+      replaceCustomer: () => replaceStripeCustomerForUser({ user, stripe: billing, db: prisma }),
     });
     redirect(portal.url);
   } catch (error) {

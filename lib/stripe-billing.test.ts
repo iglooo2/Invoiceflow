@@ -44,13 +44,15 @@ function mockDb(startingId: string | null = "cus_old") {
   return { db, calls, stored: () => stored };
 }
 
-function mockStripe(options: {
-  retrieve?: (id: string) => Promise<{ id: string; deleted?: boolean }>;
-  list?: StripeBillingCustomer[];
-  createId?: string;
-  checkout?: (params: { customer?: string; managed_payments?: { enabled?: boolean } }) => Promise<{ url?: string | null }>;
-  portal?: (customer: string) => Promise<{ url: string }>;
-}) {
+function mockStripe(
+  options: {
+    retrieve?: (id: string) => Promise<{ id: string; deleted?: boolean }>;
+    list?: StripeBillingCustomer[];
+    createId?: string;
+    checkout?: (params: { customer?: string; managed_payments?: { enabled?: boolean } }) => Promise<{ url?: string | null }>;
+    portal?: (customer: string) => Promise<{ url: string }>;
+  } = {},
+) {
   const created: string[] = [];
   const checkoutCalls: Array<{ customer?: string; managed_payments?: { enabled?: boolean } }> = [];
   const stripe = {
@@ -252,17 +254,14 @@ test("createProCheckoutSession can checkout again for an existing Pro customer",
 });
 
 test("createBillingPortalSession recreates a customer after a leftover test id", async () => {
-  const portal = await createBillingPortalSession({
-    stripe: {
-      billingPortal: {
-        sessions: {
-          create: async ({ customer }) => {
-            if (customer === "cus_test_leftover") throw missingCustomerError(customer);
-            return { url: `https://billing.stripe.com/p/session/${customer}` };
-          },
-        },
-      },
+  const { stripe } = mockStripe({
+    portal: async (customer) => {
+      if (customer === "cus_test_leftover") throw missingCustomerError(customer);
+      return { url: `https://billing.stripe.com/p/session/${customer}` };
     },
+  });
+  const portal = await createBillingPortalSession({
+    stripe,
     customerId: "cus_test_leftover",
     returnUrl: "https://invoiceflowstudio.com/dashboard/billing",
     replaceCustomer: async () => ({ customerId: "cus_live_portal" }),
