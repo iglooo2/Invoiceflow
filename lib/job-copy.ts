@@ -1,0 +1,47 @@
+export type JobFormCopy = {
+  newTitle: string;
+  editTitle: string;
+  jobNumber: string;
+  cancel: string;
+  save: string;
+  details: string;
+  title: string;
+  addClient: string;
+  removeClient: string;
+  noClients: string;
+  dates: string;
+  startDate: string;
+  endDate: string;
+  documents: string;
+  estimates: string;
+  invoices: string;
+  linkEstimates: string;
+  linkInvoices: string;
+  noEstimates: string;
+  noInvoices: string;
+  scheduling: string;
+  visits: string;
+  createVisit: string;
+  visitNotes: string;
+  visitDate: string;
+  removeVisit: string;
+  notes: string;
+  notesPlaceholder: string;
+  actions: string;
+  markCompleted: string;
+  deleteJob: string;
+};
+
+export type JobListCopy = {
+  search: string;
+  active: string;
+  complete: string;
+  emptyTitle: string;
+  emptyBody: string;
+  emptyFiltered: string;
+  jobNumber: string;
+  title: string;
+  client: string;
+  dates: string;
+  noClient: string;
+};
