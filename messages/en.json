@@ -260,6 +260,7 @@
     "save": "Save",
     "remove": "Remove",
     "downloadPdf": "Download PDF",
+    "exportCsv": "Export CSV",
     "publicView": "Public view",
     "emailShareLink": "Email share link",
     "markPaid": "Mark paid",
