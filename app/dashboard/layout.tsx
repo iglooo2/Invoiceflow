@@ -15,7 +15,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const links = [
     [dict.app.overview, "/dashboard"],
     [dict.app.invoices, "/dashboard/invoices"],
-    [dict.app.proposals, "/dashboard/proposals"],
+    [dict.app.estimates, "/dashboard/estimates"],
     [dict.app.clients, "/dashboard/clients"],
     [dict.app.billing, "/dashboard/billing"],
     [dict.app.settings, "/dashboard/settings"],

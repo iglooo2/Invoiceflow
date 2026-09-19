@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { formatCents, invoiceTotals, lineTotalCents, proposalTotalCents } from "./money";
+import { estimateTotals, formatCents, invoiceTotals, lineTotalCents, proposalTotalCents } from "./money";
 
 test("line totals round to cents", () => {
   assert.equal(lineTotalCents(1.5, 125), 18750);
@@ -25,6 +25,14 @@ test("proposal totals skip empty amounts", () => {
     proposalTotalCents([{ amount: 1200 }, { amount: null }, { amount: 300 }]),
     150000,
   );
+});
+
+test("estimate totals apply markup then tax", () => {
+  const totals = estimateTotals([{ amount: 1000 }, { amount: null }], 8, 10);
+  assert.equal(totals.subtotalCents, 100000);
+  assert.equal(totals.markupCents, 10000);
+  assert.equal(totals.taxCents, 8800);
+  assert.equal(totals.totalCents, 118800);
 });
 
 test("formats usd", () => {

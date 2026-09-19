@@ -17,3 +17,7 @@ AUTH_DEV_MODE="false"
 STRIPE_SECRET_KEY="sk_test_..."
 STRIPE_WEBHOOK_SECRET="whsec_..."
 STRIPE_PRO_PRICE_ID="price_..."
+
+# QuickBooks Online (optional). Live OAuth is not enabled yet.
+# INTUIT_CLIENT_ID=""
+# INTUIT_CLIENT_SECRET=""

@@ -3,7 +3,7 @@ import { Wordmark } from "@/components/brand";
 import { LanguageSwitcher } from "@/components/marketing/language-switcher";
 import { Button } from "@/components/ui/button";
 import type { Dictionary } from "@/lib/dictionary";
-import { CONTACT_MAILTO, SITE_DOMAIN, SITE_STUDIO, startFreeHref } from "@/lib/site";
+import { CONTACT_PATH, SITE_DOMAIN, SITE_STUDIO, startFreeHref } from "@/lib/site";
 import { localizedPath, type Locale } from "@/lib/i18n";
 
 export function MarketingHeader({
@@ -24,11 +24,17 @@ export function MarketingHeader({
         <Link href={`${localizedPath(locale, "/")}#how`} className="hover:text-foreground">
           {copy.how}
         </Link>
+        <Link href={localizedPath(locale, "/estimates")} className="hover:text-foreground">
+          {copy.estimates}
+        </Link>
         <Link href={localizedPath(locale, "/pricing")} className="hover:text-foreground">
           {copy.pricing}
         </Link>
         <Link href={`${localizedPath(locale, "/")}#templates`} className="hover:text-foreground">
           {copy.templates}
+        </Link>
+        <Link href={localizedPath(locale, CONTACT_PATH)} className="hover:text-foreground">
+          {copy.messageUs}
         </Link>
       </nav>
       <div className="flex items-center gap-3">
@@ -68,10 +74,11 @@ export function MarketingFooter({
         <p className="text-xs">{SITE_STUDIO} · {SITE_DOMAIN}</p>
         <div className="flex flex-col items-start gap-3 sm:items-end">
           <div className="flex flex-wrap gap-4">
+            <Link href={localizedPath(locale, "/estimates")}>{copy.estimates}</Link>
             <Link href={localizedPath(locale, "/pricing")}>{copy.pricing}</Link>
             <Link href={localizedPath(locale, "/terms")}>{copy.terms}</Link>
             <Link href={localizedPath(locale, "/privacy")}>{copy.privacy}</Link>
-            <a href={CONTACT_MAILTO}>{copy.messageUs}</a>
+            <Link href={localizedPath(locale, CONTACT_PATH)}>{copy.messageUs}</Link>
             <Link href={localizedPath(locale, "/login")}>{copy.signIn}</Link>
           </div>
           <LanguageSwitcher locale={locale} path={path} label={copy.language} />

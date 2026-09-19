@@ -4,7 +4,10 @@
     "pricingTitle": "Preise",
     "loginTitle": "Anmelden",
     "termsTitle": "Nutzungsbedingungen",
-    "privacyTitle": "Datenschutz"
+    "privacyTitle": "Datenschutz",
+    "contactTitle": "Anfrage senden",
+    "estimatesTitle": "Kostenvoranschläge",
+    "estimatesDescription": "Kalkuliere Aufträge mit gebrandeten InvoiceFlow-Studio-Voranschlägen — Positionen, Aufschlag, Steuer, Online-Genehmigung und QuickBooks Online, wenn du soweit bist."
   },
   "nav": {
     "how": "So funktioniert’s",
@@ -16,7 +19,8 @@
     "messageUs": "Schreib uns",
     "terms": "Bedingungen",
     "privacy": "Datenschutz",
-    "language": "Sprache"
+    "language": "Sprache",
+    "estimates": "Voranschläge"
   },
   "home": {
     "eyebrow": "InvoiceFlow Studio",
@@ -26,7 +30,7 @@
     "seePricing": "Preise ansehen",
     "startCta": "Kostenlos starten (3 Rechnungen/Mo.)",
     "openStudio": "Studio öffnen",
-    "freeNote": "Kostenlos: 3 Rechnungen und 3 Angebote im Monat. Keine Buchhaltungs-Suite. Kein 47-Schritte-Assistent.",
+    "freeNote": "Kostenlos: 3 Rechnungen und 3 Voranschläge im Monat. Keine Buchhaltungssuite. Kein 47-Schritt-Assistent.",
     "how": [
       {
         "title": "Mit einer Studio-Vorlage starten",
@@ -64,7 +68,7 @@
   },
   "pricing": {
     "headline": "Einfacher Preis für eine einfache Aufgabe.",
-    "lede": "InvoiceFlow Studio ist keine Buchhaltungs-Suite. Es ist der schnellste Weg, eine schöne Rechnung oder ein Angebot zu senden und zu wissen, ob sie bezahlt wurde — auf invoiceflowstudio.com.",
+    "lede": "InvoiceFlow Studio ist keine Buchhaltungssuite. Es ist der schnellste Weg, eine schöne Rechnung oder einen Voranschlag zu senden und zu wissen, ob sie genehmigt oder bezahlt wurde — auf invoiceflowstudio.com.",
     "perMonth": "/ Monat",
     "useStarter": "Starter nutzen",
     "upgradePro": "Auf Pro upgraden"
@@ -75,21 +79,22 @@
       "blurb": "Reicht, um diesen Monat keine hässlichen Word-Docs mehr zu schicken.",
       "features": [
         "3 Rechnungen / Monat",
-        "3 Angebote / Monat",
-        "PDF-Download + teilbare Kundenlinks",
-        "Studio-Vorlagen",
-        "InvoiceFlow-Kennzeichnung auf öffentlichen Seiten"
+        "3 Voranschläge / Monat",
+        "PDF + teilbare Kundenlinks",
+        "Studio-Vorlagen + gespeicherte Positionen",
+        "InvoiceFlow-Marke auf öffentlichen Seiten"
       ]
     },
     "pro": {
       "name": "Pro",
-      "blurb": "Unbegrenzte Rechnungen und Angebote für ein arbeitendes Studio.",
+      "blurb": "Unbegrenzte Rechnungen und Voranschläge für ein arbeitendes Studio.",
       "features": [
-        "Unbegrenzte Rechnungen & Angebote",
-        "PDF-Download + teilbare Kundenlinks",
-        "Eigene Studiodaten auf jedem Dokument",
-        "Kein InvoiceFlow-Kennzeichen in der Kundenansicht",
-        "Stripe-Abrechnungsportal"
+        "Unbegrenzte Rechnungen & Voranschläge",
+        "PDF + teilbare Kundenlinks",
+        "Studio-Daten auf jedem Dokument",
+        "Keine InvoiceFlow-Marke in der Kundenansicht",
+        "QuickBooks-Online-Sync (kommt bald)",
+        "Stripe-Kundenportal"
       ]
     }
   },
@@ -137,6 +142,44 @@
       "Kontaktiere den Betreiber unter invoiceflowstudio.com, um Export oder Löschung deiner Kontodaten anzufordern."
     ]
   },
+  "contact": {
+    "title": "Anfrage senden",
+    "lede": "Fülle die Angaben aus, wir melden uns bei dir.",
+    "email": "Deine E-Mail-Adresse",
+    "emailPlaceholder": "du@beispiel.com",
+    "topic": "Thema",
+    "topicPlaceholder": "Option wählen",
+    "topics": {
+      "general": "Allgemein",
+      "billing": "Abrechnung",
+      "support": "Support",
+      "partnership": "Partnerschaft",
+      "other": "Sonstiges"
+    },
+    "subject": "Betreff",
+    "subjectPlaceholder": "Kurze Zusammenfassung deiner Anfrage",
+    "description": "Beschreibung",
+    "descriptionPlaceholder": "Bitte beschreibe dein Anliegen im Detail",
+    "attachments": "Anhänge",
+    "attach": "Klicken, um Dateien anzuhängen",
+    "submit": "Senden",
+    "sending": "Wird gesendet…",
+    "successTitle": "Anfrage gesendet",
+    "successBody": "Danke — wir antworten an die angegebene E-Mail.",
+    "sendAnother": "Weitere Anfrage senden",
+    "error": "Das konnten wir gerade nicht senden. Bitte gleich noch einmal versuchen.",
+    "invalid": "Bitte fülle die Pflichtfelder aus.",
+    "bold": "Fett",
+    "italic": "Kursiv",
+    "bulletList": "Aufzählung",
+    "numberedList": "Nummerierte Liste",
+    "alignLeft": "Links ausrichten",
+    "alignCenter": "Zentrieren",
+    "alignRight": "Rechts ausrichten",
+    "link": "Link",
+    "quote": "Zitat",
+    "linkPrompt": "URL eingeben"
+  },
   "app": {
     "signOut": "Abmelden",
     "overview": "Übersicht",
@@ -170,12 +213,13 @@
       "overdue": "Überfällig",
       "void": "Ungültig",
       "accepted": "Angenommen",
-      "declined": "Abgelehnt"
+      "declined": "Abgelehnt",
+      "approved": "Genehmigt"
     },
     "home": {
       "title": "Gut — du bist da. Schick etwas raus.",
-      "proOn": "Pro ist aktiv. Unbegrenzte Rechnungen und Angebote in diesem Monat.",
-      "usage": "{invoices}/{invoiceLimit} Rechnungen und {proposals}/{proposalLimit} Angebote in diesem Monat genutzt.",
+      "proOn": "Pro ist an. Unbegrenzte Rechnungen und Voranschläge in diesem Monat.",
+      "usage": "{invoices}/{invoiceLimit} Rechnungen und {proposals}/{proposalLimit} Voranschläge in diesem Monat.",
       "outstanding": "Offen (aktuell)",
       "invoicesThisMonth": "Rechnungen in diesem Monat",
       "proposalsThisMonth": "Angebote in diesem Monat",
@@ -184,10 +228,14 @@
       "tplDesignBody": "Brand-Suite-Positionen, 14 Tage Zahlungsziel.",
       "tplRetainerTitle": "Retainer-Rechnung",
       "tplRetainerBody": "Stunden + async Direction, fällig in 7 Tagen.",
-      "tplVideoTitle": "Angebot für Videoschnitt",
-      "tplVideoBody": "Cut, Deliverables, Investment, annehmen/ablehnen.",
+      "tplVideoTitle": "Videoschnitt-Voranschlag",
+      "tplVideoBody": "Schnitt, Lieferungen, Investment, online genehmigen.",
       "noInvoices": "Noch keine Rechnungen.",
-      "noProposals": "Noch keine Angebote."
+      "noProposals": "Noch keine Angebote.",
+      "estimatesThisMonth": "Voranschläge in diesem Monat",
+      "tplJobTitle": "Auftrags-Voranschlag",
+      "tplJobBody": "Besichtigung, Arbeit, Material — senden von der Baustelle.",
+      "noEstimates": "Noch keine Voranschläge."
     },
     "invoiceList": {
       "lede": "Nach Status filtern oder Kunde und Nummer suchen.",
@@ -216,19 +264,31 @@
     },
     "settingsPage": {
       "title": "Studio-Daten",
-      "lede": "Das sehen Kunden auf Rechnungen, Angeboten und PDFs.",
+      "lede": "Das sehen Kunden auf Rechnungen, Voranschlägen und PDFs.",
       "yourName": "Dein Name",
       "studioName": "Studioname",
       "studioEmail": "Studio-E-Mail",
       "phone": "Telefon",
       "website": "Website",
-      "address": "Adresse"
+      "address": "Adresse",
+      "qbEyebrow": "QuickBooks Online",
+      "qbTitle": "Bücher verbinden",
+      "qbLede": "Synchronisiere Rechnungen und Voranschläge mit QuickBooks Online, damit die gesendete Zahl die ist, die dein Steuerberater sieht. Einmal verbinden, dann täglicher Sync — oder tippe Jetzt synchronisieren. Live-Intuit-OAuth ist in dieser Version nicht dabei.",
+      "qbReserved": "QuickBooks verbinden ist für dein Studio reserviert. Lege eine Intuit-Developer-App an und setze",
+      "qbRedirect": "Redirect-URI:",
+      "qbBullet1": "Automatisiere die Buchhaltung nach dem Senden aus InvoiceFlow Studio.",
+      "qbBullet2": "Halte Rechnungen und Voranschläge mit QuickBooks Online im Gleichschritt.",
+      "qbBullet3": "Der Steuerberater bleibt in QuickBooks; du im Studio-Tool.",
+      "qbCredsPresent": "Zugangsdaten sind vorhanden",
+      "qbCredsMissing": "Zugangsdaten sind noch nicht gesetzt",
+      "qbConnectReady": "QuickBooks verbinden (OAuth kommt bald)",
+      "qbConnectSoon": "QuickBooks verbinden — kommt bald"
     },
     "billingPage": {
-      "lede": "Du bist auf {plan}. Starter ist auf 3 Rechnungen und 3 Angebote pro Monat begrenzt. Pro kostet ${price}/Monat, unbegrenzt.",
+      "lede": "Du bist auf {plan}. Starter ist auf 3 Rechnungen und 3 Voranschläge pro Monat begrenzt. Pro kostet ${price}/Monat, unbegrenzt.",
       "success": "Stripe-Checkout abgeschlossen. Neu laden, falls der Plan noch nicht gewechselt hat — der Webhook holt nach.",
       "demo": "Lokales Demo-Pro für 30 Tage freigeschaltet.",
-      "limit": "Starter umfasst 3 Rechnungen und 3 Angebote pro Monat. Upgrade auf Pro für unbegrenzt.",
+      "limit": "Starter enthält 3 Rechnungen und 3 Voranschläge pro Monat. Upgrade auf Pro für unbegrenzt.",
       "portal": "Stripe-Kundenportal",
       "unlockDemo": "Pro für lokale Demo freischalten",
       "returnStarter": "Zurück zu Starter"
@@ -236,7 +296,111 @@
     "errors": {
       "invoiceNotFound": "Rechnung nicht gefunden.",
       "proposalNotFound": "Angebot nicht gefunden.",
-      "clientEmailRequired": "Füge eine Kunden-E-Mail hinzu, bevor du den Link sendest."
+      "clientEmailRequired": "Füge eine Kunden-E-Mail hinzu, bevor du den Link sendest.",
+      "estimateNotFound": "Voranschlag nicht gefunden."
+    },
+    "estimates": "Voranschläge",
+    "newEstimate": "Neuer Voranschlag",
+    "newEstimateLede": "Positionen, Aufschlag, Steuer und ein Link, den Kunden am Telefon genehmigen.",
+    "editEstimate": "Voranschlag bearbeiten",
+    "estimateList": {
+      "lede": "Kalkuliere den Auftrag, sende einen gebrandeten Link und verfolge geöffnet, genehmigt und abgelehnt.",
+      "title": "Titel",
+      "client": "Kunde",
+      "status": "Status",
+      "opened": "Geöffnet",
+      "total": "Summe",
+      "attached": "{count} angehängt",
+      "empty": "Keine Voranschläge passen zu diesen Filtern."
+    },
+    "estimateActivity": {
+      "opened": "Geöffnet {when}.",
+      "notOpened": "Noch nicht geöffnet.",
+      "approved": "Online genehmigt von {name}{when}.",
+      "waiting": "Wartet auf eine Online-Genehmigung.",
+      "email": "Wir mailen deine Studio-Adresse, wenn ein Kunde öffnet oder genehmigt — ohne Resend aktualisiert sich der Status trotzdem hier."
     }
+  },
+  "estimatesPage": {
+    "eyebrow": "Kostenvoranschläge für Freelancer und Auftragnehmer",
+    "headline": "Den Auftrag kalkulieren. Den Voranschlag senden. Das Ja holen.",
+    "lede": "InvoiceFlow Studio ist der fokussierte Weg, einen gebrandeten Kostenvoranschlag zu schreiben, ein PDF oder einen Link zu senden und zu wissen, wann der Kunde ihn geöffnet oder genehmigt hat — ohne die Woche zur Buchhaltung zu machen.",
+    "startFreeCreate": "Kostenlos starten — Voranschlag erstellen",
+    "create": "Voranschlag erstellen",
+    "freeNote": "Starter enthält 3 Voranschläge im Monat. Funktioniert vom Telefon. Kein 47-Schritt-Assistent.",
+    "themes": [
+      {
+        "title": "Richtig kalkulieren",
+        "body": "Geh den Umfang einmal durch, schreib ihn auf und sende eine Zahl, hinter der du stehen kannst. Ein genauer Voranschlag hält den Auftrag profitabel, bevor das erste Material bestellt wird."
+      },
+      {
+        "title": "Vor Ort kalkulieren",
+        "body": "Baue einen detaillierten Voranschlag vom Telefon auf der Baustelle. Ergänze Arbeit, Material und Notizen, während der Kunde noch hinsieht — und sende den Link, bevor du gehst."
+      },
+      {
+        "title": "Sieht professionell aus",
+        "body": "Jeder Voranschlag trägt deinen Studionamen, deine Farben und ein sauberes PDF. Kunden sehen ein Markendokument, keinen Screenshot einer Tabelle."
+      },
+      {
+        "title": "Mit Sicherheit preisen",
+        "body": "Positionen, Aufschlag und Steuer. Die Summe aktualisiert sich beim Tippen, damit du die Zahl kennst, bevor der Kunde sie sieht."
+      },
+      {
+        "title": "Schneller genehmigen",
+        "body": "Kunden öffnen den Voranschlag am Telefon, prüfen die Positionen, tippen ihren Namen und genehmigen online. Kein Drucken-Unterschreiben-Scannen."
+      },
+      {
+        "title": "Fotos, Dateien, wiederkehrende Jobs",
+        "body": "Hänge Dateinamen von der Baustelle an, nutze gespeicherte Positionen und starte von einer Vorlage, damit der nächste ähnliche Auftrag schon halb geschrieben ist."
+      }
+    ],
+    "buildTitle": "Einen professionellen Voranschlag bauen",
+    "buildItems": [
+      "Positionen, damit der Kunde Arbeit, Material und das Warum sieht.",
+      "Gespeicherte Positionen und Vorlagen für Aufträge, die du schon kalkulieren kannst.",
+      "Fotos und Dateien auf dem Voranschlag, damit der Umfang sichtbar ist, nicht nur ein Absatz.",
+      "Digitale Unterschrift: Namen tippen, online genehmigen, fertig.",
+      "Hinweise bei Öffnung oder Genehmigung (E-Mail, wenn eine Studio-Adresse gesetzt ist; sonst markieren wir es im Dashboard).",
+      "Telefon-first für die Einfahrt, den Flur oder die letzten fünf Minuten der Besichtigung."
+    ],
+    "qbEyebrow": "QuickBooks Online",
+    "qbTitle": "Bücher im Gleichschritt",
+    "qbLede": "Wenn aus dem Auftrag eine Rechnung wird, sollten die Zahlen schon stimmen. InvoiceFlow Studio ist dafür gebaut, Rechnungen und Voranschläge mit QuickBooks Online zu synchronisieren, statt Positionen für den Steuerberater neu zu tippen.",
+    "qbItems": [
+      "Einmal verbinden — wir merken uns die Firmendatei.",
+      "Täglicher automatischer Sync, oder tippe Jetzt synchronisieren nach einem vollen Tag.",
+      "Rechnungen und Voranschläge bleiben im Gleichschritt, damit die Bücher zur Arbeit passen.",
+      "Dein Steuerberater bleibt in QuickBooks Online; du sendest weiter aus InvoiceFlow Studio."
+    ],
+    "qbNoteBefore": "Live-Intuit-OAuth ist in dieser Version nicht dabei. Lege eine Intuit-Developer-App an (",
+    "qbNoteMid": ") und nutze",
+    "qbNoteAfter": "um QuickBooks verbinden zu reservieren. Die Geschichte ist hier; der Handshake kommt, wenn die Zugangsdaten da sind.",
+    "qbCta": "QuickBooks-Einstellungen öffnen",
+    "notifyTitle": "Wissen, wann sie schauen — und wann sie ja sagen",
+    "notifyLede": "Der öffentliche Link speichert die erste Öffnung und die Online-Genehmigung. Mit Studio-E-Mail schickt InvoiceFlow Studio eine kurze Notiz. In jedem Fall zeigt das Dashboard Geöffnet und Genehmigt, damit du nachfassen kannst, solange der Auftrag warm ist.",
+    "heroStudio": "Studio North",
+    "heroTitle": "Kostenvoranschlag",
+    "heroStatus": "Gesendet",
+    "heroClient": "Hearth Goods · 14 Tage gültig",
+    "heroLines": [
+      {
+        "label": "Besichtigung & Umfang",
+        "amount": "$125"
+      },
+      {
+        "label": "Arbeit",
+        "amount": "$1,800"
+      },
+      {
+        "label": "Material",
+        "amount": "$640"
+      },
+      {
+        "label": "Aufschlag + Steuer",
+        "amount": "$205"
+      }
+    ],
+    "heroTotal": "Voranschlag gesamt",
+    "heroTotalAmount": "$2,770"
   }
 }

@@ -50,7 +50,7 @@ export const SEED_TEMPLATES = [
     slug: "video-edit-proposal",
     name: "Video Edit Proposal",
     kind: "proposal" as const,
-    description: "A tight edit proposal for a brand film, reel, or YouTube package.",
+    description: "A tight edit estimate for a brand film, reel, or YouTube package.",
     payload: {
       title: "Picture edit & sound pass",
       validForDays: 21,
@@ -70,6 +70,34 @@ export const SEED_TEMPLATES = [
           heading: "Investment",
           body: "Includes assembly, fine cut, basic sound design, and music supervision from your licensed library (or Epidemic).",
           amount: 3200,
+        },
+      ],
+    } satisfies ProposalTemplatePayload,
+  },
+  {
+    slug: "job-estimate",
+    name: "Job Estimate",
+    kind: "proposal" as const,
+    description: "Itemized pricing for a jobsite visit — labor, materials, and a clear total.",
+    payload: {
+      title: "Job estimate",
+      validForDays: 14,
+      notes: "Price holds for 14 days. Materials billed as used. Two site visits included.",
+      sections: [
+        {
+          heading: "Site visit & scope",
+          body: "Walk the job, take measurements and photos, and write a scope you can stand behind before anyone orders materials.",
+          amount: 125,
+        },
+        {
+          heading: "Labor",
+          body: "Crew time to complete the work described above, including a clean jobsite at the end of each day.",
+          amount: 1800,
+        },
+        {
+          heading: "Materials allowance",
+          body: "Estimated parts and consumables. Unused returns credited; overages approved before we buy.",
+          amount: 640,
         },
       ],
     } satisfies ProposalTemplatePayload,

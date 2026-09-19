@@ -7,6 +7,7 @@ export const SITE_URL = `https://${SITE_DOMAIN}`;
 export const SITE_DESCRIPTION =
   "Ditch the Word docs. Pick a template that matches your work — fast invoices and proposals for designers, editors, and writers.";
 export const CONTACT_EMAIL = "galit.igor@yahoo.com";
+export const CONTACT_PATH = "/contact";
 export const CONTACT_MAILTO = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("InvoiceFlow Studio inquiry")}`;
 
 export function startFreeHref(signedIn: boolean, locale?: Locale) {
