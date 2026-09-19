@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { format } from "date-fns";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
+import { prismaReadFailureMessage, safeErrorLog } from "@/lib/db-errors";
 import { publicProposalUrl } from "@/lib/email";
-import { estimateEditPath } from "@/lib/estimates";
+import { estimateEditPath, formatEstimateDate } from "@/lib/estimates";
+import { ESTIMATE_SCHEMA_WARNING, findEstimateForUser } from "@/lib/proposal-queries";
 import { appCopy } from "@/lib/i18n-request";
 import { formatMessage } from "@/lib/i18n";
 import { currentPlanId } from "@/lib/plans";
@@ -24,13 +25,31 @@ export default async function EstimateDetailPage({
   const { dict } = await appCopy();
   const { id } = await params;
   const { error } = await searchParams;
-  const estimate = await prisma.proposal.findFirst({
-    where: { id, userId: user.id },
-    include: { sections: { orderBy: { sortOrder: "asc" } } },
-  });
+  let loaded;
+  try {
+    loaded = await findEstimateForUser(prisma, user.id, id, { includeSections: true });
+  } catch (caught) {
+    console.error("EstimateDetailPage", safeErrorLog(caught));
+    loaded = {
+      estimate: null,
+      usedLegacySchema: false,
+      error: prismaReadFailureMessage(caught),
+    };
+  }
+  if (loaded.error) {
+    return (
+      <div className="grid gap-6">
+        <h1 className="font-display text-4xl">{dict.app.estimates}</h1>
+        <p className="rounded-2xl bg-primary/10 px-4 py-3 text-sm">{loaded.error}</p>
+      </div>
+    );
+  }
+  const estimate = loaded.estimate;
   if (!estimate) notFound();
   const share = publicProposalUrl(estimate.publicToken);
   const activity = dict.app.estimateActivity;
+  const openedWhen = formatEstimateDate(estimate.viewedAt, "MMM d, yyyy 'at' h:mm a");
+  const signedWhen = formatEstimateDate(estimate.signedAt, "MMM d");
 
   return (
     <div className="grid gap-6">
@@ -53,16 +72,17 @@ export default async function EstimateDetailPage({
         </div>
       </div>
       {error ? <p className="rounded-2xl bg-primary/10 px-4 py-3 text-sm">{error}</p> : null}
+      {loaded.usedLegacySchema ? (
+        <p className="rounded-2xl bg-primary/10 px-4 py-3 text-sm">{ESTIMATE_SCHEMA_WARNING}</p>
+      ) : null}
       <div className="no-print rounded-3xl border border-border bg-card px-4 py-3 text-sm text-muted-foreground">
-        {estimate.viewedAt
-          ? formatMessage(activity.opened, {
-              when: format(estimate.viewedAt, "MMM d, yyyy 'at' h:mm a"),
-            })
+        {openedWhen
+          ? formatMessage(activity.opened, { when: openedWhen })
           : activity.notOpened}{" "}
         {estimate.signedName
           ? formatMessage(activity.approved, {
               name: estimate.signedName,
-              when: estimate.signedAt ? ` · ${format(estimate.signedAt, "MMM d")}` : "",
+              when: signedWhen ? ` · ${signedWhen}` : "",
             })
           : activity.waiting}{" "}
         {activity.email}
