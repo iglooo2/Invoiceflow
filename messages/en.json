@@ -28,7 +28,7 @@
   "home": {
     "eyebrow": "InvoiceFlow Studio",
     "headline": "Ditch the Word Docs.\nPick a template that matches your work.",
-    "lede": "The focused tool for designers, editors, and writers who would rather ship work than wrestle a .docx. Choose a studio template, send a PDF or a client link, and know what’s paid.",
+    "lede": "The focused tool for designers, editors, writers, and contractors who would rather ship work than wrestle a .docx. Choose a studio template, send a PDF or a client link, and know what’s paid.",
     "createInvoice": "Create your first invoice",
     "seePricing": "See pricing",
     "startCta": "Start for Free (3 Invoices/mo)",
@@ -116,7 +116,7 @@
     "apple": "Continue with Apple",
     "github": "Continue with GitHub",
     "googleHint": "Google Sign-In is not configured. Add AUTH_GOOGLE_ID and AUTH_GOOGLE_SECRET as Cloudflare Worker secrets.",
-    "appleHint": "Apple Sign-In is not configured. Add AUTH_APPLE_ID and AUTH_APPLE_SECRET as Cloudflare Worker secrets. Create the secret with your Apple Team ID and key.",
+    "appleHint": "Apple Sign-In is not configured. Add AUTH_APPLE_ID and AUTH_APPLE_SECRET (the .p8 key or a client-secret JWT) as Cloudflare Worker secrets. If AUTH_APPLE_SECRET is the .p8 file, also set AUTH_APPLE_TEAM and AUTH_APPLE_KEY_ID.",
     "githubHint": "GitHub OAuth appears here when AUTH_GITHUB_ID and AUTH_GITHUB_SECRET are set.",
     "demoPrefix": "Demo:",
     "errors": {
@@ -129,7 +129,8 @@
       "magicEmail": "Enter the email for your magic link.",
       "magicFailed": "Couldn’t send a magic link. Check AUTH_RESEND_KEY.",
       "oauthFailed": "That sign-in didn’t complete. Try email and password, or check the Google/Apple Worker secrets.",
-      "oauthNotConfigured": "That sign-in method is not configured on this server."
+      "oauthNotConfigured": "That sign-in method is not configured on this server.",
+      "appleSecretInvalid": "Apple Sign-In is misconfigured. AUTH_APPLE_SECRET must be a client-secret JWT, or a .p8 key with AUTH_APPLE_TEAM and AUTH_APPLE_KEY_ID."
     }
   },
   "onboarding": {
@@ -260,6 +261,7 @@
     "save": "Save",
     "remove": "Remove",
     "downloadPdf": "Download PDF",
+    "exportCsv": "Export CSV",
     "publicView": "Public view",
     "emailShareLink": "Email share link",
     "markPaid": "Mark paid",

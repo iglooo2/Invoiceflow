@@ -59,8 +59,8 @@ See `.env.example`. Placeholders only — never commit real secrets.
 | `AUTH_URL` | `http://localhost:3000` | `https://invoiceflowstudio.com` | Defaults to localhost / production domain |
 | `NEXT_PUBLIC_APP_URL` | `http://localhost:3000` | `https://invoiceflowstudio.com` | Share links and Stripe redirects |
 | `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | optional | optional **runtime** Worker secrets | Google button enabled at request time; disabled with a hint if missing. Not a `NEXT_PUBLIC_*` flag |
-| `AUTH_APPLE_ID` / `AUTH_APPLE_SECRET` | optional | optional **runtime** Worker secrets | Apple button enabled at request time; disabled with a hint if missing. Apple needs HTTPS (not localhost HTTP). Generate the JWT secret with your Team ID + key (`npx auth add apple`) |
-| `AUTH_APPLE_TEAM` / `AUTH_APPLE_KEY_ID` | optional | optional (console only) | Used when creating `AUTH_APPLE_SECRET`; the Worker reads the JWT, not these directly |
+| `AUTH_APPLE_ID` / `AUTH_APPLE_SECRET` | optional | optional **runtime** Worker secrets | Apple button enabled at request time; disabled with a hint if missing. Apple needs HTTPS (not localhost HTTP). `AUTH_APPLE_SECRET` may be a client-secret JWT **or** the `.p8` private key. |
+| `AUTH_APPLE_TEAM` / `AUTH_APPLE_KEY_ID` | optional | optional **runtime** Worker secrets | Required when `AUTH_APPLE_SECRET` is the `.p8` key. The Worker mints the ES256 client-secret JWT with Web Crypto (Workers-safe). Not needed if `AUTH_APPLE_SECRET` is already a JWT. |
 | `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET` | optional | optional | GitHub button hidden |
 | `AUTH_RESEND_KEY` / `EMAIL_FROM` | optional | optional | Magic link hidden; share-link email logs to console |
 | `STRIPE_SECRET_KEY` | optional test key | **runtime secret** `sk_test_…` or `sk_live_…` | Checkout disabled |
@@ -225,7 +225,10 @@ Do this in the Cloudflare dashboard — the agent cannot click it for you:
    | `STRIPE_PRO_PRICE_ID` | Secret (**runtime**) | Live-mode `price_…` (Dashboard Live toggle). Must be encrypted — a plaintext Variable is wiped on Git deploy if `keep_vars` is off. Never put the live id in the repo. |
    | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | unused | Do not rely on this — see Stripe section |
    | `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | Secret (**runtime**) | Google Sign-In. Read on the Worker at request time (not a Build/`NEXT_PUBLIC_*` flag). Callback `https://invoiceflowstudio.com/api/auth/callback/google` |
-   | `AUTH_APPLE_ID` / `AUTH_APPLE_SECRET` | Secret (**runtime**) | Apple Sign-In (Services ID + client-secret JWT). Same runtime read as Google. Callback `https://invoiceflowstudio.com/api/auth/callback/apple`. Create the JWT with your Apple Team ID and private key. |
+   | `AUTH_APPLE_ID` | Secret (**runtime**) | Apple **Services ID** (e.g. `com.invoiceflowstudio.web`), not the App ID |
+   | `AUTH_APPLE_SECRET` | Secret (**runtime**) | `.p8` private key contents **or** a client-secret JWT. Prefer the `.p8` key — JWTs expire in ~6 months |
+   | `AUTH_APPLE_TEAM` | Secret (**runtime**) | 10-character Apple Team ID. Required when `AUTH_APPLE_SECRET` is a `.p8` key |
+   | `AUTH_APPLE_KEY_ID` | Secret (**runtime**) | 10-character Key ID. Required when `AUTH_APPLE_SECRET` is a `.p8` key |
    | `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET` | Secret | if using GitHub login |
    | `AUTH_RESEND_KEY` | Secret | if using magic links |
    | `EMAIL_FROM` | Variable | `InvoiceFlow Studio <noreply@invoiceflowstudio.com>` |
@@ -238,7 +241,7 @@ Do this in the Cloudflare dashboard — the agent cannot click it for you:
 7. **Custom domain:** Worker → **Settings → Domains & Routes → Add** → `invoiceflowstudio.com`. Because the zone is already on Cloudflare, accept the proxied record it offers. Optionally add `www` and redirect it to apex in the zone.
 8. OAuth apps (if used):
    - **Google:** OAuth client, homepage `https://invoiceflowstudio.com`, authorized redirect `https://invoiceflowstudio.com/api/auth/callback/google`.
-   - **Apple:** Services ID with Sign In with Apple, return URL `https://invoiceflowstudio.com/api/auth/callback/apple`. Create a client-secret JWT from your Team ID + key and store it as `AUTH_APPLE_SECRET`. Apple does not accept localhost HTTP.
+   - **Apple:** See [Apple Sign-In on Cloudflare Workers](#apple-sign-in-on-cloudflare-workers) below. Return URL must be exactly `https://invoiceflowstudio.com/api/auth/callback/apple`. Apple does not accept localhost HTTP.
    - **GitHub:** Homepage `https://invoiceflowstudio.com`, callback `https://invoiceflowstudio.com/api/auth/callback/github`.
 9. Stripe webhook endpoint: `https://invoiceflowstudio.com/api/stripe/webhook` (events: `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`).
 
@@ -252,6 +255,40 @@ Worker name in `wrangler.jsonc` is `invoiceflow` (must match the Cloudflare Git-
 - Attach **invoiceflowstudio.com** as a custom domain
 - (Optional) Enable R2 and bind `NEXT_INC_CACHE_R2_BUCKET` for durable Next.js incremental cache — not required for the MVP
 
+## Apple Sign-In on Cloudflare Workers
+
+Continue with Apple is always visible on `/login` (sign-in and register). The button is enabled only when the Worker has a complete Apple secret set. If secrets are missing, the button stays visible but disabled with a hint. Apple requires HTTPS; it will not complete on `http://localhost`.
+
+**Callback URL (must match Apple Console exactly):** `https://invoiceflowstudio.com/api/auth/callback/apple`
+
+### 1. Apple Developer
+
+1. [Identifiers → App IDs](https://developer.apple.com/account/resources/identifiers/list/bundleId): create or edit an App ID and enable **Sign In with Apple**.
+2. [Identifiers → Services IDs](https://developer.apple.com/account/resources/identifiers/list/serviceId): create a Services ID such as `com.invoiceflowstudio.web`. This string is **`AUTH_APPLE_ID`** — do not use the App ID / bundle id.
+3. Enable **Sign In with Apple** on that Services ID → **Configure**:
+   - Primary App ID: the App ID from step 1
+   - Domains and Subdomains: `invoiceflowstudio.com` (add `www.invoiceflowstudio.com` only if you serve Apple on www)
+   - Return URLs: `https://invoiceflowstudio.com/api/auth/callback/apple`
+4. [Keys](https://developer.apple.com/account/resources/authkeys/list): create a key, enable **Sign In with Apple**, download **`AuthKey_XXXXXXXXXX.p8`** (shown once). Copy the **Key ID**.
+5. Copy the **Team ID** from the top-right of the Apple Developer account.
+
+### 2. Cloudflare Worker runtime secrets
+
+Worker → **Settings → Variables and Secrets**. Use **encrypted Secrets** (not Build variables, not plaintext Variables that `wrangler deploy` can wipe):
+
+| Secret | Value |
+|---|---|
+| `AUTH_APPLE_ID` | Services ID (`com.invoiceflowstudio.web`) |
+| `AUTH_APPLE_SECRET` | Full `.p8` file contents, including `BEGIN PRIVATE KEY` lines. Cloudflare may store newlines as `\n` — the Worker accepts that. A pre-minted client-secret JWT also works until it expires (~6 months). |
+| `AUTH_APPLE_TEAM` | 10-character Team ID (required when the secret is a `.p8` key) |
+| `AUTH_APPLE_KEY_ID` | 10-character Key ID (required when the secret is a `.p8` key) |
+| `AUTH_URL` | `https://invoiceflowstudio.com` |
+| `AUTH_SECRET` | existing Auth.js secret (`openssl rand -base64 32`) |
+
+Do **not** invent placeholder values. After saving secrets, Continue with Apple enables on the next request (login is `force-dynamic`; no rebuild required for these runtime secrets). A new deploy is required for this Apple callback / JWT-minting code.
+
+Optional: `npx auth add apple` still mints a JWT locally if you would rather store `AUTH_APPLE_SECRET` as a JWT and skip Team / Key ID. Rotate that JWT before the 6-month expiry.
+
 ## Stripe (test locally, live on Workers)
 
 Checkout is a **server action** (`startProCheckout` → `stripe.checkout.sessions.create`). The Billing button label follows the **runtime** `STRIPE_SECRET_KEY` prefix (`sk_test_` vs `sk_live_` / restricted `rk_test_` / `rk_live_`). `AUTH_*` is not used for Stripe mode. `AUTH_DEV_MODE` only shows the local “Unlock Pro” demo button.
@@ -261,7 +298,8 @@ Checkout is a **server action** (`startProCheckout` → `stripe.checkout.session
 | Variable | When it is read | Notes |
 |---|---|---|
 | `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | **Runtime** Worker secret | Preferred via `getCloudflareContext()`. Login is `force-dynamic` so the Continue with Google button enables without a rebuild. Do not use a `NEXT_PUBLIC_*` flag — Next would inline it at `cf:build`. |
-| `AUTH_APPLE_ID` / `AUTH_APPLE_SECRET` | **Runtime** Worker secret | Same as Google. Continue with Apple stays visible when unset (disabled + hint). |
+| `AUTH_APPLE_ID` / `AUTH_APPLE_SECRET` | **Runtime** Worker secret | Same as Google. Continue with Apple stays visible when unset (disabled + hint). Secret may be a `.p8` key or a JWT. |
+| `AUTH_APPLE_TEAM` / `AUTH_APPLE_KEY_ID` | **Runtime** Worker secret | Read by the Worker to mint the Apple client-secret JWT when `AUTH_APPLE_SECRET` is a `.p8` key. |
 | `STRIPE_SECRET_KEY` | **Runtime** Worker secret | Preferred via `getCloudflareContext()`. Do not rely on a Build var — Next may inline an empty/placeholder `process.env` at `cf:build`. |
 | `STRIPE_PRO_PRICE_ID` | **Runtime** Worker secret | Encrypted secret, same as the Stripe key. Must be created in the **same** Stripe mode as the secret. A test `price_…` with `sk_live_` fails (`No such price`). A dashboard **plaintext Variable** is deleted on `wrangler deploy` because `wrangler.jsonc` `vars` only lists `NEXTJS_ENV` — Secrets survive. |
 | `STRIPE_WEBHOOK_SECRET` | **Runtime** Worker secret | Live Dashboard endpoint for production; Stripe CLI `whsec_…` locally. |

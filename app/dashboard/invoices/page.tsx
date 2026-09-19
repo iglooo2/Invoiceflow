@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
+import { csvExportHref, invoiceListWhere, parseListFilters } from "@/lib/csv";
 import { formatCents, invoiceTotals } from "@/lib/money";
 import { requireUser } from "@/lib/session";
 import { Button } from "@/components/ui/button";
@@ -14,19 +15,10 @@ export default async function InvoicesPage({
 }) {
   const user = await requireUser();
   const { dict } = await appCopy();
-  const { status, q } = await searchParams;
+  const filters = parseListFilters(await searchParams);
+  const { status, q } = filters;
   const invoices = await prisma.invoice.findMany({
-    where: {
-      userId: user.id,
-      status: status || undefined,
-      OR: q
-        ? [
-            { number: { contains: q } },
-            { clientName: { contains: q } },
-            { clientCompany: { contains: q } },
-          ]
-        : undefined,
-    },
+    where: invoiceListWhere(user.id, filters),
     include: { items: true },
     orderBy: { createdAt: "desc" },
   });
@@ -38,9 +30,14 @@ export default async function InvoicesPage({
           <h1 className="font-display text-4xl">{dict.app.invoices}</h1>
           <p className="text-muted-foreground">{dict.app.invoiceList.lede}</p>
         </div>
-        <Button asChild>
-          <Link href="/dashboard/invoices/new">{dict.app.newInvoice}</Link>
-        </Button>
+        <div className="btn-row">
+          <Button asChild variant="outline">
+            <a href={csvExportHref("invoices", filters)}>{dict.app.exportCsv}</a>
+          </Button>
+          <Button asChild>
+            <Link href="/dashboard/invoices/new">{dict.app.newInvoice}</Link>
+          </Button>
+        </div>
       </div>
       <form className="flex flex-col gap-2 sm:flex-row sm:items-center">
         <Input name="q" placeholder={dict.app.search} defaultValue={q} className="min-w-0 sm:flex-1" />

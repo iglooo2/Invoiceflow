@@ -28,7 +28,7 @@
   "home": {
     "eyebrow": "InvoiceFlow Studio",
     "headline": "Olvídate de los Word.\nElige una plantilla que encaje con tu trabajo.",
-    "lede": "La herramienta enfocada para diseñadores, editores y redactores que prefieren entregar trabajo a pelearse con un .docx. Elige una plantilla de estudio, envía un PDF o un enlace al cliente y sabe qué está pagado.",
+    "lede": "La herramienta enfocada para diseñadores, editores, redactores y contratistas que prefieren entregar trabajo a pelearse con un .docx. Elige una plantilla de estudio, envía un PDF o un enlace al cliente y sabe qué está pagado.",
     "createInvoice": "Crea tu primera factura",
     "seePricing": "Ver precios",
     "startCta": "Empieza gratis (3 facturas/mes)",
@@ -116,7 +116,7 @@
     "apple": "Continuar con Apple",
     "github": "Continuar con GitHub",
     "googleHint": "Google Sign-In no está configurado. Añade AUTH_GOOGLE_ID y AUTH_GOOGLE_SECRET como secretos del Worker de Cloudflare.",
-    "appleHint": "Apple Sign-In no está configurado. Añade AUTH_APPLE_ID y AUTH_APPLE_SECRET como secretos del Worker. Crea el secreto con tu Apple Team ID y clave.",
+    "appleHint": "Apple Sign-In no está configurado. Añade AUTH_APPLE_ID y AUTH_APPLE_SECRET (clave .p8 o JWT) como secretos del Worker. Si AUTH_APPLE_SECRET es el .p8, define también AUTH_APPLE_TEAM y AUTH_APPLE_KEY_ID.",
     "githubHint": "GitHub OAuth aparece aquí cuando AUTH_GITHUB_ID y AUTH_GITHUB_SECRET están configurados.",
     "demoPrefix": "Demo:",
     "errors": {
@@ -129,7 +129,8 @@
       "magicEmail": "Introduce el email para el enlace mágico.",
       "magicFailed": "No se pudo enviar el enlace mágico. Revisa AUTH_RESEND_KEY.",
       "oauthFailed": "Ese acceso no se completó. Prueba email y contraseña, o revisa los secretos de Google/Apple del Worker.",
-      "oauthNotConfigured": "Ese método de acceso no está configurado en este servidor."
+      "oauthNotConfigured": "Ese método de acceso no está configurado en este servidor.",
+      "appleSecretInvalid": "Apple Sign-In está mal configurado. AUTH_APPLE_SECRET debe ser un JWT, o una clave .p8 con AUTH_APPLE_TEAM y AUTH_APPLE_KEY_ID."
     }
   },
   "onboarding": {
@@ -260,6 +261,7 @@
     "save": "Guardar",
     "remove": "Quitar",
     "downloadPdf": "Descargar PDF",
+    "exportCsv": "Exportar CSV",
     "publicView": "Vista pública",
     "emailShareLink": "Enviar enlace",
     "markPaid": "Marcar pagada",

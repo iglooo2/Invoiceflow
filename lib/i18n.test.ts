@@ -114,6 +114,7 @@ test("login and dashboard common errors exist in every locale", () => {
     assert.ok(dict.app.status.approved.length > 0, locale);
     assert.ok(dict.app.status.pending.length > 0, locale);
     assert.ok(dict.app.markPending.length > 0, locale);
+    assert.ok(dict.app.exportCsv.length > 0, locale);
     assert.ok(dict.meta.contactTitle.length > 0, locale);
     assert.ok(dict.contact.submit.length > 0, locale);
   }
@@ -152,6 +153,8 @@ test("localized landing keeps the studio gallery and register CTA", () => {
     assert.match(dict.home.headline, /\n/);
     assert.ok(dict.login.google.length > 0, locale);
     assert.ok(dict.login.apple.length > 0, locale);
+    assert.match(dict.login.appleHint, /AUTH_APPLE_TEAM/);
+    assert.ok(dict.login.errors.appleSecretInvalid.length > 0, locale);
     assert.ok(dict.onboarding.profileTitle.length > 0, locale);
     assert.ok(dict.onboarding.businessTitle.length > 0, locale);
     assert.match(dict.onboarding.businessLede, /InvoiceFlow Studio/);
