@@ -21,9 +21,9 @@ const TEMPLATES = [
     client: "Hearth Goods",
     heading: "Invoice",
     lines: [
-      ["Visual identity system", "$2,400"],
-      ["Logo suite", "$1,200"],
-      ["Brand guidelines", "$850"],
+      ["Visual identity system", "1", "$2,400"],
+      ["Logo suite", "1", "$1,200"],
+      ["Brand guidelines", "1", "$850"],
     ],
     total: "$4,450",
   },
@@ -35,9 +35,9 @@ const TEMPLATES = [
     client: "Northlight",
     heading: "Creative Proposal",
     lines: [
-      ["Discovery & direction", "Included"],
-      ["Campaign system", "$3,200"],
-      ["Launch kit", "$900"],
+      ["Discovery & direction", "—", "Incl."],
+      ["Campaign system", "1", "$3,200"],
+      ["Launch kit", "1", "$900"],
     ],
     total: "$4,100",
   },
@@ -49,10 +49,11 @@ const TEMPLATES = [
     client: "Hearth Goods",
     heading: "Billing",
     lines: [
-      ["Monthly retainer — 12 hrs", "$1,500"],
-      ["Async art direction", "$200"],
+      ["Monthly retainer", "12", "$1,500"],
+      ["Async art direction", "1", "$200"],
+      ["Rush weekend hours", "2", "$250"],
     ],
-    total: "$1,700",
+    total: "$1,950",
   },
   {
     id: "brand-identity-proposal",
@@ -60,11 +61,11 @@ const TEMPLATES = [
     kind: "Proposal",
     studio: "IF Studio",
     client: "Hearth Goods",
-    heading: "Brand Identity Proposal",
+    heading: "Brand Identity",
     lines: [
-      ["Mark, wordmark, suite", "Included"],
-      ["Color + type system", "Included"],
-      ["Guidelines PDF", "$4,800"],
+      ["Mark & wordmark", "—", "Incl."],
+      ["Color + type system", "—", "Incl."],
+      ["Guidelines PDF", "1", "$4,800"],
     ],
     total: "$4,800",
   },
@@ -185,10 +186,6 @@ export function StudioProduct() {
           </div>
         </div>
       </div>
-      <div className="studio-monitor-stand" aria-hidden>
-        <div className="studio-monitor-neck" />
-        <div className="studio-monitor-base" />
-      </div>
     </div>
   );
 }
@@ -202,11 +199,12 @@ function MiniDocument({
   selected: boolean;
   accent: string;
 }) {
+  const badgeColor = accent === "#FFFDF9" || accent === "#F4EFE6" ? "#2D4A3E" : accent;
   return (
     <div
       className={cn(
-        "relative aspect-[3/4] overflow-hidden rounded-lg bg-[#faf6f0] p-2.5 transition-shadow",
-        !selected && "ring-1 ring-[#ece6dc] shadow-[0_10px_24px_-18px_rgba(28,25,23,0.55)]",
+        "relative flex aspect-[3/4] flex-col overflow-hidden rounded-lg bg-[#faf6f0] p-2.5 text-left transition-shadow",
+        selected ? "pb-8" : "ring-1 ring-[#ece6dc] shadow-[0_10px_24px_-18px_rgba(28,25,23,0.55)]",
       )}
       style={
         selected
@@ -214,31 +212,39 @@ function MiniDocument({
           : undefined
       }
     >
-      <div className="flex items-start justify-between gap-2">
+      <span className="mb-2 block h-0.5 w-7 rounded-full" style={{ backgroundColor: selected ? accent : "#d9d0c4" }} />
+      <div className="flex items-start justify-between gap-1">
         <div className="min-w-0">
           <p className="truncate text-[8px] uppercase tracking-[0.14em] text-muted-foreground">
             {template.studio}
           </p>
-          <p className="mt-0.5 font-display text-[11px] leading-tight tracking-tight">{template.heading}</p>
+          <p className="mt-0.5 font-display text-[12px] leading-tight tracking-tight">{template.heading}</p>
         </div>
-        <p className="shrink-0 text-[7px] text-muted-foreground">{template.client}</p>
+        <p className="max-w-[46%] truncate text-right text-[8px] text-muted-foreground">{template.client}</p>
       </div>
-      <div className="mt-2 space-y-1 border-t border-[#ece6dc] pt-2">
-        {template.lines.map(([label, amount]) => (
-          <div key={label} className="flex items-center justify-between gap-2 text-[7px] text-[#6b6258]">
-            <span className="truncate">{label}</span>
+      <div className="mt-2 flex justify-between text-[7px] uppercase tracking-[0.12em] text-muted-foreground">
+        <span>Description</span>
+        <span>Amount</span>
+      </div>
+      <div className="mt-1 flex-1 space-y-1.5 border-t border-[#ece6dc] pt-1.5">
+        {template.lines.map(([label, qty, amount]) => (
+          <div key={label} className="grid grid-cols-[1fr_auto] items-baseline gap-2 text-[8px] leading-3 text-[#6b6258]">
+            <span className="truncate">
+              {label}
+              <span className="ml-1 text-[7px] text-[#b0a89e]">{qty === "—" ? "" : `×${qty}`}</span>
+            </span>
             <span>{amount}</span>
           </div>
         ))}
       </div>
-      <div className="mt-2 flex items-center justify-between border-t border-[#ece6dc] pt-1.5 text-[8px] font-medium">
+      <div className="mt-auto flex items-center justify-between border-t border-[#ece6dc] pt-1.5 text-[9px] font-medium">
         <span>Total</span>
         <span>{template.total}</span>
       </div>
       {selected ? (
         <span
           className="absolute bottom-2 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full bg-white px-2 py-0.5 text-[8px] font-medium uppercase tracking-[0.12em] shadow-sm"
-          style={{ color: accent === "#FFFDF9" || accent === "#F4EFE6" ? "#2D4A3E" : accent }}
+          style={{ color: badgeColor }}
         >
           <Check className="h-2.5 w-2.5" aria-hidden />
           Selected
