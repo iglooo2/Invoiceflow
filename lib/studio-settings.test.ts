@@ -74,11 +74,15 @@ test("parseCompanyForm writes a combined businessAddress for PDFs", () => {
   form.set("city", "San Francisco");
   form.set("region", "CA");
   form.set("country", "United States");
+  form.set("industry", "design");
+  form.set("employeeCount", "2-5");
   const parsed = parseCompanyForm(form);
   assert.equal(parsed.success, true);
   if (parsed.success) {
     assert.match(parsed.data.businessAddress, /14 Shotwell St/);
     assert.match(parsed.data.businessAddress, /United States/);
+    assert.equal(parsed.data.industry, "design");
+    assert.equal(parsed.data.employeeCount, "2-5");
   }
 });
 

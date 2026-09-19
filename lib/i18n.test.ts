@@ -103,6 +103,8 @@ test("login and dashboard common errors exist in every locale", () => {
   for (const locale of LOCALES) {
     const dict = getDictionary(locale);
     assert.ok(dict.login.errors.invalidCredentials.length > 0, locale);
+    assert.ok(dict.login.errors.oauthNotConfigured.length > 0, locale);
+    assert.ok(dict.onboarding.errors.phone.length > 0, locale);
     assert.ok(dict.app.errors.invoiceNotFound.length > 0, locale);
     assert.ok(dict.app.errors.estimateNotFound.length > 0, locale);
     assert.ok(dict.app.errors.clientEmailRequired.length > 0, locale);
@@ -135,11 +137,19 @@ test("localized landing keeps the studio gallery and register CTA", () => {
   assert.match(page, /startFreeHref/);
   assert.match(login, /query\.mode === "register"/);
   assert.match(forms, /initialMode = "signin"/);
+  assert.match(forms, /copy\.google/);
+  assert.match(forms, /copy\.apple/);
   for (const locale of LOCALES) {
     const dict = getDictionary(locale);
     assert.ok(dict.home.startCta.length > 0, locale);
     assert.ok(dict.home.openStudio.length > 0, locale);
     assert.match(dict.home.headline, /\n/);
+    assert.ok(dict.login.google.length > 0, locale);
+    assert.ok(dict.login.apple.length > 0, locale);
+    assert.ok(dict.onboarding.profileTitle.length > 0, locale);
+    assert.ok(dict.onboarding.businessTitle.length > 0, locale);
+    assert.match(dict.onboarding.businessLede, /InvoiceFlow Studio/);
+    assert.equal(dict.onboarding.businessLede.toLowerCase().includes(["joi", "st"].join("")), false);
   }
 });
 

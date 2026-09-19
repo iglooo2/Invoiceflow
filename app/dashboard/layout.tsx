@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { AccountMenu } from "@/components/dashboard/account-menu";
 import { Wordmark } from "@/components/brand";
 import { LanguageSwitcher } from "@/components/marketing/language-switcher";
 import { appCopy } from "@/lib/i18n-request";
+import { needsOnboarding, nextOnboardingPath } from "@/lib/onboarding";
 import { displayPersonName } from "@/lib/studio-settings";
 import { requireUser, planFromUser } from "@/lib/session";
 
@@ -10,8 +12,11 @@ export const dynamic = "force-dynamic";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser();
-  const plan = planFromUser(user);
   const { locale, dict } = await appCopy();
+  if (needsOnboarding(user)) {
+    redirect(nextOnboardingPath(user, locale));
+  }
+  const plan = planFromUser(user);
   const links = [
     [dict.app.overview, "/dashboard"],
     [dict.app.invoices, "/dashboard/invoices"],

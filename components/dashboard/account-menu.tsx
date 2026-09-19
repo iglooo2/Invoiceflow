@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import Link from "next/link";
 import { ChevronDown } from "lucide-react";
 import { logout } from "@/app/actions/auth";
@@ -19,6 +20,7 @@ export function AccountMenu({
   myAccountLabel: string;
   logoutLabel: string;
 }) {
+  const logoutFormRef = useRef<HTMLFormElement>(null);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-sm hover:bg-muted">
@@ -32,11 +34,11 @@ export function AccountMenu({
         <DropdownMenuItem asChild>
           <Link href="/dashboard/settings/account">{myAccountLabel}</Link>
         </DropdownMenuItem>
-        <form action={logout}>
+        <form ref={logoutFormRef} action={logout}>
           <DropdownMenuItem
             onSelect={(event) => {
               event.preventDefault();
-              event.currentTarget.closest("form")?.requestSubmit();
+              logoutFormRef.current?.requestSubmit();
             }}
           >
             {logoutLabel}

@@ -12,11 +12,11 @@ import {
 } from "@/lib/db-errors";
 import { localizedPath } from "@/lib/i18n";
 import { appCopy } from "@/lib/i18n-request";
+import { appleAuthEnabled, googleAuthEnabled } from "@/lib/utils";
 
 const credentialsSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
-  name: z.string().optional(),
 });
 
 export async function loginWithPassword(formData: FormData) {
@@ -48,17 +48,15 @@ export async function loginWithPassword(formData: FormData) {
 }
 
 export async function registerWithPassword(formData: FormData) {
-  const parsed = credentialsSchema.extend({ name: z.string().min(1) }).safeParse({
+  const parsed = credentialsSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
-    name: formData.get("name"),
   });
   if (!parsed.success) {
     const { dict } = await appCopy();
     return { error: dict.login.errors.registerRequired };
   }
   const email = parsed.data.email.toLowerCase();
-  const name = parsed.data.name;
   if (isMissingRuntimeDatabaseUrl()) {
     console.error("registerWithPassword missing DATABASE_URL", databaseRuntimeStatus());
     return { error: missingRuntimeDatabaseUrlMessage() };
@@ -82,11 +80,10 @@ export async function registerWithPassword(formData: FormData) {
       data: {
         id: crypto.randomUUID(),
         email,
-        name,
         passwordHash,
-        businessName: name,
         businessEmail: email,
         plan: "free",
+        onboardingComplete: false,
         createdAt: now,
         updatedAt: now,
       },
@@ -112,6 +109,22 @@ export async function registerWithPassword(formData: FormData) {
 
 export async function loginWithGithub() {
   await signIn("github", { redirectTo: "/dashboard" });
+}
+
+export async function loginWithGoogle() {
+  if (!googleAuthEnabled()) {
+    const { dict } = await appCopy();
+    return { error: dict.login.errors.oauthNotConfigured };
+  }
+  await signIn("google", { redirectTo: "/dashboard" });
+}
+
+export async function loginWithApple() {
+  if (!appleAuthEnabled()) {
+    const { dict } = await appCopy();
+    return { error: dict.login.errors.oauthNotConfigured };
+  }
+  await signIn("apple", { redirectTo: "/dashboard" });
 }
 
 export async function loginWithMagicLink(formData: FormData) {

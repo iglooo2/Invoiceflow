@@ -3,6 +3,8 @@
     "description": "Olvídate de los Word. Elige una plantilla que encaje con tu trabajo — facturas y propuestas rápidas para diseñadores, editores y redactores.",
     "pricingTitle": "Precios",
     "loginTitle": "Iniciar sesión",
+    "onboardingTitle": "Empecemos",
+    "onboardingBusinessTitle": "Añade los datos del negocio",
     "termsTitle": "Términos del servicio",
     "privacyTitle": "Política de privacidad",
     "contactTitle": "Enviar una solicitud",
@@ -100,26 +102,79 @@
   },
   "login": {
     "headline": "Vuelve al trabajo. Nosotros nos encargamos del PDF.",
-    "lede": "Email y contraseña funcionan sin claves de API. Añade GitHub o Resend cuando quieras autenticación de producción.",
+    "lede": "Email y contraseña funcionan sin claves de API. Continúa con Google o Apple — los botones siguen visibles si esos secretos del Worker aún no están configurados.",
     "signIn": "Iniciar sesión",
     "createAccount": "Crear cuenta",
     "name": "Nombre",
     "email": "Email",
     "password": "Contraseña",
+    "orContinue": "o continúa con",
     "magicLabel": "O envía un enlace mágico",
     "sendMagic": "Enviar enlace mágico",
+    "google": "Continuar con Google",
+    "apple": "Continuar con Apple",
     "github": "Continuar con GitHub",
+    "googleHint": "Google Sign-In no está configurado. Añade AUTH_GOOGLE_ID y AUTH_GOOGLE_SECRET como secretos del Worker de Cloudflare.",
+    "appleHint": "Apple Sign-In no está configurado. Añade AUTH_APPLE_ID y AUTH_APPLE_SECRET como secretos del Worker. Crea el secreto con tu Apple Team ID y clave.",
     "githubHint": "GitHub OAuth aparece aquí cuando AUTH_GITHUB_ID y AUTH_GITHUB_SECRET están configurados.",
     "demoPrefix": "Demo:",
     "errors": {
       "invalidEmailPassword": "Introduce un email y una contraseña válidos.",
       "invalidCredentials": "Esas credenciales no coinciden. Prueba el acceso demo o crea una cuenta.",
-      "registerRequired": "Se requieren nombre, un email válido y una contraseña de 8+ caracteres.",
+      "registerRequired": "Se requieren un email válido y una contraseña de 8+ caracteres.",
       "accountExists": "Ya existe una cuenta con ese email. Inicia sesión.",
       "hashFailed": "No se pudo cifrar esa contraseña en este servidor. Revisa los logs del Worker (bcryptjs / crypto).",
       "signInFailed": "Cuenta creada, pero el acceso falló. Intenta iniciar sesión.",
       "magicEmail": "Introduce el email para el enlace mágico.",
-      "magicFailed": "No se pudo enviar el enlace mágico. Revisa AUTH_RESEND_KEY."
+      "magicFailed": "No se pudo enviar el enlace mágico. Revisa AUTH_RESEND_KEY.",
+      "oauthFailed": "Ese acceso no se completó. Prueba email y contraseña, o revisa los secretos de Google/Apple del Worker.",
+      "oauthNotConfigured": "Ese método de acceso no está configurado en este servidor."
+    }
+  },
+  "onboarding": {
+    "profileTitle": "Empecemos",
+    "profileLede": "Tu nombre y teléfono nos ayudan a darte soporte cuando lo necesites.",
+    "firstName": "Nombre",
+    "lastName": "Apellido (opcional)",
+    "country": "País",
+    "phone": "Número de teléfono",
+    "consentPrefix": "Acepto los",
+    "consentAnd": "y la",
+    "saveContinue": "Guardar y continuar",
+    "businessTitle": "Añade los datos del negocio",
+    "businessLede": "Usamos esta información para personalizar tu experiencia en InvoiceFlow Studio. Siempre puedes editarla después.",
+    "businessName": "Nombre del negocio",
+    "employeeCount": "Número de empleados",
+    "industry": "Sector",
+    "goBack": "Volver",
+    "goBackHint": "¿Quieres hacer un cambio?",
+    "employees": {
+      "just-me": "Solo yo",
+      "2-5": "2–5",
+      "6-10": "6–10",
+      "11-25": "11–25",
+      "26-50": "26–50",
+      "51-200": "51–200",
+      "200+": "200+"
+    },
+    "industries": {
+      "design": "Diseño / marca",
+      "photo-video": "Fotografía / vídeo",
+      "writing": "Redacción / editorial",
+      "marketing": "Marketing",
+      "trades": "Oficios / contratistas",
+      "consulting": "Consultoría",
+      "software": "Software / TI",
+      "other": "Otro"
+    },
+    "errors": {
+      "firstName": "Introduce tu nombre.",
+      "phone": "Introduce un teléfono válido.",
+      "consent": "Acepta los Términos para continuar.",
+      "businessName": "Introduce el nombre del negocio.",
+      "employeeCount": "Selecciona el número de empleados.",
+      "industry": "Selecciona tu sector.",
+      "saveFailed": "No se pudieron guardar esos datos. Inténtalo de nuevo."
     }
   },
   "terms": {
@@ -137,7 +192,7 @@
     "updated": "Última actualización: 15 de septiembre de 2026. Borrador del MVP — sustitúyelo por una política revisada antes del lanzamiento.",
     "paragraphs": [
       "Recogemos el email de la cuenta, datos del perfil del estudio, facturas, propuestas y metadatos de facturación necesarios para operar el producto.",
-      "El acceso puede usar email/contraseña, GitHub OAuth y, de forma opcional, enlaces mágicos de Resend. Los pagos van por Stripe; guardamos IDs de cliente y suscripción, no números de tarjeta completos.",
+      "El acceso puede usar email/contraseña, Google, Apple, GitHub OAuth y, de forma opcional, enlaces mágicos de Resend. Los pagos van por Stripe; guardamos IDs de cliente y suscripción, no números de tarjeta completos.",
       "Los enlaces públicos son tokens difíciles de adivinar. Quien tenga el enlace puede ver el documento. No envíes tokens que quieras mantener en privado.",
       "Contacta al operador en invoiceflowstudio.com para pedir la exportación o eliminación de los datos de tu cuenta."
     ]
@@ -276,6 +331,8 @@
       "studioName": "Nombre del estudio",
       "studioEmail": "Email del estudio",
       "phone": "Teléfono",
+      "employeeCount": "Número de empleados",
+      "industry": "Sector",
       "website": "Sitio web",
       "address": "Dirección",
       "nav": {

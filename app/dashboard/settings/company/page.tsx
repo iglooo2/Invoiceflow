@@ -3,9 +3,10 @@ import { LogoField } from "@/components/settings/file-fields";
 import { ProBadge, SchemaWarning, SettingsBanner, SettingsToolbar } from "@/components/settings/settings-chrome";
 import { OutlinedField, OutlinedSelect } from "@/components/ui/outlined-field";
 import { appCopy } from "@/lib/i18n-request";
+import { EMPLOYEE_COUNT_KEYS, INDUSTRY_KEYS } from "@/lib/onboarding";
 import { isProPlan } from "@/lib/plans";
 import { requireUser } from "@/lib/session";
-import { STUDIO_COUNTRIES, STUDIO_INDUSTRIES } from "@/lib/studio-settings";
+import { STUDIO_COUNTRIES } from "@/lib/studio-settings";
 import { loadStudioSettings } from "@/lib/studio-settings-store";
 
 export default async function CompanySettingsPage({
@@ -37,7 +38,7 @@ export default async function CompanySettingsPage({
         <section className="grid gap-5">
           <h2 className="font-display text-xl">{copy.company.basic}</h2>
           <OutlinedField label={copy.company.companyName} name="businessName" defaultValue={user.businessName} />
-          <OutlinedField label={copy.company.phone} name="businessPhone" defaultValue={user.businessPhone} />
+          <OutlinedField label={copy.company.phone} name="businessPhone" defaultValue={user.businessPhone || user.phone} />
           <OutlinedField label={copy.company.address1} name="addressLine1" defaultValue={s.addressLine1} />
           <OutlinedField label={copy.company.address2} name="addressLine2" defaultValue={s.addressLine2} />
           <div className="grid gap-5 md:grid-cols-2">
@@ -66,11 +67,27 @@ export default async function CompanySettingsPage({
           <OutlinedField label={copy.company.phone2} name="businessPhone2" defaultValue={s.businessPhone2} />
           <OutlinedField label={copy.company.fax} name="businessFax" defaultValue={s.businessFax} />
           <OutlinedField label={copy.company.website} name="website" defaultValue={user.website} />
-          <OutlinedSelect label={copy.company.industry} name="industry" defaultValue={s.industry}>
+          <OutlinedSelect
+            label={copy.employeeCount}
+            name="employeeCount"
+            defaultValue={user.employeeCount ?? ""}
+          >
+            <option value="">{copy.employeeCount}</option>
+            {EMPLOYEE_COUNT_KEYS.map((key) => (
+              <option key={key} value={key}>
+                {dict.onboarding.employees[key]}
+              </option>
+            ))}
+          </OutlinedSelect>
+          <OutlinedSelect
+            label={copy.company.industry}
+            name="industry"
+            defaultValue={user.industry || s.industry}
+          >
             <option value="">{copy.company.industryPlaceholder}</option>
-            {STUDIO_INDUSTRIES.map((industry) => (
-              <option key={industry} value={industry}>
-                {industry}
+            {INDUSTRY_KEYS.map((key) => (
+              <option key={key} value={key}>
+                {dict.onboarding.industries[key]}
               </option>
             ))}
           </OutlinedSelect>

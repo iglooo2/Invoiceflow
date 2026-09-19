@@ -24,6 +24,11 @@ model User {
   businessPhone   String?
   businessAddress String?
   website         String?
+  phone           String?
+  employeeCount   String?
+  industry        String?
+  /// Existing accounts stay ungated. New signups set this false until onboarding finishes.
+  onboardingComplete Boolean @default(true)
 
   plan                   String    @default("free")
   stripeCustomerId       String?   @unique

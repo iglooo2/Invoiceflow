@@ -106,6 +106,9 @@ export async function updateCompany(formData: FormData) {
         businessEmail: data.businessEmail || null,
         website: data.website || null,
         businessAddress: data.businessAddress || null,
+        phone: data.businessPhone || user.phone || null,
+        employeeCount: data.employeeCount || null,
+        industry: data.industry || null,
       },
     });
   } catch (error) {

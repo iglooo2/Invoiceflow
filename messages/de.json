@@ -3,6 +3,8 @@
     "description": "Schluss mit Word-Docs. Wähle eine Vorlage, die zu deiner Arbeit passt — schnelle Rechnungen und Angebote für Designer, Editoren und Texter.",
     "pricingTitle": "Preise",
     "loginTitle": "Anmelden",
+    "onboardingTitle": "Los geht’s",
+    "onboardingBusinessTitle": "Unternehmensdaten hinzufügen",
     "termsTitle": "Nutzungsbedingungen",
     "privacyTitle": "Datenschutz",
     "contactTitle": "Anfrage senden",
@@ -100,26 +102,79 @@
   },
   "login": {
     "headline": "Zurück an die Arbeit. Um das PDF kümmern wir uns.",
-    "lede": "E-Mail und Passwort funktionieren ohne API-Keys. GitHub oder Resend kannst du ergänzen, wenn du Production-Auth brauchst.",
+    "lede": "E-Mail und Passwort funktionieren ohne API-Keys. Weiter mit Google oder Apple — die Buttons bleiben sichtbar, wenn diese Worker-Secrets noch fehlen.",
     "signIn": "Anmelden",
     "createAccount": "Konto erstellen",
     "name": "Name",
     "email": "E-Mail",
     "password": "Passwort",
+    "orContinue": "oder weiter mit",
     "magicLabel": "Oder einen Magic Link per E-Mail",
     "sendMagic": "Magic Link senden",
+    "google": "Mit Google weiter",
+    "apple": "Mit Apple weiter",
     "github": "Mit GitHub weiter",
+    "googleHint": "Google Sign-In ist nicht konfiguriert. Setze AUTH_GOOGLE_ID und AUTH_GOOGLE_SECRET als Cloudflare-Worker-Secrets.",
+    "appleHint": "Apple Sign-In ist nicht konfiguriert. Setze AUTH_APPLE_ID und AUTH_APPLE_SECRET als Worker-Secrets. Erzeuge das Secret mit deiner Apple Team ID und dem Schlüssel.",
     "githubHint": "GitHub OAuth erscheint hier, wenn AUTH_GITHUB_ID und AUTH_GITHUB_SECRET gesetzt sind.",
     "demoPrefix": "Demo:",
     "errors": {
       "invalidEmailPassword": "Gib eine gültige E-Mail und ein Passwort ein.",
       "invalidCredentials": "Diese Zugangsdaten passen nicht. Nutze den Demo-Login oder erstelle ein Konto.",
-      "registerRequired": "Name, eine gültige E-Mail und ein Passwort mit 8+ Zeichen sind erforderlich.",
+      "registerRequired": "Eine gültige E-Mail und ein Passwort mit 8+ Zeichen sind erforderlich.",
       "accountExists": "Ein Konto mit dieser E-Mail existiert bereits. Melde dich an.",
       "hashFailed": "Das Passwort konnte auf diesem Server nicht gehasht werden. Worker-Logs prüfen (bcryptjs / crypto).",
       "signInFailed": "Konto erstellt, aber die Anmeldung ist fehlgeschlagen. Bitte einloggen.",
       "magicEmail": "Gib die E-Mail für den Magic Link ein.",
-      "magicFailed": "Magic Link konnte nicht gesendet werden. AUTH_RESEND_KEY prüfen."
+      "magicFailed": "Magic Link konnte nicht gesendet werden. AUTH_RESEND_KEY prüfen.",
+      "oauthFailed": "Diese Anmeldung wurde nicht abgeschlossen. Versuche E-Mail und Passwort oder prüfe die Google/Apple-Worker-Secrets.",
+      "oauthNotConfigured": "Diese Anmeldemethode ist auf diesem Server nicht konfiguriert."
+    }
+  },
+  "onboarding": {
+    "profileTitle": "Los geht’s",
+    "profileLede": "Dein Name und deine Telefonnummer helfen uns, dich zu unterstützen, wenn du uns brauchst.",
+    "firstName": "Vorname",
+    "lastName": "Nachname (optional)",
+    "country": "Land",
+    "phone": "Telefonnummer",
+    "consentPrefix": "Ich stimme den",
+    "consentAnd": "und der",
+    "saveContinue": "Speichern und weiter",
+    "businessTitle": "Unternehmensdaten hinzufügen",
+    "businessLede": "Wir nutzen diese Angaben, um deine InvoiceFlow Studio Erfahrung anzupassen. Du kannst sie später jederzeit ändern.",
+    "businessName": "Unternehmensname",
+    "employeeCount": "Anzahl der Mitarbeitenden",
+    "industry": "Branche",
+    "goBack": "Zurück",
+    "goBackHint": "Möchtest du etwas ändern?",
+    "employees": {
+      "just-me": "Nur ich",
+      "2-5": "2–5",
+      "6-10": "6–10",
+      "11-25": "11–25",
+      "26-50": "26–50",
+      "51-200": "51–200",
+      "200+": "200+"
+    },
+    "industries": {
+      "design": "Design / Branding",
+      "photo-video": "Foto / Video",
+      "writing": "Text / Redaktion",
+      "marketing": "Marketing",
+      "trades": "Handwerk / Aufträge",
+      "consulting": "Beratung",
+      "software": "Software / IT",
+      "other": "Sonstiges"
+    },
+    "errors": {
+      "firstName": "Gib deinen Vornamen ein.",
+      "phone": "Gib eine gültige Telefonnummer ein.",
+      "consent": "Bitte stimme den Nutzungsbedingungen zu, um fortzufahren.",
+      "businessName": "Gib den Unternehmensnamen ein.",
+      "employeeCount": "Wähle die Anzahl der Mitarbeitenden.",
+      "industry": "Wähle deine Branche.",
+      "saveFailed": "Diese Angaben konnten nicht gespeichert werden. Bitte erneut versuchen."
     }
   },
   "terms": {
@@ -137,7 +192,7 @@
     "updated": "Zuletzt aktualisiert am 15. September 2026. MVP-Entwurf — vor dem Launch durch eine geprüfte Richtlinie ersetzen.",
     "paragraphs": [
       "Wir erfassen Konto-E-Mail, Studio-Profildaten, Rechnungen, Angebote und Abrechnungsmetadaten, die wir zum Betrieb des Produkts brauchen.",
-      "Die Anmeldung kann E-Mail/Passwort, GitHub OAuth und optional Resend-Magic-Links nutzen. Zahlungen laufen über Stripe; wir speichern Kunden- und Abo-IDs, keine vollständigen Kartennummern.",
+      "Die Anmeldung kann E-Mail/Passwort, Google, Apple, GitHub OAuth und optional Resend-Magic-Links nutzen. Zahlungen laufen über Stripe; wir speichern Kunden- und Abo-IDs, keine vollständigen Kartennummern.",
       "Öffentliche Share-Links sind schwer zu erratende Tokens. Jeder mit dem Link kann das Dokument sehen. Schicke keine Tokens, die privat bleiben sollen.",
       "Kontaktiere den Betreiber unter invoiceflowstudio.com, um Export oder Löschung deiner Kontodaten anzufordern."
     ]
@@ -276,6 +331,8 @@
       "studioName": "Studioname",
       "studioEmail": "Studio-E-Mail",
       "phone": "Telefon",
+      "employeeCount": "Anzahl der Mitarbeitenden",
+      "industry": "Branche",
       "website": "Website",
       "address": "Adresse",
       "nav": {

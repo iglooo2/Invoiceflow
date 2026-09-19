@@ -1,4 +1,5 @@
 import { isMissingDatabaseSchemaError } from "./db-errors";
+import { isEmployeeCountKey, isIndustryKey } from "./onboarding";
 
 export const SETTINGS_SCHEMA_WARNING =
   "Postgres is missing Studio Settings tables (StudioSettings, TaxRate). From a laptop, against the Neon direct/unpooled URL (not *-pooler.*): npm run db:push:prod";
@@ -213,6 +214,14 @@ export function allowedLocale(value: string) {
   return STUDIO_LOCALES.some((item) => item.value === value) ? value : "en-US";
 }
 
+export function allowedIndustry(value: string) {
+  return isIndustryKey(value) ? value : "";
+}
+
+export function allowedEmployeeCount(value: string) {
+  return isEmployeeCountKey(value) ? value : "";
+}
+
 export function normalizeStudioSettings(row: unknown): StudioSettingsRecord {
   const record = (row ?? {}) as Record<string, unknown>;
   const str = (key: keyof StudioSettingsRecord, fallback = "") =>
@@ -330,6 +339,7 @@ export type CompanyFormInput = {
   businessEmail: string;
   website: string;
   industry: string;
+  employeeCount: string;
   clearLogo: boolean;
   businessAddress: string;
 };
@@ -357,7 +367,8 @@ export function parseCompanyForm(formData: FormData): ParseResult<CompanyFormInp
       taxNumber: optional(formData, "taxNumber"),
       businessEmail: optional(formData, "businessEmail"),
       website: optional(formData, "website"),
-      industry: optional(formData, "industry"),
+      industry: allowedIndustry(optional(formData, "industry")),
+      employeeCount: allowedEmployeeCount(optional(formData, "employeeCount")),
       clearLogo: checked(formData, "clearLogo"),
       businessAddress: composeBusinessAddress({
         addressLine1,
