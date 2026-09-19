@@ -108,6 +108,9 @@ export async function loadContracts(userId: string): Promise<{
   warning?: string;
 }> {
   try {
+    if (!prisma.contract) {
+      return { contracts: [], missingSchema: true, warning: SETTINGS_SCHEMA_WARNING };
+    }
     const rows = await prisma.contract.findMany({
       where: { userId },
       orderBy: { createdAt: "asc" },
