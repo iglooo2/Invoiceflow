@@ -94,6 +94,51 @@ export async function defaultTaxPercent(userId: string) {
   return taxes[0]?.rate ?? 0;
 }
 
+export type LoadedContract = {
+  id: string;
+  name: string;
+  details: string;
+  defaultForEstimates: boolean;
+  defaultForInvoices: boolean;
+};
+
+export async function loadContracts(userId: string): Promise<{
+  contracts: LoadedContract[];
+  missingSchema: boolean;
+  warning?: string;
+}> {
+  try {
+    const rows = await prisma.contract.findMany({
+      where: { userId },
+      orderBy: { createdAt: "asc" },
+    });
+    return {
+      contracts: rows.map((row) => ({
+        id: row.id,
+        name: row.name,
+        details: row.details,
+        defaultForEstimates: row.defaultForEstimates,
+        defaultForInvoices: row.defaultForInvoices,
+      })),
+      missingSchema: false,
+    };
+  } catch (error) {
+    if (isMissingDatabaseSchemaError(error)) {
+      return { contracts: [], missingSchema: true, warning: SETTINGS_SCHEMA_WARNING };
+    }
+    throw error;
+  }
+}
+
+export async function defaultContractDetails(userId: string, kind: "invoice" | "estimate") {
+  const { contracts } = await loadContracts(userId);
+  const match =
+    kind === "invoice"
+      ? contracts.find((row) => row.defaultForInvoices)
+      : contracts.find((row) => row.defaultForEstimates);
+  return match?.details?.trim() || "";
+}
+
 export async function withDocumentFooter<T extends object>(userId: string, studio: T) {
   const loaded = await loadStudioSettings(userId);
   return { ...studio, footerMessage: loaded.settings.footerMessage || null };

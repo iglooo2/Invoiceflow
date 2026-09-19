@@ -3,7 +3,7 @@ import { appCopy } from "@/lib/i18n-request";
 import { requireUser } from "@/lib/session";
 import { ProposalForm } from "@/components/proposal-form";
 import { createProposal } from "@/app/actions/proposals";
-import { defaultTaxPercent, loadStudioSettings } from "@/lib/studio-settings-store";
+import { defaultContractDetails, defaultTaxPercent, loadStudioSettings } from "@/lib/studio-settings-store";
 
 export default async function NewEstimatePage({
   searchParams,
@@ -17,9 +17,10 @@ export default async function NewEstimatePage({
     where: { userId: user.id },
     orderBy: { name: "asc" },
   });
-  const [{ settings }, taxRate] = await Promise.all([
+  const [{ settings }, taxRate, contractNotes] = await Promise.all([
     loadStudioSettings(user.id),
     defaultTaxPercent(user.id),
+    defaultContractDetails(user.id, "estimate"),
   ]);
   return (
     <div className="grid gap-6">
@@ -37,6 +38,7 @@ export default async function NewEstimatePage({
           status: "draft",
           taxRate,
           markupRate: settings.defaultMarkupPercent,
+          notes: contractNotes,
           attachments: [],
           sections: [{ heading: "Work", body: "", amount: null }],
         }}

@@ -9,7 +9,8 @@
     "privacyTitle": "Política de privacidade",
     "contactTitle": "Enviar uma solicitação",
     "estimatesTitle": "Orçamentos",
-    "estimatesDescription": "Precifique serviços com orçamentos do InvoiceFlow Studio — itens, markup, imposto, aprovação online e QuickBooks Online quando você estiver pronto."
+    "estimatesDescription": "Precifique serviços com orçamentos do InvoiceFlow Studio — itens, markup, imposto, aprovação online e QuickBooks Online quando você estiver pronto.",
+    "referralTermsTitle": "Termos do programa de indicação"
   },
   "nav": {
     "how": "Como funciona",
@@ -343,7 +344,9 @@
         "documents": "Documentos",
         "taxes": "Impostos",
         "markup": "Margem dos itens",
-        "quickbooks": "Sincronizar QuickBooks"
+        "quickbooks": "Sincronizar QuickBooks",
+        "contracts": "Contratos",
+        "refer": "Indique e ganhe"
       },
       "account": {
         "heading": "Informações da conta",
@@ -430,8 +433,8 @@
         "percent": "Margem padrão %"
       },
       "qbEyebrow": "QuickBooks Online",
-      "qbTitle": "Conecte seus livros",
-      "qbLede": "Sincronize faturas e orçamentos com o QuickBooks Online para o número que você enviou ser o que o contador vê. Conecte uma vez e depois um sync diário — ou toque em Sincronizar agora. OAuth ao vivo da Intuit não está nesta versão.",
+      "qbTitle": "InvoiceFlow Studio → QuickBooks",
+      "qbLede": "Conecte suas contas InvoiceFlow Studio → QuickBooks Online para manter os livros atualizados automaticamente.",
       "qbReserved": "Conectar QuickBooks fica reservado para o seu estúdio. Crie um app de desenvolvedor Intuit e defina",
       "qbRedirect": "URI de redirecionamento:",
       "qbBullet1": "Automatize a contabilidade depois de enviar pelo InvoiceFlow Studio.",
@@ -440,7 +443,44 @@
       "qbCredsPresent": "As credenciais estão presentes",
       "qbCredsMissing": "As credenciais ainda não estão definidas",
       "qbConnectReady": "Conectar QuickBooks (OAuth em breve)",
-      "qbConnectSoon": "Conectar QuickBooks — em breve"
+      "qbConnectSoon": "Conectar QuickBooks — em breve",
+      "contracts": {
+        "heading": "Contratos",
+        "empty": "Use “Novo contrato” para adicionar termos que você possa anexar a orçamentos e faturas.",
+        "new": "Novo contrato",
+        "edit": "Editar contrato",
+        "name": "Nome do contrato",
+        "details": "Detalhes do contrato",
+        "defaultEstimate": "Definir como contrato padrão de orçamentos",
+        "defaultInvoice": "Definir como contrato padrão de faturas",
+        "delete": "Excluir contrato"
+      },
+      "refer": {
+        "headline": "Convide contratantes e ganhe ${reward}!",
+        "lede": "Ganhe recompensas em dinheiro por contratantes que assinam o InvoiceFlow Studio Pro por {days} dias.",
+        "generate": "Gerar seu link de indicação",
+        "termsLead": "Ao clicar em Gerar seu link de indicação, você concorda com os",
+        "termsLink": "Termos e condições do programa de indicação",
+        "termsTail": "Isso permite gerar seu link exclusivo e acumular ganhos.",
+        "agree": "Concordo com os Termos e condições do programa de indicação",
+        "share": "Compartilhar agora",
+        "copy": "Copiar link",
+        "copied": "Copiado",
+        "linkLabel": "Seu link de indicação",
+        "earnings": "Ganhos totais",
+        "earningsHint": "Saldo semanal de recompensas. Pagamento pendente.",
+        "earningsPlaceholder": "$0.00",
+        "generated": "Seu link de indicação está pronto para compartilhar.",
+        "phoneMore": "Mais",
+        "phoneTitle": "Indique e ganhe",
+        "phoneStatus": "Status"
+      },
+      "qbUpgrade": "Assinar agora",
+      "qbLearnMore": "Saiba mais",
+      "qbProHint": "Passe para o Pro para usar o QuickBooks Sync",
+      "qbBenefit1": "Pare de exportar manualmente os dados do InvoiceFlow Studio",
+      "qbBenefit2": "Pare de vasculhar documentos antigos na temporada de impostos",
+      "qbBenefit3": "Deixe o contador feliz — e longe das suas costas!"
     },
     "billingPage": {
       "lede": "Você está no {plan}. O Starter limita a 3 faturas e 3 orçamentos por mês. O Pro custa ${price}/mês, ilimitado.",
@@ -560,5 +600,15 @@
     ],
     "heroTotal": "Total do orçamento",
     "heroTotalAmount": "$2,770"
+  },
+  "referralTerms": {
+    "title": "Termos e condições do programa de indicação",
+    "updated": "Atualizado em 19 de setembro de 2026. Rascunho do MVP — revise com um advogado antes do lançamento.",
+    "paragraphs": [
+      "O InvoiceFlow Studio paga uma recompensa quando alguém que você convida assina o Pro e permanece o período de qualificação mostrado em Configurações.",
+      "As recompensas são um espaço reservado nesta versão. Ganhos e pagamentos ainda não são processados.",
+      "Os links usam invoiceflowstudio.com/r/ seguido do seu código exclusivo. Não use domínios de concorrentes.",
+      "Podemos alterar, pausar ou encerrar o programa com aviso. Abuso, autoindicação e contas falsas não são elegíveis."
+    ]
   }
 }

@@ -9,7 +9,8 @@
     "privacyTitle": "Datenschutz",
     "contactTitle": "Anfrage senden",
     "estimatesTitle": "Kostenvoranschläge",
-    "estimatesDescription": "Kalkuliere Aufträge mit gebrandeten InvoiceFlow-Studio-Voranschlägen — Positionen, Aufschlag, Steuer, Online-Genehmigung und QuickBooks Online, wenn du soweit bist."
+    "estimatesDescription": "Kalkuliere Aufträge mit gebrandeten InvoiceFlow-Studio-Voranschlägen — Positionen, Aufschlag, Steuer, Online-Genehmigung und QuickBooks Online, wenn du soweit bist.",
+    "referralTermsTitle": "Bedingungen des Empfehlungsprogramms"
   },
   "nav": {
     "how": "So funktioniert’s",
@@ -343,7 +344,9 @@
         "documents": "Dokumente",
         "taxes": "Steuern",
         "markup": "Positionsaufschlag",
-        "quickbooks": "QuickBooks-Sync"
+        "quickbooks": "QuickBooks-Sync",
+        "contracts": "Verträge",
+        "refer": "Empfehlen & verdienen"
       },
       "account": {
         "heading": "Kontoinformationen",
@@ -430,8 +433,8 @@
         "percent": "Standard-Aufschlag %"
       },
       "qbEyebrow": "QuickBooks Online",
-      "qbTitle": "Bücher verbinden",
-      "qbLede": "Synchronisiere Rechnungen und Voranschläge mit QuickBooks Online, damit die gesendete Zahl die ist, die dein Steuerberater sieht. Einmal verbinden, dann täglicher Sync — oder tippe Jetzt synchronisieren. Live-Intuit-OAuth ist in dieser Version nicht dabei.",
+      "qbTitle": "InvoiceFlow Studio → QuickBooks",
+      "qbLede": "Verbinde deine InvoiceFlow Studio → QuickBooks-Online-Konten, um die Bücher automatisch aktuell zu halten.",
       "qbReserved": "QuickBooks verbinden ist für dein Studio reserviert. Lege eine Intuit-Developer-App an und setze",
       "qbRedirect": "Redirect-URI:",
       "qbBullet1": "Automatisiere die Buchhaltung nach dem Senden aus InvoiceFlow Studio.",
@@ -440,7 +443,44 @@
       "qbCredsPresent": "Zugangsdaten sind vorhanden",
       "qbCredsMissing": "Zugangsdaten sind noch nicht gesetzt",
       "qbConnectReady": "QuickBooks verbinden (OAuth kommt bald)",
-      "qbConnectSoon": "QuickBooks verbinden — kommt bald"
+      "qbConnectSoon": "QuickBooks verbinden — kommt bald",
+      "contracts": {
+        "heading": "Verträge",
+        "empty": "Nutze „Neuer Vertrag“, um Bedingungen für Voranschläge und Rechnungen zu hinterlegen.",
+        "new": "Neuer Vertrag",
+        "edit": "Vertrag bearbeiten",
+        "name": "Vertragsname",
+        "details": "Vertragsdetails",
+        "defaultEstimate": "Als Standardvertrag für Voranschläge setzen",
+        "defaultInvoice": "Als Standardvertrag für Rechnungen setzen",
+        "delete": "Vertrag löschen"
+      },
+      "refer": {
+        "headline": "Lade Auftragnehmer ein und verdiene ${reward}!",
+        "lede": "Verdiene Prämien für Auftragnehmer, die {days} Tage bei InvoiceFlow Studio Pro bleiben.",
+        "generate": "Empfehlungslink erzeugen",
+        "termsLead": "Mit Klick auf Empfehlungslink erzeugen stimmst du den",
+        "termsLink": "Bedingungen des Empfehlungsprogramms",
+        "termsTail": "So erhältst du deinen einzigartigen Link und kannst Prämien sammeln.",
+        "agree": "Ich stimme den Bedingungen des Empfehlungsprogramms zu",
+        "share": "Jetzt teilen",
+        "copy": "Link kopieren",
+        "copied": "Kopiert",
+        "linkLabel": "Dein Empfehlungslink",
+        "earnings": "Gesamtverdienst",
+        "earningsHint": "Wöchentliches Prämiensaldo. Auszahlung ausstehend.",
+        "earningsPlaceholder": "$0.00",
+        "generated": "Dein Empfehlungslink ist bereit zum Teilen.",
+        "phoneMore": "Mehr",
+        "phoneTitle": "Empfehlen",
+        "phoneStatus": "Status"
+      },
+      "qbUpgrade": "Jetzt upgraden",
+      "qbLearnMore": "Mehr erfahren",
+      "qbProHint": "Upgrade auf Pro, um QuickBooks Sync zu nutzen",
+      "qbBenefit1": "Hör auf, InvoiceFlow-Studio-Daten von Hand zu exportieren",
+      "qbBenefit2": "Hör auf, in der Steuersaison alte Belege zu suchen",
+      "qbBenefit3": "Halte deinen Buchhalter glücklich — und von deinem Rücken!"
     },
     "billingPage": {
       "lede": "Du bist auf {plan}. Starter ist auf 3 Rechnungen und 3 Voranschläge pro Monat begrenzt. Pro kostet ${price}/Monat, unbegrenzt.",
@@ -560,5 +600,15 @@
     ],
     "heroTotal": "Voranschlag gesamt",
     "heroTotalAmount": "$2,770"
+  },
+  "referralTerms": {
+    "title": "Bedingungen des Empfehlungsprogramms",
+    "updated": "Zuletzt aktualisiert am 19. September 2026. MVP-Entwurf — vor dem Launch rechtlich prüfen.",
+    "paragraphs": [
+      "InvoiceFlow Studio zahlt eine Prämie, wenn jemand, den du einlädst, Pro abonniert und die in den Einstellungen gezeigte Frist bleibt.",
+      "Prämien sind in dieser Version ein Platzhalter. Verdienste und Auszahlungen werden noch nicht verarbeitet.",
+      "Links nutzen invoiceflowstudio.com/r/ plus deinen eindeutigen Code. Keine Wettbewerber-Domains verwenden.",
+      "Wir können das Programm mit Hinweis ändern, pausieren oder beenden. Missbrauch, Selbstwerbung und Fake-Konten sind ausgeschlossen."
+    ]
   }
 }
