@@ -262,11 +262,13 @@
     "publicView": "Vue publique",
     "emailShareLink": "Envoyer le lien",
     "markPaid": "Marquer payée",
+    "markPending": "Marquer en attente",
     "copyLink": "Copier le lien",
     "copied": "Copié",
     "status": {
       "draft": "Brouillon",
       "sent": "Envoyée",
+      "pending": "En attente",
       "paid": "Payée",
       "overdue": "En retard",
       "void": "Annulée",

@@ -262,11 +262,13 @@
     "publicView": "Public view",
     "emailShareLink": "Email share link",
     "markPaid": "Mark paid",
+    "markPending": "Mark pending",
     "copyLink": "Copy link",
     "copied": "Copied",
     "status": {
       "draft": "Draft",
       "sent": "Sent",
+      "pending": "Pending",
       "paid": "Paid",
       "overdue": "Overdue",
       "void": "Void",

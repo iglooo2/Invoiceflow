@@ -262,11 +262,13 @@
     "publicView": "Öffentliche Ansicht",
     "emailShareLink": "Link per E-Mail",
     "markPaid": "Als bezahlt markieren",
+    "markPending": "Als ausstehend markieren",
     "copyLink": "Link kopieren",
     "copied": "Kopiert",
     "status": {
       "draft": "Entwurf",
       "sent": "Gesendet",
+      "pending": "Ausstehend",
       "paid": "Bezahlt",
       "overdue": "Überfällig",
       "void": "Ungültig",

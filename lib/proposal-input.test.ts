@@ -1,6 +1,11 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { parseProposalDecisionForm, parseProposalForm, parseProposalIdForm } from "./proposal-input";
+import {
+  parseProposalDecisionForm,
+  parseProposalForm,
+  parseProposalIdForm,
+  parseProposalStatusForm,
+} from "./proposal-input";
 
 function proposalForm(overrides: Record<string, string> = {}, sections?: unknown) {
   const form = new FormData();
@@ -87,4 +92,31 @@ test("parseProposalForm does not throw on invalid sections JSON", () => {
   assert.equal(parsed.success, false);
   if (parsed.success) return;
   assert.match(parsed.error, /invalid/i);
+});
+
+test("parseProposalForm accepts pending status", () => {
+  const parsed = parseProposalForm(proposalForm({ status: "pending" }));
+  assert.equal(parsed.success, true);
+  if (!parsed.success) return;
+  assert.equal(parsed.data.status, "pending");
+});
+
+test("parseProposalStatusForm reads hidden proposalId and pending status", () => {
+  const form = new FormData();
+  form.set("proposalId", "est_123");
+  form.set("status", "pending");
+  const parsed = parseProposalStatusForm(form);
+  assert.equal(parsed.success, true);
+  if (!parsed.success) return;
+  assert.equal(parsed.data.proposalId, "est_123");
+  assert.equal(parsed.data.status, "pending");
+});
+
+test("parseProposalStatusForm rejects a missing id or an invalid status", () => {
+  const form = new FormData();
+  form.set("proposalId", "est_123");
+  form.set("status", "paid");
+  const parsed = parseProposalStatusForm(form);
+  assert.equal(parsed.success, false);
+  if (!parsed.success) assert.match(parsed.error, /status is not valid/);
 });

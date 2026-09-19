@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select, Textarea } from "@/components/ui/input";
-import { serializeAttachments, type EstimateAttachment } from "@/lib/estimates";
+import { serializeAttachments, ESTIMATE_STATUSES, type EstimateAttachment } from "@/lib/estimates";
 import { estimateTotals, formatCents } from "@/lib/money";
 import { SAVED_ITEMS_STORAGE_KEY, STUDIO_SAVED_ITEMS, type SavedEstimateItem } from "@/lib/saved-items";
 
@@ -142,10 +142,11 @@ export function ProposalForm({
         <div className="grid gap-2">
           <Label htmlFor="status">Status</Label>
           <Select id="status" name="status" defaultValue={initial?.status ?? "draft"}>
-            <option value="draft">Draft</option>
-            <option value="sent">Sent</option>
-            <option value="accepted">Approved</option>
-            <option value="declined">Declined</option>
+            {ESTIMATE_STATUSES.map((value) => (
+              <option key={value} value={value}>
+                {value === "accepted" ? "Approved" : value[0].toUpperCase() + value.slice(1)}
+              </option>
+            ))}
           </Select>
         </div>
         <div className="grid gap-2">
