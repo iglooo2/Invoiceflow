@@ -2,10 +2,12 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import { NextRequest } from "next/server";
 import { getDictionary } from "./dictionary";
 import {
   DEFAULT_LOCALE,
   LOCALES,
+  LOCALE_COOKIE,
   formatMessage,
   localizedPath,
   matchLocale,
@@ -14,6 +16,7 @@ import {
   shouldSkipLocale,
   splitLocalePath,
 } from "./i18n";
+import { proxy } from "../proxy";
 
 test("formatMessage fills dashboard copy templates", () => {
   assert.equal(
@@ -70,6 +73,26 @@ test("every locale dictionary has the same keys as English", () => {
   const english = flatten(getDictionary("en"));
   for (const locale of LOCALES) {
     assert.deepEqual(flatten(getDictionary(locale)), english, locale);
+  }
+});
+
+test("unauthenticated dashboard redirects to the cookie locale login, not /en", () => {
+  const request = new NextRequest("http://localhost:3000/dashboard", {
+    headers: { cookie: `${LOCALE_COOKIE}=es` },
+  });
+  const response = proxy(request);
+  const location = response.headers.get("location") ?? "";
+  assert.equal(new URL(location).pathname, "/es/login");
+  assert.equal(new URL(location).searchParams.get("callbackUrl"), "/dashboard");
+  assert.match(response.headers.get("set-cookie") ?? "", /invoiceflow-locale=es/);
+});
+
+test("login and dashboard common errors exist in every locale", () => {
+  for (const locale of LOCALES) {
+    const dict = getDictionary(locale);
+    assert.ok(dict.login.errors.invalidCredentials.length > 0, locale);
+    assert.ok(dict.app.errors.invoiceNotFound.length > 0, locale);
+    assert.ok(dict.app.errors.clientEmailRequired.length > 0, locale);
   }
 });
 

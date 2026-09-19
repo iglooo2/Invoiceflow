@@ -103,7 +103,17 @@
     "sendMagic": "Magic Link senden",
     "github": "Mit GitHub weiter",
     "githubHint": "GitHub OAuth erscheint hier, wenn AUTH_GITHUB_ID und AUTH_GITHUB_SECRET gesetzt sind.",
-    "demoPrefix": "Demo:"
+    "demoPrefix": "Demo:",
+    "errors": {
+      "invalidEmailPassword": "Gib eine gültige E-Mail und ein Passwort ein.",
+      "invalidCredentials": "Diese Zugangsdaten passen nicht. Nutze den Demo-Login oder erstelle ein Konto.",
+      "registerRequired": "Name, eine gültige E-Mail und ein Passwort mit 8+ Zeichen sind erforderlich.",
+      "accountExists": "Ein Konto mit dieser E-Mail existiert bereits. Melde dich an.",
+      "hashFailed": "Das Passwort konnte auf diesem Server nicht gehasht werden. Worker-Logs prüfen (bcryptjs / crypto).",
+      "signInFailed": "Konto erstellt, aber die Anmeldung ist fehlgeschlagen. Bitte einloggen.",
+      "magicEmail": "Gib die E-Mail für den Magic Link ein.",
+      "magicFailed": "Magic Link konnte nicht gesendet werden. AUTH_RESEND_KEY prüfen."
+    }
   },
   "terms": {
     "title": "Nutzungsbedingungen",
@@ -220,6 +230,11 @@
       "portal": "Stripe-Kundenportal",
       "unlockDemo": "Pro für lokale Demo freischalten",
       "returnStarter": "Zurück zu Starter"
+    },
+    "errors": {
+      "invoiceNotFound": "Rechnung nicht gefunden.",
+      "proposalNotFound": "Angebot nicht gefunden.",
+      "clientEmailRequired": "Füge eine Kunden-E-Mail hinzu, bevor du den Link sendest."
     }
   }
 }

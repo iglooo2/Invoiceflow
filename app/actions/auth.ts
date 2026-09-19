@@ -10,6 +10,8 @@ import {
   registerFailureMessage,
   safeErrorLog,
 } from "@/lib/db-errors";
+import { localizedPath } from "@/lib/i18n";
+import { appCopy } from "@/lib/i18n-request";
 
 const credentialsSchema = z.object({
   email: z.string().email(),
@@ -23,7 +25,8 @@ export async function loginWithPassword(formData: FormData) {
     password: formData.get("password"),
   });
   if (!parsed.success) {
-    return { error: "Enter a valid email and password." };
+    const { dict } = await appCopy();
+    return { error: dict.login.errors.invalidEmailPassword };
   }
   try {
     await signIn("credentials", {
@@ -37,7 +40,8 @@ export async function loginWithPassword(formData: FormData) {
       return { error: missingRuntimeDatabaseUrlMessage() };
     }
     if (error instanceof AuthError) {
-      return { error: "Those credentials didn’t match. Try the demo login or create an account." };
+      const { dict } = await appCopy();
+      return { error: dict.login.errors.invalidCredentials };
     }
     throw error;
   }
@@ -50,7 +54,8 @@ export async function registerWithPassword(formData: FormData) {
     name: formData.get("name"),
   });
   if (!parsed.success) {
-    return { error: "Name, a valid email, and an 8+ character password are required." };
+    const { dict } = await appCopy();
+    return { error: dict.login.errors.registerRequired };
   }
   const email = parsed.data.email.toLowerCase();
   const name = parsed.data.name;
@@ -63,12 +68,14 @@ export async function registerWithPassword(formData: FormData) {
     passwordHash = await bcrypt.hash(parsed.data.password, 10);
   } catch (error) {
     console.error("registerWithPassword hash failed", safeErrorLog(error));
-    return { error: "Couldn’t hash that password on this server. Check Worker logs (bcryptjs / crypto)." };
+    const { dict } = await appCopy();
+    return { error: dict.login.errors.hashFailed };
   }
   try {
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) {
-      return { error: "An account with that email already exists. Sign in instead." };
+      const { dict } = await appCopy();
+      return { error: dict.login.errors.accountExists };
     }
     const now = new Date();
     await prisma.user.create({
@@ -96,7 +103,8 @@ export async function registerWithPassword(formData: FormData) {
     });
   } catch (error) {
     if (error instanceof AuthError) {
-      return { error: "Account created, but sign-in failed. Try logging in." };
+      const { dict } = await appCopy();
+      return { error: dict.login.errors.signInFailed };
     }
     throw error;
   }
@@ -110,7 +118,10 @@ export async function loginWithMagicLink(formData: FormData) {
   const email = String(formData.get("email") || "")
     .trim()
     .toLowerCase();
-  if (!email) return { error: "Enter the email for your magic link." };
+  if (!email) {
+    const { dict } = await appCopy();
+    return { error: dict.login.errors.magicEmail };
+  }
   try {
     await signIn("resend", {
       email,
@@ -118,12 +129,14 @@ export async function loginWithMagicLink(formData: FormData) {
     });
   } catch (error) {
     if (error instanceof AuthError) {
-      return { error: "Couldn’t send a magic link. Check AUTH_RESEND_KEY." };
+      const { dict } = await appCopy();
+      return { error: dict.login.errors.magicFailed };
     }
     throw error;
   }
 }
 
 export async function logout() {
-  await signOut({ redirectTo: "/" });
+  const { locale } = await appCopy();
+  await signOut({ redirectTo: localizedPath(locale, "/") });
 }

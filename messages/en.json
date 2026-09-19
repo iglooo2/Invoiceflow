@@ -103,7 +103,17 @@
     "sendMagic": "Send magic link",
     "github": "Continue with GitHub",
     "githubHint": "GitHub OAuth appears here when AUTH_GITHUB_ID and AUTH_GITHUB_SECRET are set.",
-    "demoPrefix": "Demo:"
+    "demoPrefix": "Demo:",
+    "errors": {
+      "invalidEmailPassword": "Enter a valid email and password.",
+      "invalidCredentials": "Those credentials didn’t match. Try the demo login or create an account.",
+      "registerRequired": "Name, a valid email, and an 8+ character password are required.",
+      "accountExists": "An account with that email already exists. Sign in instead.",
+      "hashFailed": "Couldn’t hash that password on this server. Check Worker logs (bcryptjs / crypto).",
+      "signInFailed": "Account created, but sign-in failed. Try logging in.",
+      "magicEmail": "Enter the email for your magic link.",
+      "magicFailed": "Couldn’t send a magic link. Check AUTH_RESEND_KEY."
+    }
   },
   "terms": {
     "title": "Terms of Service",
@@ -220,6 +230,11 @@
       "portal": "Stripe customer portal",
       "unlockDemo": "Unlock Pro for local demo",
       "returnStarter": "Return to Starter"
+    },
+    "errors": {
+      "invoiceNotFound": "Invoice not found.",
+      "proposalNotFound": "Proposal not found.",
+      "clientEmailRequired": "Add a client email before sending the share link."
     }
   }
 }

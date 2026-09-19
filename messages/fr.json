@@ -103,7 +103,17 @@
     "sendMagic": "Envoyer le lien magique",
     "github": "Continuer avec GitHub",
     "githubHint": "GitHub OAuth apparaît ici lorsque AUTH_GITHUB_ID et AUTH_GITHUB_SECRET sont définis.",
-    "demoPrefix": "Démo :"
+    "demoPrefix": "Démo :",
+    "errors": {
+      "invalidEmailPassword": "Saisissez un e-mail et un mot de passe valides.",
+      "invalidCredentials": "Ces identifiants ne correspondent pas. Essayez la démo ou créez un compte.",
+      "registerRequired": "Le nom, un e-mail valide et un mot de passe de 8+ caractères sont requis.",
+      "accountExists": "Un compte existe déjà avec cet e-mail. Connectez-vous.",
+      "hashFailed": "Impossible de hacher ce mot de passe sur ce serveur. Vérifiez les logs Worker (bcryptjs / crypto).",
+      "signInFailed": "Compte créé, mais la connexion a échoué. Essayez de vous connecter.",
+      "magicEmail": "Saisissez l’e-mail pour le lien magique.",
+      "magicFailed": "Impossible d’envoyer un lien magique. Vérifiez AUTH_RESEND_KEY."
+    }
   },
   "terms": {
     "title": "Conditions d’utilisation",
@@ -220,6 +230,11 @@
       "portal": "Portail client Stripe",
       "unlockDemo": "Débloquer Pro en démo locale",
       "returnStarter": "Revenir à Starter"
+    },
+    "errors": {
+      "invoiceNotFound": "Facture introuvable.",
+      "proposalNotFound": "Proposition introuvable.",
+      "clientEmailRequired": "Ajoutez l’e-mail du client avant d’envoyer le lien."
     }
   }
 }
