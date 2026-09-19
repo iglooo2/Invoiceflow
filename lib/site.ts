@@ -3,7 +3,11 @@ export const SITE_STUDIO = "InvoiceFlow Studio";
 export const SITE_DOMAIN = "invoiceflowstudio.com";
 export const SITE_URL = `https://${SITE_DOMAIN}`;
 export const SITE_DESCRIPTION =
-  "Fast, beautiful invoices and proposals for designers, video editors, and writers who hate making them by hand.";
+  "Ditch the Word docs. Pick a template that matches your work — fast invoices and proposals for designers, editors, and writers.";
+
+export function startFreeHref(signedIn: boolean) {
+  return signedIn ? "/dashboard" : "/login?mode=register";
+}
 
 export function isPostgresUrl(url = process.env["DATABASE_URL"] ?? "") {
   return /^postgres(ql)?:/i.test(url.trim());

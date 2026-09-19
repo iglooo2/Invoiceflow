@@ -10,13 +10,15 @@ export function AuthForms({
   magicEnabled,
   callbackUrl,
   showDemoCredentials,
+  initialMode = "signin",
 }: {
   githubEnabled: boolean;
   magicEnabled: boolean;
   callbackUrl: string;
   showDemoCredentials: boolean;
+  initialMode?: "signin" | "register";
 }) {
-  const [mode, setMode] = useState<"signin" | "register">("signin");
+  const [mode, setMode] = useState<"signin" | "register">(initialMode);
   const [error, setError] = useState<string | null>(null);
 
   return (

@@ -29,7 +29,7 @@ export function MarketingHeader({ signedIn }: { signedIn: boolean }) {
               <Link href="/login">Sign in</Link>
             </Button>
             <Button asChild>
-              <Link href="/login">Start free</Link>
+              <Link href="/login?mode=register">Start free</Link>
             </Button>
           </>
         )}

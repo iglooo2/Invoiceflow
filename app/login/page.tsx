@@ -10,7 +10,7 @@ export const metadata: Metadata = { title: "Sign in" };
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ callbackUrl?: string; error?: string }>;
+  searchParams: Promise<{ callbackUrl?: string; error?: string; mode?: string }>;
 }) {
   const user = await getCurrentUser();
   if (user) redirect("/dashboard");
@@ -31,6 +31,7 @@ export default async function LoginPage({
           magicEnabled={resendEnabled()}
           showDemoCredentials={isDevMode()}
           callbackUrl={params.callbackUrl || "/dashboard"}
+          initialMode={params.mode === "register" ? "register" : "signin"}
         />
       </main>
       <MarketingFooter />
