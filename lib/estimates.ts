@@ -1,3 +1,5 @@
+import { format } from "date-fns";
+
 export const ESTIMATE_LIST_PATH = "/dashboard/estimates";
 export const ESTIMATE_NEW_PATH = "/dashboard/estimates/new";
 export const ESTIMATE_MARKETING_PATH = "/estimates";
@@ -37,6 +39,13 @@ export function parseAttachmentsJson(raw: string | null | undefined): EstimateAt
   } catch {
     return [];
   }
+}
+
+export function formatEstimateDate(value: Date | string | null | undefined, pattern: string) {
+  if (!value) return "";
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return format(date, pattern);
 }
 
 export function serializeAttachments(items: EstimateAttachment[]) {

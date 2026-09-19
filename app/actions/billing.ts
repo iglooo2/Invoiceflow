@@ -7,12 +7,18 @@ import { prisma } from "@/lib/db";
 import { errorRedirect, safeErrorLog } from "@/lib/db-errors";
 import { requireUser } from "@/lib/session";
 import {
-  buildProCheckoutSessionParams,
+  BILLING_EMAIL_REQUIRED,
+  asStripeBillingClient,
+  createBillingPortalSession,
+  createProCheckoutSession,
+  replaceStripeCustomerForUser,
+  resolveStripeCustomerForUser,
+  savedStripeCustomerId,
+} from "@/lib/stripe-billing";
+import {
   ensureStripeProductSaaSTaxCode,
   getStripe,
   getStripeProPriceId,
-  isMissingStripeCustomerError,
-  isStripeTaxCodeError,
   stripeEnabled,
   stripeFailureMessage,
   stripeMisconfiguredMessage,
@@ -23,46 +29,16 @@ function redirectBillingError(message: string): never {
   redirect(errorRedirect("/dashboard/billing", message));
 }
 
-async function createStripeCustomerForUser(user: {
-  id: string;
-  email: string | null;
-  name?: string | null;
-  businessName?: string | null;
-}) {
-  if (!user.email) {
-    redirectBillingError("Your account needs an email address to subscribe.");
-  }
-  const stripe = getStripe();
-  if (!stripe) {
-    redirectBillingError(stripeMisconfiguredMessage());
-  }
-  const customer = await stripe.customers.create({
-    email: user.email,
-    name: user.businessName || user.name || undefined,
-    metadata: { userId: user.id },
-  });
-  await prisma.user.update({
-    where: { id: user.id },
-    data: { stripeCustomerId: customer.id },
-  });
-  return customer.id;
-}
-
 export async function startProCheckout() {
   try {
     const user = await requireUser();
     if (!user.email) {
-      redirectBillingError("Your account needs an email address to subscribe.");
+      redirectBillingError(BILLING_EMAIL_REQUIRED);
     }
     const stripe = getStripe();
     const priceId = getStripeProPriceId();
     if (!stripe || !priceId || !stripeEnabled()) {
       redirectBillingError(stripeMisconfiguredMessage());
-    }
-
-    let customerId = user.stripeCustomerId;
-    if (!customerId) {
-      customerId = await createStripeCustomerForUser(user);
     }
 
     try {
@@ -72,39 +48,16 @@ export async function startProCheckout() {
       console.error("ensureStripeProductSaaSTaxCode failed", safeErrorLog(error));
     }
 
-    const createSession = (customer: string, managedPaymentsEnabled?: boolean) =>
-      stripe.checkout.sessions.create(
-        buildProCheckoutSessionParams({
-          customerId: customer,
-          priceId,
-          userId: user.id,
-          appUrl: getAppUrl(),
-          managedPaymentsEnabled,
-        }),
-      );
-
-    let session;
-    try {
-      session = await createSession(customerId);
-    } catch (error) {
-      unstable_rethrow(error);
-      // Test-mode cus_… ids are invisible to live keys (and the reverse).
-      if (customerId && isMissingStripeCustomerError(error)) {
-        customerId = await createStripeCustomerForUser(user);
-        try {
-          session = await createSession(customerId);
-        } catch (retryError) {
-          unstable_rethrow(retryError);
-          if (!isStripeTaxCodeError(retryError)) throw retryError;
-          session = await createSession(customerId, false);
-        }
-      } else if (isStripeTaxCodeError(error)) {
-        // Account default is Managed Payments; session can opt out if tax still fails.
-        session = await createSession(customerId, false);
-      } else {
-        throw error;
-      }
-    }
+    const billing = asStripeBillingClient(stripe);
+    const resolved = await resolveStripeCustomerForUser({ user, stripe: billing, db: prisma });
+    const session = await createProCheckoutSession({
+      stripe: billing,
+      customerId: resolved.customerId,
+      priceId,
+      userId: user.id,
+      appUrl: getAppUrl(),
+      replaceCustomer: () => replaceStripeCustomerForUser({ user, stripe: billing, db: prisma }),
+    });
 
     if (!session.url) {
       redirectBillingError("Stripe did not return a checkout URL.");
@@ -121,12 +74,19 @@ export async function openBillingPortal() {
   try {
     const user = await requireUser();
     const stripe = getStripe();
-    if (!stripe || !user.stripeCustomerId) {
-      redirectBillingError("No Stripe customer is on file yet. Upgrade once before opening the customer portal.");
+    if (!stripe || !stripeEnabled()) {
+      redirectBillingError(stripeMisconfiguredMessage());
     }
-    const portal = await stripe.billingPortal.sessions.create({
-      customer: user.stripeCustomerId,
-      return_url: `${getAppUrl()}/dashboard/billing`,
+    if (!user.email && !savedStripeCustomerId(user.stripeCustomerId)) {
+      redirectBillingError(BILLING_EMAIL_REQUIRED);
+    }
+    const billing = asStripeBillingClient(stripe);
+    const resolved = await resolveStripeCustomerForUser({ user, stripe: billing, db: prisma });
+    const portal = await createBillingPortalSession({
+      stripe: billing,
+      customerId: resolved.customerId,
+      returnUrl: `${getAppUrl()}/dashboard/billing`,
+      replaceCustomer: () => replaceStripeCustomerForUser({ user, stripe: billing, db: prisma }),
     });
     redirect(portal.url);
   } catch (error) {

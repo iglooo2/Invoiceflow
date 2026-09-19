@@ -19,6 +19,15 @@ export {
   buildProCheckoutSessionParams,
   ensureStripeProductSaaSTaxCode,
 } from "./stripe-checkout";
+export {
+  BILLING_EMAIL_REQUIRED,
+  asStripeBillingClient,
+  createBillingPortalSession,
+  createProCheckoutSession,
+  replaceStripeCustomerForUser,
+  resolveStripeCustomerForUser,
+  savedStripeCustomerId,
+} from "./stripe-billing";
 export { createStripeClient, stripeWebhookCryptoProvider } from "./stripe-client";
 
 let stripeClient: ReturnType<typeof createStripeClient> | null = null;

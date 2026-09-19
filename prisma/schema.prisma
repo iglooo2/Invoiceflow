@@ -150,7 +150,7 @@ model Proposal {
   clientName    String
   clientEmail   String?
   clientCompany String?
-  taxRate       Float     @default(0)
+  taxRate       Float     @default(0) // Estimates; production needs `npm run db:push:prod`
   markupRate    Float     @default(0)
   viewedAt      DateTime?
   signedName    String?

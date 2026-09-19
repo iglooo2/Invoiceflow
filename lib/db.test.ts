@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { NEON_HTTP_ADAPTER_OPTIONS } from "./db";
-import { documentWriteFailureMessage, errorRedirect, registerFailureMessage, safeErrorLog } from "./db-errors";
+import { documentWriteFailureMessage, errorRedirect, isMissingDatabaseSchemaError, prismaReadFailureMessage, registerFailureMessage, safeErrorLog } from "./db-errors";
 import {
   prismaAdapterKind,
   sanitizeNeonHttpUrl,
@@ -123,6 +123,14 @@ test("documentWriteFailureMessage maps schema drift, unique numbers, and Neon HT
     assert.match(
       documentWriteFailureMessage({ name: "Error", message: "Transactions are not supported in HTTP mode" }),
       /separate statements/,
+    );
+    assert.match(
+      prismaReadFailureMessage({ name: "PrismaClientKnownRequestError", code: "P2022", message: "column" }),
+      /db:push:prod/,
+    );
+    assert.equal(
+      isMissingDatabaseSchemaError({ message: 'column "taxRate" of relation "Proposal" does not exist' }),
+      true,
     );
     assert.match(
       documentWriteFailureMessage({

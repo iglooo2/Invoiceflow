@@ -1,7 +1,13 @@
 import Link from "next/link";
-import { format } from "date-fns";
 import { prisma } from "@/lib/db";
-import { parseAttachmentsJson, ESTIMATE_NEW_PATH, estimateDetailPath } from "@/lib/estimates";
+import { prismaReadFailureMessage, safeErrorLog } from "@/lib/db-errors";
+import {
+  parseAttachmentsJson,
+  ESTIMATE_NEW_PATH,
+  estimateDetailPath,
+  formatEstimateDate,
+} from "@/lib/estimates";
+import { ESTIMATE_SCHEMA_WARNING, listEstimatesForUser } from "@/lib/proposal-queries";
 import { appCopy } from "@/lib/i18n-request";
 import { formatMessage } from "@/lib/i18n";
 import { estimateTotals, formatCents } from "@/lib/money";
@@ -19,17 +25,23 @@ export default async function EstimatesPage({
   const { dict } = await appCopy();
   const { status, q } = await searchParams;
   const copy = dict.app.estimateList;
-  const estimates = await prisma.proposal.findMany({
-    where: {
+  let estimates: Awaited<ReturnType<typeof listEstimatesForUser>>["estimates"] = [];
+  let usedLegacySchema = false;
+  let loadError: string | undefined;
+  try {
+    const loaded = await listEstimatesForUser(prisma, {
       userId: user.id,
-      status: status || undefined,
-      OR: q
-        ? [{ title: { contains: q } }, { clientName: { contains: q } }]
-        : undefined,
-    },
-    include: { sections: true },
-    orderBy: { createdAt: "desc" },
-  });
+      status,
+      q,
+      includeSections: true,
+    });
+    estimates = loaded.estimates;
+    usedLegacySchema = loaded.usedLegacySchema;
+    loadError = loaded.error;
+  } catch (error) {
+    console.error("EstimatesPage", safeErrorLog(error));
+    loadError = prismaReadFailureMessage(error);
+  }
 
   return (
     <div className="grid gap-6">
@@ -42,6 +54,10 @@ export default async function EstimatesPage({
           <Link href={ESTIMATE_NEW_PATH}>{dict.app.newEstimate}</Link>
         </Button>
       </div>
+      {loadError ? <p className="rounded-2xl bg-primary/10 px-4 py-3 text-sm">{loadError}</p> : null}
+      {usedLegacySchema ? (
+        <p className="rounded-2xl bg-primary/10 px-4 py-3 text-sm">{ESTIMATE_SCHEMA_WARNING}</p>
+      ) : null}
       <form className="flex flex-col gap-2 sm:flex-row">
         <Input name="q" placeholder={dict.app.search} defaultValue={q} />
         <Select name="status" defaultValue={status || ""}>
@@ -70,6 +86,7 @@ export default async function EstimatesPage({
             {estimates.map((estimate) => {
               const totals = estimateTotals(estimate.sections, estimate.taxRate, estimate.markupRate);
               const files = parseAttachmentsJson(estimate.attachments);
+              const opened = formatEstimateDate(estimate.viewedAt, "MMM d");
               return (
                 <tr key={estimate.id} className="border-b border-border/70">
                   <td className="px-4 py-3">
@@ -86,16 +103,14 @@ export default async function EstimatesPage({
                   <td className="px-4 py-3">
                     <StatusBadge status={estimate.status} labels={dict.app.status} />
                   </td>
-                  <td className="px-4 py-3 text-muted-foreground">
-                    {estimate.viewedAt ? format(estimate.viewedAt, "MMM d") : "—"}
-                  </td>
+                  <td className="px-4 py-3 text-muted-foreground">{opened || "—"}</td>
                   <td className="px-4 py-3">{formatCents(totals.totalCents, estimate.currency)}</td>
                 </tr>
               );
             })}
           </tbody>
         </table>
-        {estimates.length === 0 ? (
+        {estimates.length === 0 && !loadError ? (
           <p className="px-4 py-10 text-sm text-muted-foreground">{copy.empty}</p>
         ) : null}
       </div>

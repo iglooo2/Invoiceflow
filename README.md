@@ -92,6 +92,54 @@ npm run db:migrate:prod              # prisma migrate deploy
 
 For Neon, use the **pooled** (`-pooler`) URL as the Worker `DATABASE_URL`, and the **direct** URL when running `db:push:prod`.
 
+### Estimates columns (required after the Estimates / PR #23 deploy)
+
+Cloudflare Worker logs on `/dashboard/estimates`:
+
+```
+prisma:error Invalid prisma.proposal.findMany() invocation: column Proposal.taxRate does not exist
+```
+
+Production Neon is missing the six Proposal columns added for Estimates. Prisma’s default `findMany` SELECTs them, the Worker throws, and Cloudflare shows **This page couldn’t load**.
+
+**Unblock (schema):** from a laptop, push the Prisma schema to the Neon **direct / unpooled** URL (not the Worker `*-pooler.*` secret). Prisma talks TCP; the Worker cannot run this. No Worker redeploy is required for the SQL itself.
+
+```bash
+cd /path/to/invoiceflow
+
+# Neon DIRECT host — NOT *-pooler.*
+export DATABASE_URL="postgresql://USER:PASSWORD@ep-XXXX.us-east-1.aws.neon.tech/neondb?sslmode=require"
+
+# If .env already has DATABASE_URL_UNPOOLED, this script uses it automatically.
+npm run db:push:prod
+```
+
+`npm run db:push:prod` is `node scripts/prisma.mjs db push --require-postgres`. It refuses SQLite. That adds:
+
+| Column | Postgres type |
+|---|---|
+| `"taxRate"` | `DOUBLE PRECISION NOT NULL DEFAULT 0` |
+| `"markupRate"` | `DOUBLE PRECISION NOT NULL DEFAULT 0` |
+| `"viewedAt"` | `TIMESTAMP(3)` |
+| `"signedName"` | `TEXT` |
+| `"signedAt"` | `TIMESTAMP(3)` |
+| `"attachments"` | `TEXT` |
+
+SQL-only equivalent (`prisma/add-estimate-columns.sql`), against the same direct URL:
+
+```sql
+ALTER TABLE "Proposal" ADD COLUMN IF NOT EXISTS "taxRate" DOUBLE PRECISION NOT NULL DEFAULT 0;
+ALTER TABLE "Proposal" ADD COLUMN IF NOT EXISTS "markupRate" DOUBLE PRECISION NOT NULL DEFAULT 0;
+ALTER TABLE "Proposal" ADD COLUMN IF NOT EXISTS "viewedAt" TIMESTAMP(3);
+ALTER TABLE "Proposal" ADD COLUMN IF NOT EXISTS "signedName" TEXT;
+ALTER TABLE "Proposal" ADD COLUMN IF NOT EXISTS "signedAt" TIMESTAMP(3);
+ALTER TABLE "Proposal" ADD COLUMN IF NOT EXISTS "attachments" TEXT;
+```
+
+Then reload `https://invoiceflowstudio.com/dashboard/estimates`. Creating or approving estimates that write the new columns also needs this push.
+
+This app build still **loads the list** from older Proposal columns (markup / opened / attachments stay empty) so a missing schema is a banner, not a Cloudflare error page.
+
 Then seed production only if you want the demo user (skip for a real launch):
 
 ```bash
@@ -201,7 +249,7 @@ Changing live Stripe secrets on **Runtime** does **not** require a rebuild. Afte
 2. Create product “InvoiceFlow Pro” with a **$24/month** recurring **live** price. Copy that `price_…` (it is not the test-mode id).
 3. Set Worker **encrypted runtime secrets** (Settings → Variables and Secrets → Secret, not Variable): `STRIPE_SECRET_KEY=sk_live_…`, `STRIPE_PRO_PRICE_ID=<live price>`, `STRIPE_WEBHOOK_SECRET` from a Live endpoint at `https://invoiceflowstudio.com/api/stripe/webhook`. If `STRIPE_PRO_PRICE_ID` already exists as a plaintext Variable, delete it and re-add it as a Secret so preview `versions upload` cannot wipe it.
 4. You do not need `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` for Checkout.
-5. Accounts that already clicked Upgrade under test keys may have a test `cus_…` stored. Checkout now creates a new customer if Stripe returns “No such customer”.
+5. Accounts that already clicked Upgrade under test keys may have a test `cus_…` stored. Checkout **retrieves** the saved id first. Missing, deleted, wrong-mode, or non-`cus_` values (including a leftover `sub_`) are cleared in the database, then a Live customer is created — or an existing Live customer with the same email is reused. Pro accounts can open Checkout or the customer portal again.
 6. Live accounts often have **Managed Payments** on by default. Checkout writes Stripe tax code `txcd_10103001` (SaaS — business use) onto the Pro product when it is missing. If Stripe still rejects the session, Checkout retries with `managed_payments[enabled]=false` so Upgrade can complete without a Dashboard tax-code edit.
 
 If Checkout still fails, Billing shows a mapped error (bad key, wrong-mode price, leftover customer, missing tax code, network) or the fallback **Couldn’t complete the Stripe request (Name Code)** from `stripeFailureMessage` — check Worker logs for the raw Stripe error.
@@ -256,7 +304,7 @@ InvoiceFlow Studio can show the Connect QuickBooks story in Settings and on `/es
 ## Cloudflare / Workers notes
 
 - **OpenNext vs vinext:** Cloudflare’s newest Next.js path is [vinext](https://developers.cloudflare.com/workers/frameworks/framework-guides/nextjs/). This repo uses **`@opennextjs/cloudflare`** (still a documented Workers path) so we keep the App Router + `next build` toolchain.
-- **Prisma:** production uses the rust-free client engine + driver adapters (no query-engine binary on Workers). The Prisma client is a lazy proxy so `DATABASE_URL` is read after OpenNext copies Worker secrets onto `process.env`. Local SQLite does not use an adapter. Neon HTTP **cannot run transactions**, so invoice/estimate saves insert the parent row and then each line/section as separate statements (no nested `create`, no `prisma.$transaction`). Signup stays a single `user.create`. After this release, run `npm run db:push:prod` so estimate columns (`taxRate`, `markupRate`, `viewedAt`, `signedName`, `signedAt`, `attachments`) exist on Postgres.
+- **Prisma:** production uses the rust-free client engine + driver adapters (no query-engine binary on Workers). The Prisma client is a lazy proxy so `DATABASE_URL` is read after OpenNext copies Worker secrets onto `process.env`. Local SQLite does not use an adapter. Neon HTTP **cannot run transactions**, so invoice/estimate saves insert the parent row and then each line/section as separate statements (no nested `create`, no `prisma.$transaction`). Signup stays a single `user.create`. Estimate **reads** retry without the new Proposal columns if Postgres has not been pushed yet, and render an in-page message instead of Cloudflare’s generic error page. After this release, run `npm run db:push:prod` so estimate columns (`taxRate`, `markupRate`, `viewedAt`, `signedName`, `signedAt`, `attachments`) exist on Postgres.
 - **Signup / login check after deploy:** open `/login` → Create account with a new email and 8+ character password. You should land on **Let’s get started** (name + phone), then **Add business details**, then `/dashboard`. Existing accounts that already finished onboarding (or were created before this release) skip those steps. Sign out, sign back in with the same credentials. If the form says **DATABASE_URL is missing at runtime**, add the Neon pooled URL under Worker **runtime** Variables and Secrets (not only build vars) and redeploy. If it mentions missing tables, run `npm run db:push:prod` from a laptop. If it mentions a SQLite Prisma client, set **Build** `PRISMA_PROVIDER=postgresql` and rebuild with `npm run cf:build`. `npm test` covers adapter selection, Neon URL sanitization (`channel_binding` / `sslmode`), Prisma error hints, and postgres generate without a real DATABASE_URL.
 - **Onboarding columns on Neon:** after this release, run `npm run db:push:prod` (direct/unpooled URL) so `User` gains `phone`, `employeeCount`, `industry`, and `onboardingComplete` (boolean, default `true` so existing studios stay ungated). New signups set `onboardingComplete=false` until both steps finish. Equivalent SQL if you prefer the Neon console:
 
