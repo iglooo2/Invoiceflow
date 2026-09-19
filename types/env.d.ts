@@ -24,7 +24,11 @@ declare namespace NodeJS {
     GOOGLE_CLIENT_SECRET?: string;
     AUTH_APPLE_ID?: string;
     AUTH_APPLE_SECRET?: string;
+    AUTH_APPLE_PRIVATE_KEY?: string;
     AUTH_APPLE_TEAM?: string;
+    AUTH_APPLE_TEAM_ID?: string;
     AUTH_APPLE_KEY_ID?: string;
+    APPLE_TEAM_ID?: string;
+    APPLE_KEY_ID?: string;
   }
 }

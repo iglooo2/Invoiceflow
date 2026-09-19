@@ -28,7 +28,7 @@
   "home": {
     "eyebrow": "InvoiceFlow Studio",
     "headline": "Deixe os docs do Word de lado.\nEscolha um modelo que combine com o seu trabalho.",
-    "lede": "A ferramenta objetiva para designers, editores e redatores que preferem entregar trabalho a brigar com um .docx. Escolha um modelo de estúdio, envie um PDF ou um link para o cliente e saiba o que foi pago.",
+    "lede": "A ferramenta objetiva para designers, editores, redatores e empreiteiros que preferem entregar trabalho a brigar com um .docx. Escolha um modelo de estúdio, envie um PDF ou um link para o cliente e saiba o que foi pago.",
     "createInvoice": "Criar sua primeira fatura",
     "seePricing": "Ver preços",
     "startCta": "Começar grátis (3 faturas/mês)",
@@ -116,7 +116,7 @@
     "apple": "Continuar com Apple",
     "github": "Continuar com GitHub",
     "googleHint": "O Google Sign-In não está configurado. Adicione AUTH_GOOGLE_ID e AUTH_GOOGLE_SECRET como segredos Runtime do Worker da Cloudflare (nomes do Auth.js). GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET também são aceitos como aliases.",
-    "appleHint": "O Apple Sign-In não está configurado. Adicione AUTH_APPLE_ID e AUTH_APPLE_SECRET como segredos do Worker. Crie o segredo com seu Apple Team ID e chave.",
+    "appleHint": "O Apple Sign-In não está configurado. Adicione AUTH_APPLE_ID e AUTH_APPLE_SECRET (chave .p8 ou JWT) como segredos do Worker. Se AUTH_APPLE_SECRET for o .p8, defina também AUTH_APPLE_TEAM e AUTH_APPLE_KEY_ID.",
     "githubHint": "O GitHub OAuth aparece aqui quando AUTH_GITHUB_ID e AUTH_GITHUB_SECRET estão definidos.",
     "demoPrefix": "Demo:",
     "errors": {
@@ -131,6 +131,7 @@
       "oauthFailed": "O acesso com Google ou Apple não foi concluído. Confira AUTH_GOOGLE_ID / AUTH_GOOGLE_SECRET (ou AUTH_APPLE_ID / AUTH_APPLE_SECRET) como segredos Runtime do Worker, e a URL de callback OAuth.",
       "oauthAccountNotLinked": "Já existe uma conta InvoiceFlow com esse e-mail. Entre com e-mail e senha (a senha criada para esse endereço), ou use o Google de novo para vincular as contas.",
       "oauthNotConfigured": "Esse método de acesso não está configurado neste servidor.",
+      "appleSecretInvalid": "O Apple Sign-In está mal configurado. AUTH_APPLE_SECRET deve ser um JWT, ou uma chave .p8 com AUTH_APPLE_TEAM e AUTH_APPLE_KEY_ID.",
       "configuration": "AUTH_SECRET está ausente no runtime do Worker. Defina AUTH_SECRET como segredo Runtime da Cloudflare (não só variável de Build) e AUTH_URL=https://invoiceflowstudio.com como variável Runtime.",
       "signInIncomplete": "Esse acesso não foi concluído. Tente e-mail e senha, ou tente de novo."
     }

@@ -171,6 +171,8 @@ test("localized landing keeps the studio gallery and register CTA", () => {
     assert.match(dict.home.headline, /\n/);
     assert.ok(dict.login.google.length > 0, locale);
     assert.ok(dict.login.apple.length > 0, locale);
+    assert.match(dict.login.appleHint, /AUTH_APPLE_TEAM/);
+    assert.ok(dict.login.errors.appleSecretInvalid.length > 0, locale);
     assert.ok(dict.onboarding.profileTitle.length > 0, locale);
     assert.ok(dict.onboarding.businessTitle.length > 0, locale);
     assert.match(dict.onboarding.businessLede, /InvoiceFlow Studio/);

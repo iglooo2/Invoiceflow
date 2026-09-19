@@ -1,3 +1,4 @@
+import { appleClientSecretReady, type AppleClientSecretInput } from "./apple-secret";
 import { SITE_URL } from "./site";
 import {
   copyCloudflareAuthEnvToProcess,
@@ -55,7 +56,7 @@ export function appleClientId() {
 }
 
 export function appleClientSecret() {
-  return firstAuthSecret("AUTH_APPLE_SECRET", "APPLE_SECRET", "APPLE_CLIENT_SECRET");
+  return firstAuthSecret("AUTH_APPLE_SECRET", "APPLE_SECRET", "APPLE_CLIENT_SECRET", "AUTH_APPLE_PRIVATE_KEY");
 }
 
 export function resolvedAuthSecret() {
@@ -77,8 +78,17 @@ export function googleAuthEnabled() {
   return oauthPairEnabled(googleClientId(), googleClientSecret());
 }
 
+export function appleCredentials(): AppleClientSecretInput {
+  return {
+    clientId: appleClientId(),
+    secret: appleClientSecret(),
+    teamId: firstAuthSecret("AUTH_APPLE_TEAM", "AUTH_APPLE_TEAM_ID", "APPLE_TEAM_ID"),
+    keyId: firstAuthSecret("AUTH_APPLE_KEY_ID", "APPLE_KEY_ID"),
+  };
+}
+
 export function appleAuthEnabled() {
-  return oauthPairEnabled(appleClientId(), appleClientSecret());
+  return appleClientSecretReady(appleCredentials());
 }
 
 export function githubAuthEnabled() {
@@ -109,15 +119,19 @@ export function applyAuthRuntimeEnv() {
   writeProcessEnv("NEXTAUTH_URL", url);
   writeProcessEnv("AUTH_TRUST_HOST", "true");
 
-  const googleId = googleClientId();
-  const googleSecret = googleClientSecret();
-  writeProcessEnv("AUTH_GOOGLE_ID", googleId);
-  writeProcessEnv("AUTH_GOOGLE_SECRET", googleSecret);
+  writeProcessEnv("AUTH_GOOGLE_ID", googleClientId());
+  writeProcessEnv("AUTH_GOOGLE_SECRET", googleClientSecret());
 
-  const appleId = appleClientId();
-  const appleSecret = appleClientSecret();
-  writeProcessEnv("AUTH_APPLE_ID", appleId);
-  writeProcessEnv("AUTH_APPLE_SECRET", appleSecret);
+  const apple = appleCredentials();
+  writeProcessEnv("AUTH_APPLE_ID", apple.clientId);
+  writeProcessEnv("AUTH_APPLE_SECRET", apple.secret);
+  writeProcessEnv("AUTH_APPLE_TEAM", apple.teamId ?? "");
+  writeProcessEnv("AUTH_APPLE_KEY_ID", apple.keyId ?? "");
+}
+
+/** Alias used by Apple JWT minting (#37). Same as `applyAuthRuntimeEnv`. */
+export function publishAuthRuntimeEnv() {
+  applyAuthRuntimeEnv();
 }
 
 export async function ensureAuthRuntimeEnv() {

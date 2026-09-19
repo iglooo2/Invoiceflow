@@ -19,7 +19,8 @@ import {
 } from "@/lib/db-errors";
 import { localizedPath } from "@/lib/i18n";
 import { appCopy } from "@/lib/i18n-request";
-import { appleAuthEnabled, ensureAuthRuntimeEnv, googleAuthEnabled } from "@/lib/auth-env";
+import { resolveAppleClientSecret } from "@/lib/apple-secret";
+import { appleAuthEnabled, appleCredentials, ensureAuthRuntimeEnv, googleAuthEnabled } from "@/lib/auth-env";
 
 const credentialsSchema = z.object({
   email: z.string().email(),
@@ -158,6 +159,12 @@ export async function loginWithApple() {
   const { dict } = await appCopy();
   if (!appleAuthEnabled()) {
     return { error: dict.login.errors.oauthNotConfigured };
+  }
+  try {
+    await resolveAppleClientSecret(appleCredentials());
+  } catch (error) {
+    console.error("loginWithApple secret", safeErrorLog(error));
+    return { error: dict.login.errors.appleSecretInvalid };
   }
   try {
     await signIn("apple", { redirectTo: "/dashboard" });

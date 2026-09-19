@@ -1,5 +1,6 @@
 import type { NextAuthConfig } from "next-auth";
 import type { Provider } from "next-auth/providers";
+import type { NextRequest } from "next/server";
 import NextAuth from "next-auth";
 import Apple from "next-auth/providers/apple";
 import Credentials from "next-auth/providers/credentials";
@@ -8,10 +9,11 @@ import Google from "next-auth/providers/google";
 import Resend from "next-auth/providers/resend";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
+import { resolveAppleClientSecret } from "@/lib/apple-secret";
+import { appleFormPostCookies, shouldUseSecureAuthCookies } from "@/lib/auth-cookies";
 import {
   appleAuthEnabled,
-  appleClientId,
-  appleClientSecret,
+  appleCredentials,
   ensureAuthRuntimeEnv,
   githubAuthEnabled,
   googleAuthEnabled,
@@ -20,6 +22,7 @@ import {
   readAuthSecret,
   resendEnabled,
   resolvedAuthSecret,
+  resolvedAuthUrl,
 } from "@/lib/auth-env";
 import { allowVerifiedOauthAccountLinking } from "@/lib/auth-oauth";
 import { databaseRuntimeStatus, prisma } from "@/lib/db";
@@ -27,7 +30,7 @@ import { safeErrorLog } from "@/lib/db-errors";
 import { sendMagicLinkEmail } from "@/lib/email";
 import { markNewUserOnboarding } from "@/lib/onboarding";
 
-function buildAuthProviders(): Provider[] {
+async function buildAuthProviders(): Promise<Provider[]> {
   const providers: Provider[] = [
     Credentials({
       name: "Email and password",
@@ -73,13 +76,29 @@ function buildAuthProviders(): Provider[] {
   }
 
   if (appleAuthEnabled()) {
-    providers.push(
-      Apple({
-        clientId: appleClientId(),
-        clientSecret: appleClientSecret(),
-        allowDangerousEmailAccountLinking: true,
-      }),
-    );
+    const apple = appleCredentials();
+    try {
+      const clientSecret = await resolveAppleClientSecret(apple);
+      providers.push(
+        Apple({
+          clientId: apple.clientId,
+          clientSecret,
+          // OIDC id_token is required; Auth.js defaults are nonce+state (not PKCE).
+          // Apple's `name email` scopes force response_mode=form_post.
+          checks: ["nonce", "state"],
+          client: { token_endpoint_auth_method: "client_secret_post" },
+          authorization: {
+            params: {
+              scope: "name email",
+              response_mode: "form_post",
+            },
+          },
+          allowDangerousEmailAccountLinking: true,
+        }),
+      );
+    } catch (error) {
+      console.error("Apple client secret failed", safeErrorLog(error));
+    }
   }
 
   if (githubAuthEnabled()) {
@@ -106,9 +125,11 @@ function buildAuthProviders(): Provider[] {
   return providers;
 }
 
-async function authOptions(): Promise<NextAuthConfig> {
+async function authOptions(request?: NextRequest): Promise<NextAuthConfig> {
   await ensureAuthRuntimeEnv();
   const secret = resolvedAuthSecret();
+  const providers = await buildAuthProviders();
+  const secureCookies = shouldUseSecureAuthCookies(request?.url, resolvedAuthUrl());
   return {
     adapter: PrismaAdapter(prisma),
     session: { strategy: "jwt" },
@@ -124,7 +145,8 @@ async function authOptions(): Promise<NextAuthConfig> {
       signIn: "/login",
       error: "/login",
     },
-    providers: buildAuthProviders(),
+    providers,
+    cookies: appleAuthEnabled() ? appleFormPostCookies(secureCookies) : undefined,
     events: {
       async createUser({ user }) {
         if (!user.id) return;

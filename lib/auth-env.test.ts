@@ -61,7 +61,8 @@ test("Google and Apple Sign-In read process.env when Cloudflare context is absen
     process.env.AUTH_GOOGLE_ID = "id";
     process.env.AUTH_GOOGLE_SECRET = "secret";
     process.env.AUTH_APPLE_ID = "com.invoiceflowstudio.web";
-    process.env.AUTH_APPLE_SECRET = "jwt";
+    process.env.AUTH_APPLE_SECRET =
+      "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZWFtIn0.dGVzdA";
     process.env.AUTH_GITHUB_ID = "gh-id";
     process.env.AUTH_GITHUB_SECRET = "gh-secret";
     process.env.AUTH_RESEND_KEY = "re_test";
@@ -165,6 +166,30 @@ test("missing AUTH_SECRET message tells operators to use Worker Runtime, not Bui
   assert.match(AUTH_SECRET_RUNTIME_MISSING, /AUTH_URL/);
 });
 
+test("Apple Sign-In needs a JWT or a .p8 key plus team and key id", () => {
+  const previous = {
+    appleId: process.env.AUTH_APPLE_ID,
+    appleSecret: process.env.AUTH_APPLE_SECRET,
+    appleTeam: process.env.AUTH_APPLE_TEAM,
+    appleKey: process.env.AUTH_APPLE_KEY_ID,
+  };
+  try {
+    process.env.AUTH_APPLE_ID = "com.invoiceflowstudio.web";
+    process.env.AUTH_APPLE_SECRET = "-----BEGIN PRIVATE KEY-----\n" + "A".repeat(80) + "\n-----END PRIVATE KEY-----";
+    delete process.env.AUTH_APPLE_TEAM;
+    delete process.env.AUTH_APPLE_KEY_ID;
+    assert.equal(appleAuthEnabled(), false);
+    process.env.AUTH_APPLE_TEAM = "TEAM12ABCD";
+    process.env.AUTH_APPLE_KEY_ID = "KEY12ABCDE";
+    assert.equal(appleAuthEnabled(), true);
+  } finally {
+    restoreEnv("AUTH_APPLE_ID", previous.appleId);
+    restoreEnv("AUTH_APPLE_SECRET", previous.appleSecret);
+    restoreEnv("AUTH_APPLE_TEAM", previous.appleTeam);
+    restoreEnv("AUTH_APPLE_KEY_ID", previous.appleKey);
+  }
+});
+
 test("OAuth enablement reads Cloudflare runtime secrets, not a NEXT_PUBLIC flag", () => {
   const authEnv = readFileSync(path.join(import.meta.dirname, "auth-env.ts"), "utf8");
   const runtime = readFileSync(path.join(import.meta.dirname, "runtime-env.ts"), "utf8");
@@ -182,12 +207,14 @@ test("OAuth enablement reads Cloudflare runtime secrets, not a NEXT_PUBLIC flag"
   assert.match(authEnv, /copyCloudflareAuthEnvToProcess/);
   assert.match(authEnv, /AUTH_GOOGLE_ID/);
   assert.match(authEnv, /AUTH_APPLE_ID/);
+  assert.match(authEnv, /AUTH_APPLE_TEAM/);
+  assert.match(authEnv, /appleClientSecretReady/);
   assert.doesNotMatch(authEnv, /NEXT_PUBLIC_/);
   assert.doesNotMatch(utils, /googleAuthEnabled/);
   assert.doesNotMatch(utils, /AUTH_GOOGLE_ID/);
   assert.match(auth, /NextAuth\(authOptions\)/);
-  assert.match(auth, /async function authOptions\(\)/);
-  assert.match(auth, /function buildAuthProviders\(\)/);
+  assert.match(auth, /async function authOptions/);
+  assert.match(auth, /async function buildAuthProviders/);
   assert.match(auth, /googleClientId\(\)/);
   assert.match(auth, /googleClientSecret\(\)/);
   assert.match(auth, /ensureAuthRuntimeEnv\(\)/);
@@ -196,6 +223,11 @@ test("OAuth enablement reads Cloudflare runtime secrets, not a NEXT_PUBLIC flag"
   assert.match(auth, /resolvedAuthSecret\(\)/);
   assert.match(auth, /NODE_ENV === "production" \? undefined/);
   assert.doesNotMatch(auth, /secret: process\.env\.AUTH_SECRET/);
+  assert.match(auth, /appleCredentials/);
+  assert.match(auth, /resolveAppleClientSecret/);
+  assert.match(auth, /response_mode: "form_post"/);
+  assert.match(auth, /checks: \["nonce", "state"\]/);
+  assert.match(auth, /appleFormPostCookies/);
   assert.doesNotMatch(auth, /process\.env\.AUTH_GOOGLE_ID/);
   assert.match(authEnv, /GOOGLE_CLIENT_ID/);
   assert.match(authEnv, /AUTH_GOOGLE_ID/);
@@ -220,6 +252,8 @@ test("OAuth enablement reads Cloudflare runtime secrets, not a NEXT_PUBLIC flag"
   assert.match(actions, /redirectDigestErrorCode/);
   assert.match(actions, /credentialsActionErrorMessage/);
   assert.match(actions, /oauthActionErrorMessage/);
+  assert.match(actions, /resolveAppleClientSecret/);
+  assert.match(actions, /appleSecretInvalid/);
   assert.match(login, /loginQueryErrorMessage/);
   assert.match(login, /ensureAuthRuntimeEnv/);
   assert.match(login, /isOauthAccountNotLinkedCode/);
