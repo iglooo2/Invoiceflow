@@ -79,6 +79,7 @@ export function AuthForms({
       <div className="grid gap-3">
         <OauthButton
           enabled={googleEnabled}
+          provider="google"
           label={copy.google}
           hint={copy.googleHint}
           action={loginWithGoogle}
@@ -87,6 +88,7 @@ export function AuthForms({
         />
         <OauthButton
           enabled={appleEnabled}
+          provider="apple"
           label={copy.apple}
           hint={copy.appleHint}
           action={loginWithApple}
@@ -133,6 +135,7 @@ export function AuthForms({
 
 function OauthButton({
   enabled,
+  provider,
   label,
   hint,
   action,
@@ -140,26 +143,38 @@ function OauthButton({
   icon,
 }: {
   enabled: boolean;
+  provider: "google" | "apple";
   label: string;
   hint: string;
   action: () => Promise<{ error?: string } | void>;
   onError: (message: string | null) => void;
   icon: ReactNode;
 }) {
+  const hintId = `${provider}-oauth-hint`;
   if (!enabled) {
     return (
-      <div>
-        <Button type="button" variant="outline" className="w-full justify-center" disabled>
+      <div data-oauth={provider} data-oauth-enabled="false">
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full justify-center disabled:opacity-70"
+          disabled
+          aria-describedby={hintId}
+        >
           {icon}
           {label}
         </Button>
-        <p className="mt-2 text-xs text-muted-foreground">{hint}</p>
+        <p id={hintId} className="mt-2 text-xs text-muted-foreground">
+          {hint}
+        </p>
       </div>
     );
   }
 
   return (
     <form
+      data-oauth={provider}
+      data-oauth-enabled="true"
       action={async () => {
         onError(null);
         const result = await action();

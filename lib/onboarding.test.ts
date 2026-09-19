@@ -14,7 +14,7 @@ import {
   parsePhone,
   splitName,
 } from "./onboarding";
-import { appleAuthEnabled, googleAuthEnabled } from "./utils";
+import { appleAuthEnabled, googleAuthEnabled } from "./auth-env";
 
 test("new users need onboarding; existing users stay ungated", () => {
   assert.equal(needsOnboarding({ onboardingComplete: false }), true);
@@ -121,8 +121,12 @@ test("login always renders Google and Apple buttons; dashboard gates new users",
   assert.match(forms, /disabled/);
   assert.match(login, /googleEnabled=\{googleAuthEnabled\(\)\}/);
   assert.match(login, /appleEnabled=\{appleAuthEnabled\(\)\}/);
+  assert.match(login, /force-dynamic/);
+  assert.match(login, /await connection\(\)/);
   assert.match(auth, /next-auth\/providers\/google/);
   assert.match(auth, /next-auth\/providers\/apple/);
+  assert.match(auth, /NextAuth\(authOptions\)/);
+  assert.match(auth, /readAuthSecret\("AUTH_GOOGLE_ID"\)/);
   assert.match(auth, /createUser/);
   assert.match(layout, /needsOnboarding/);
   assert.match(register, /onboardingComplete: false/);

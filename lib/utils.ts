@@ -19,19 +19,3 @@ export function isDevMode() {
   if (process.env.AUTH_DEV_MODE === "false") return false;
   return process.env.NODE_ENV !== "production";
 }
-
-export function githubAuthEnabled() {
-  return Boolean(process.env.AUTH_GITHUB_ID && process.env.AUTH_GITHUB_SECRET);
-}
-
-export function googleAuthEnabled() {
-  return Boolean(process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET);
-}
-
-export function appleAuthEnabled() {
-  return Boolean(process.env.AUTH_APPLE_ID && process.env.AUTH_APPLE_SECRET);
-}
-
-export function resendEnabled() {
-  return Boolean(process.env.AUTH_RESEND_KEY || process.env.RESEND_API_KEY);
-}
