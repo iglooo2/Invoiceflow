@@ -3,9 +3,11 @@ import { requireUser } from "@/lib/session";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Textarea } from "@/components/ui/input";
 import { createClient, deleteClient } from "@/app/actions/clients";
+import { appCopy } from "@/lib/i18n-request";
 
 export default async function ClientsPage() {
   const user = await requireUser();
+  const { dict } = await appCopy();
   const clients = await prisma.client.findMany({
     where: { userId: user.id },
     orderBy: { name: "asc" },
@@ -14,32 +16,32 @@ export default async function ClientsPage() {
   return (
     <div className="grid gap-8 lg:grid-cols-[1fr_1.2fr]">
       <div>
-        <h1 className="font-display text-4xl">Clients</h1>
-        <p className="mt-2 text-muted-foreground">Save the people you invoice so the next one takes thirty seconds.</p>
+        <h1 className="font-display text-4xl">{dict.app.clients}</h1>
+        <p className="mt-2 text-muted-foreground">{dict.app.clientsPage.lede}</p>
         <form action={createClient} className="mt-6 grid gap-3">
           <div className="grid gap-2">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name">{dict.app.clientsPage.name}</Label>
             <Input id="name" name="name" required />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{dict.app.clientsPage.email}</Label>
             <Input id="email" name="email" type="email" />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="company">Company</Label>
+            <Label htmlFor="company">{dict.app.clientsPage.company}</Label>
             <Input id="company" name="company" />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="address">Address</Label>
+            <Label htmlFor="address">{dict.app.clientsPage.address}</Label>
             <Textarea id="address" name="address" />
           </div>
-          <Button type="submit">Save client</Button>
+          <Button type="submit">{dict.app.clientsPage.save}</Button>
         </form>
       </div>
       <div className="grid gap-3">
         {clients.length === 0 ? (
           <p className="rounded-3xl border border-dashed border-border p-6 text-sm text-muted-foreground">
-            No saved clients yet. The demo account includes Hearth Goods and Oak & Film.
+            {dict.app.clientsPage.empty}
           </p>
         ) : null}
         {clients.map((client) => (
@@ -51,7 +53,7 @@ export default async function ClientsPage() {
             </div>
             <form action={deleteClient.bind(null, client.id)}>
               <Button type="submit" variant="ghost" size="sm">
-                Remove
+                {dict.app.remove}
               </Button>
             </form>
           </div>

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/session";
 import { InvoiceForm } from "@/components/invoice-form";
 import { createInvoice } from "@/app/actions/invoices";
+import { appCopy } from "@/lib/i18n-request";
 
 export default async function NewInvoicePage({
   searchParams,
@@ -10,6 +11,7 @@ export default async function NewInvoicePage({
   searchParams: Promise<{ error?: string }>;
 }) {
   const user = await requireUser();
+  const { dict } = await appCopy();
   const { error } = await searchParams;
   const clients = await prisma.client.findMany({
     where: { userId: user.id },
@@ -19,8 +21,8 @@ export default async function NewInvoicePage({
   return (
     <div className="grid gap-6">
       <div>
-        <h1 className="font-display text-4xl">New invoice</h1>
-        <p className="text-muted-foreground">Blank slate. Or go back and start from a template.</p>
+        <h1 className="font-display text-4xl">{dict.app.newInvoice}</h1>
+        <p className="text-muted-foreground">{dict.app.newInvoiceLede}</p>
       </div>
       <InvoiceForm
         action={createInvoice}

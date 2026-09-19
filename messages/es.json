@@ -103,7 +103,17 @@
     "sendMagic": "Enviar enlace mágico",
     "github": "Continuar con GitHub",
     "githubHint": "GitHub OAuth aparece aquí cuando AUTH_GITHUB_ID y AUTH_GITHUB_SECRET están configurados.",
-    "demoPrefix": "Demo:"
+    "demoPrefix": "Demo:",
+    "errors": {
+      "invalidEmailPassword": "Introduce un email y una contraseña válidos.",
+      "invalidCredentials": "Esas credenciales no coinciden. Prueba el acceso demo o crea una cuenta.",
+      "registerRequired": "Se requieren nombre, un email válido y una contraseña de 8+ caracteres.",
+      "accountExists": "Ya existe una cuenta con ese email. Inicia sesión.",
+      "hashFailed": "No se pudo cifrar esa contraseña en este servidor. Revisa los logs del Worker (bcryptjs / crypto).",
+      "signInFailed": "Cuenta creada, pero el acceso falló. Intenta iniciar sesión.",
+      "magicEmail": "Introduce el email para el enlace mágico.",
+      "magicFailed": "No se pudo enviar el enlace mágico. Revisa AUTH_RESEND_KEY."
+    }
   },
   "terms": {
     "title": "Términos del servicio",
@@ -124,5 +134,107 @@
       "Los enlaces públicos son tokens difíciles de adivinar. Quien tenga el enlace puede ver el documento. No envíes tokens que quieras mantener en privado.",
       "Contacta al operador en invoiceflowstudio.com para pedir la exportación o eliminación de los datos de tu cuenta."
     ]
+  },
+  "app": {
+    "signOut": "Cerrar sesión",
+    "overview": "Resumen",
+    "invoices": "Facturas",
+    "proposals": "Propuestas",
+    "clients": "Clientes",
+    "billing": "Facturación",
+    "settings": "Ajustes",
+    "newInvoice": "Nueva factura",
+    "newProposal": "Nueva propuesta",
+    "newInvoiceLede": "Empezar en blanco. O vuelve y usa una plantilla.",
+    "newProposalLede": "Secciones, precios opcionales, aceptar o rechazar en el enlace público.",
+    "viewAll": "Ver todas",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "allStatuses": "Todos los estados",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "save": "Guardar",
+    "remove": "Quitar",
+    "downloadPdf": "Descargar PDF",
+    "publicView": "Vista pública",
+    "emailShareLink": "Enviar enlace",
+    "markPaid": "Marcar pagada",
+    "copyLink": "Copiar enlace",
+    "copied": "Copiado",
+    "status": {
+      "draft": "Borrador",
+      "sent": "Enviada",
+      "paid": "Pagada",
+      "overdue": "Vencida",
+      "void": "Anulada",
+      "accepted": "Aceptada",
+      "declined": "Rechazada"
+    },
+    "home": {
+      "title": "Bien — ya estás aquí. Envía algo.",
+      "proOn": "Pro está activo. Facturas y propuestas ilimitadas este mes.",
+      "usage": "{invoices}/{invoiceLimit} facturas y {proposals}/{proposalLimit} propuestas usadas este mes.",
+      "outstanding": "Pendiente (reciente)",
+      "invoicesThisMonth": "Facturas este mes",
+      "proposalsThisMonth": "Propuestas este mes",
+      "startTemplate": "Empezar con una plantilla",
+      "tplDesignTitle": "Factura de proyecto de diseño",
+      "tplDesignBody": "Partidas de brand suite, 14 días de plazo.",
+      "tplRetainerTitle": "Factura de retainer",
+      "tplRetainerBody": "Horas + dirección asíncrona, vencimiento en 7 días.",
+      "tplVideoTitle": "Propuesta de edición de video",
+      "tplVideoBody": "Corte, entregables, inversión, aceptar/rechazar.",
+      "noInvoices": "Aún no hay facturas.",
+      "noProposals": "Aún no hay propuestas."
+    },
+    "invoiceList": {
+      "lede": "Filtra por estado o busca cliente y número.",
+      "number": "Número",
+      "client": "Cliente",
+      "status": "Estado",
+      "total": "Total",
+      "empty": "Ninguna factura coincide con esos filtros."
+    },
+    "proposalList": {
+      "lede": "Sigue el trabajo enviado, aceptado y rechazado.",
+      "title": "Título",
+      "client": "Cliente",
+      "status": "Estado",
+      "investment": "Inversión",
+      "empty": "Ninguna propuesta coincide con esos filtros."
+    },
+    "clientsPage": {
+      "lede": "Guarda a quienes facturas para que la siguiente tarde treinta segundos.",
+      "name": "Nombre",
+      "email": "Email",
+      "company": "Empresa",
+      "address": "Dirección",
+      "save": "Guardar cliente",
+      "empty": "Aún no hay clientes. La cuenta demo incluye Hearth Goods y Oak & Film."
+    },
+    "settingsPage": {
+      "title": "Datos del estudio",
+      "lede": "Esto es lo que ven los clientes en facturas, propuestas y PDFs.",
+      "yourName": "Tu nombre",
+      "studioName": "Nombre del estudio",
+      "studioEmail": "Email del estudio",
+      "phone": "Teléfono",
+      "website": "Sitio web",
+      "address": "Dirección"
+    },
+    "billingPage": {
+      "lede": "Estás en {plan}. Starter limita a 3 facturas y 3 propuestas al mes. Pro cuesta ${price}/mes, ilimitado.",
+      "success": "El checkout de Stripe terminó. Recarga si el plan aún no cambió — el webhook puede estar al día.",
+      "demo": "Pro de demo local desbloqueado por 30 días.",
+      "limit": "Starter incluye 3 facturas y 3 propuestas al mes. Pasa a Pro para ilimitado.",
+      "portal": "Portal de cliente de Stripe",
+      "unlockDemo": "Desbloquear Pro para demo local",
+      "returnStarter": "Volver a Starter"
+    },
+    "errors": {
+      "invoiceNotFound": "Factura no encontrada.",
+      "proposalNotFound": "Propuesta no encontrada.",
+      "clientEmailRequired": "Añade el email del cliente antes de enviar el enlace."
+    }
   }
 }

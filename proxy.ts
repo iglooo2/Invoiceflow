@@ -29,21 +29,21 @@ export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (pathname.startsWith("/dashboard")) {
+    const locale = negotiateLocale(
+      request.headers.get("accept-language"),
+      request.cookies.get(LOCALE_COOKIE)?.value,
+    );
     const session =
       request.cookies.get("authjs.session-token") ??
       request.cookies.get("__Secure-authjs.session-token");
 
     if (!session) {
-      const locale = negotiateLocale(
-        request.headers.get("accept-language"),
-        request.cookies.get(LOCALE_COOKIE)?.value,
-      );
       const login = new URL(localizedPath(locale, "/login"), request.url);
       login.searchParams.set("callbackUrl", pathname);
       return applyLocale(NextResponse.redirect(login), locale);
     }
 
-    return NextResponse.next();
+    return nextWithLocale(request, locale);
   }
 
   if (shouldSkipLocale(pathname)) {

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { CopyLinkButton } from "@/components/copy-link-button";
 import { ProposalPreview } from "@/components/document-preview";
 import { deleteProposal, emailProposal } from "@/app/actions/proposals";
+import { appCopy } from "@/lib/i18n-request";
 
 export default async function ProposalDetailPage({
   params,
@@ -17,6 +18,7 @@ export default async function ProposalDetailPage({
   searchParams: Promise<{ error?: string }>;
 }) {
   const user = await requireUser();
+  const { dict } = await appCopy();
   const { id } = await params;
   const { error } = await searchParams;
   const proposal = await prisma.proposal.findFirst({
@@ -34,15 +36,15 @@ export default async function ProposalDetailPage({
           <p className="text-muted-foreground">{proposal.clientName}</p>
         </div>
         <div className="no-print flex flex-wrap gap-2">
-          <CopyLinkButton value={share} />
+          <CopyLinkButton value={share} label={dict.app.copyLink} copiedLabel={dict.app.copied} />
           <Button asChild variant="outline">
-            <a href={`/api/proposals/${proposal.id}/pdf`}>Download PDF</a>
+            <a href={`/api/proposals/${proposal.id}/pdf`}>{dict.app.downloadPdf}</a>
           </Button>
           <Button asChild variant="outline">
-            <Link href={`/share/p/${proposal.publicToken}`}>Public view</Link>
+            <Link href={`/share/p/${proposal.publicToken}`}>{dict.app.publicView}</Link>
           </Button>
           <Button asChild>
-            <Link href={`/dashboard/proposals/${proposal.id}/edit`}>Edit</Link>
+            <Link href={`/dashboard/proposals/${proposal.id}/edit`}>{dict.app.edit}</Link>
           </Button>
         </div>
       </div>
@@ -51,13 +53,13 @@ export default async function ProposalDetailPage({
         <form action={emailProposal}>
           <input type="hidden" name="proposalId" value={proposal.id} />
           <Button type="submit" variant="secondary">
-            Email share link
+            {dict.app.emailShareLink}
           </Button>
         </form>
         <form action={deleteProposal}>
           <input type="hidden" name="proposalId" value={proposal.id} />
           <Button type="submit" variant="ghost">
-            Delete
+            {dict.app.delete}
           </Button>
         </form>
       </div>

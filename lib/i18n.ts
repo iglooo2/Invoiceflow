@@ -5,6 +5,7 @@ export type Locale = (typeof LOCALES)[number];
 export const DEFAULT_LOCALE: Locale = "en";
 export const LOCALE_COOKIE = "invoiceflow-locale";
 export const LOCALE_HEADER = "x-invoiceflow-locale";
+export const LOCALE_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 
 export const LOCALE_LABELS: Record<Locale, { short: string; native: string; html: string }> = {
   en: { short: "EN", native: "English", html: "en" },
@@ -80,4 +81,12 @@ export function negotiateLocale(
     if (matched) return matched;
   }
   return DEFAULT_LOCALE;
+}
+
+export function formatMessage(template: string, vars: Record<string, string | number>) {
+  return template.replace(/\{(\w+)\}/g, (_, key: string) => String(vars[key] ?? ""));
+}
+
+export function localeCookieValue(locale: Locale) {
+  return `${LOCALE_COOKIE}=${locale}; Path=/; Max-Age=${LOCALE_COOKIE_MAX_AGE}; SameSite=Lax`;
 }

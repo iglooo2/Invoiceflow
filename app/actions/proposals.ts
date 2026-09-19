@@ -11,6 +11,7 @@ import { planFromUser, requireUser } from "@/lib/session";
 import { assertCanCreate, newPublicToken, redirectIfLimitReached } from "@/lib/documents";
 import { SEED_TEMPLATES, type ProposalTemplatePayload } from "@/lib/templates";
 import { publicProposalUrl, sendDocumentEmail } from "@/lib/email";
+import { appCopy } from "@/lib/i18n-request";
 
 export type ProposalActionResult = { error: string };
 
@@ -70,7 +71,10 @@ export async function updateProposal(
     const existing = await prisma.proposal.findFirst({
       where: { id: proposalId, userId: user.id },
     });
-    if (!existing) return { error: "Proposal not found." };
+    if (!existing) {
+      const { dict } = await appCopy();
+      return { error: dict.app.errors.proposalNotFound };
+    }
     const parsed = parseProposalForm(formData);
     if (!parsed.success) return { error: parsed.error };
     await replaceProposalSections(
@@ -169,10 +173,12 @@ export async function emailProposal(formData: FormData) {
       where: { id: proposalId, userId: user.id },
     });
     if (!proposal) {
-      redirect(errorRedirect("/dashboard/proposals", "Proposal not found."));
+      const { dict } = await appCopy();
+      redirect(errorRedirect("/dashboard/proposals", dict.app.errors.proposalNotFound));
     }
     if (!proposal.clientEmail) {
-      redirect(errorRedirect(detailPath, "Add a client email before sending the share link."));
+      const { dict } = await appCopy();
+      redirect(errorRedirect(detailPath, dict.app.errors.clientEmailRequired));
     }
     await sendDocumentEmail({
       to: proposal.clientEmail,
@@ -203,7 +209,8 @@ export async function respondToProposal(formData: FormData) {
   try {
     const proposal = await prisma.proposal.findUnique({ where: { publicToken: parsed.data.token } });
     if (!proposal) {
-      redirect(errorRedirect(sharePath, "Proposal not found."));
+      const { dict } = await appCopy();
+      redirect(errorRedirect(sharePath, dict.app.errors.proposalNotFound));
     }
     if (proposal.status !== "accepted" && proposal.status !== "declined") {
       await prisma.proposal.update({
