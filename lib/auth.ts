@@ -1,5 +1,6 @@
 import type { NextAuthConfig } from "next-auth";
 import type { Provider } from "next-auth/providers";
+import type { NextRequest } from "next/server";
 import NextAuth from "next-auth";
 import Apple from "next-auth/providers/apple";
 import Credentials from "next-auth/providers/credentials";
@@ -8,19 +9,28 @@ import Google from "next-auth/providers/google";
 import Resend from "next-auth/providers/resend";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
+import { resolveAppleClientSecret } from "@/lib/apple-secret";
+import { appleFormPostCookies, shouldUseSecureAuthCookies } from "@/lib/auth-cookies";
 import {
   appleAuthEnabled,
+  appleCredentials,
+  ensureAuthRuntimeEnv,
   githubAuthEnabled,
   googleAuthEnabled,
+  googleClientId,
+  googleClientSecret,
   readAuthSecret,
   resendEnabled,
+  resolvedAuthSecret,
+  resolvedAuthUrl,
 } from "@/lib/auth-env";
+import { allowVerifiedOauthAccountLinking } from "@/lib/auth-oauth";
 import { databaseRuntimeStatus, prisma } from "@/lib/db";
 import { safeErrorLog } from "@/lib/db-errors";
 import { sendMagicLinkEmail } from "@/lib/email";
 import { markNewUserOnboarding } from "@/lib/onboarding";
 
-function buildAuthProviders(): Provider[] {
+async function buildAuthProviders(): Promise<Provider[]> {
   const providers: Provider[] = [
     Credentials({
       name: "Email and password",
@@ -56,19 +66,39 @@ function buildAuthProviders(): Provider[] {
   if (googleAuthEnabled()) {
     providers.push(
       Google({
-        clientId: readAuthSecret("AUTH_GOOGLE_ID"),
-        clientSecret: readAuthSecret("AUTH_GOOGLE_SECRET"),
+        clientId: googleClientId(),
+        clientSecret: googleClientSecret(),
+        // Safe for Google: it verifies email ownership. Without this, an
+        // email/password user hitting Continue with Google gets OAuthAccountNotLinked.
+        allowDangerousEmailAccountLinking: true,
       }),
     );
   }
 
   if (appleAuthEnabled()) {
-    providers.push(
-      Apple({
-        clientId: readAuthSecret("AUTH_APPLE_ID"),
-        clientSecret: readAuthSecret("AUTH_APPLE_SECRET"),
-      }),
-    );
+    const apple = appleCredentials();
+    try {
+      const clientSecret = await resolveAppleClientSecret(apple);
+      providers.push(
+        Apple({
+          clientId: apple.clientId,
+          clientSecret,
+          // OIDC id_token is required; Auth.js defaults are nonce+state (not PKCE).
+          // Apple's `name email` scopes force response_mode=form_post.
+          checks: ["nonce", "state"],
+          client: { token_endpoint_auth_method: "client_secret_post" },
+          authorization: {
+            params: {
+              scope: "name email",
+              response_mode: "form_post",
+            },
+          },
+          allowDangerousEmailAccountLinking: true,
+        }),
+      );
+    } catch (error) {
+      console.error("Apple client secret failed", safeErrorLog(error));
+    }
   }
 
   if (githubAuthEnabled()) {
@@ -95,19 +125,28 @@ function buildAuthProviders(): Provider[] {
   return providers;
 }
 
-function authOptions(): NextAuthConfig {
+async function authOptions(request?: NextRequest): Promise<NextAuthConfig> {
+  await ensureAuthRuntimeEnv();
+  const secret = resolvedAuthSecret();
+  const providers = await buildAuthProviders();
+  const secureCookies = shouldUseSecureAuthCookies(request?.url, resolvedAuthUrl());
   return {
     adapter: PrismaAdapter(prisma),
     session: { strategy: "jwt" },
     // Required behind Cloudflare (and any reverse proxy). AUTH_URL should still
-    // be https://invoiceflowstudio.com in production.
+    // be https://invoiceflowstudio.com in production. AUTH_TRUST_HOST is also
+    // written onto process.env so Auth.js internals match this flag.
     trustHost: true,
-    secret: readAuthSecret("AUTH_SECRET") || "dev-insecure-secret-change-me",
+    // Production must not fall back to a dummy secret: Auth.js then signs JWTs
+    // that fail on the next request (`CredentialsSignin`) when AUTH_SECRET is
+    // only a Cloudflare *Build* variable.
+    secret: secret || (process.env.NODE_ENV === "production" ? undefined : "dev-insecure-secret-change-me"),
     pages: {
       signIn: "/login",
       error: "/login",
     },
-    providers: buildAuthProviders(),
+    providers,
+    cookies: appleAuthEnabled() ? appleFormPostCookies(secureCookies) : undefined,
     events: {
       async createUser({ user }) {
         if (!user.id) return;
@@ -122,6 +161,15 @@ function authOptions(): NextAuthConfig {
       },
     },
     callbacks: {
+      async signIn({ account, profile }) {
+        if (account?.provider === "google" || account?.provider === "apple") {
+          return allowVerifiedOauthAccountLinking(
+            account.provider,
+            profile as { email_verified?: boolean | string } | undefined,
+          );
+        }
+        return true;
+      },
       async jwt({ token, user }) {
         if (user?.id) token.sub = user.id;
         return token;

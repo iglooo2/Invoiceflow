@@ -3,7 +3,14 @@
 import { AuthError } from "next-auth";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
+import { unstable_rethrow } from "next/navigation";
 import { signIn, signOut } from "@/lib/auth";
+import {
+  authErrorType,
+  credentialsActionErrorMessage,
+  oauthActionErrorMessage,
+  redirectDigestErrorCode,
+} from "@/lib/auth-errors";
 import { databaseRuntimeStatus, isMissingRuntimeDatabaseUrl, prisma } from "@/lib/db";
 import {
   missingRuntimeDatabaseUrlMessage,
@@ -12,7 +19,8 @@ import {
 } from "@/lib/db-errors";
 import { localizedPath } from "@/lib/i18n";
 import { appCopy } from "@/lib/i18n-request";
-import { appleAuthEnabled, googleAuthEnabled } from "@/lib/auth-env";
+import { resolveAppleClientSecret } from "@/lib/apple-secret";
+import { appleAuthEnabled, appleCredentials, ensureAuthRuntimeEnv, googleAuthEnabled } from "@/lib/auth-env";
 
 const credentialsSchema = z.object({
   email: z.string().email(),
@@ -20,6 +28,7 @@ const credentialsSchema = z.object({
 });
 
 export async function loginWithPassword(formData: FormData) {
+  await ensureAuthRuntimeEnv();
   const parsed = credentialsSchema.pick({ email: true, password: true }).safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
@@ -35,19 +44,25 @@ export async function loginWithPassword(formData: FormData) {
       redirectTo: String(formData.get("callbackUrl") || "/dashboard"),
     });
   } catch (error) {
+    const { dict } = await appCopy();
+    const redirectCode = redirectDigestErrorCode(error);
+    if (redirectCode) {
+      return { error: credentialsActionErrorMessage(redirectCode, dict.login.errors, "login") };
+    }
+    unstable_rethrow(error);
     if (isMissingRuntimeDatabaseUrl()) {
       console.error("loginWithPassword", safeErrorLog(error), databaseRuntimeStatus());
       return { error: missingRuntimeDatabaseUrlMessage() };
     }
     if (error instanceof AuthError) {
-      const { dict } = await appCopy();
-      return { error: dict.login.errors.invalidCredentials };
+      return { error: credentialsActionErrorMessage(authErrorType(error), dict.login.errors, "login") };
     }
     throw error;
   }
 }
 
 export async function registerWithPassword(formData: FormData) {
+  await ensureAuthRuntimeEnv();
   const parsed = credentialsSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
@@ -99,11 +114,17 @@ export async function registerWithPassword(formData: FormData) {
       redirectTo: "/dashboard",
     });
   } catch (error) {
-    if (error instanceof AuthError) {
-      const { dict } = await appCopy();
-      return { error: dict.login.errors.signInFailed };
+    const { dict } = await appCopy();
+    const redirectCode = redirectDigestErrorCode(error);
+    if (redirectCode) {
+      return { error: credentialsActionErrorMessage(redirectCode, dict.login.errors, "register") };
     }
-    throw error;
+    unstable_rethrow(error);
+    if (error instanceof AuthError) {
+      return { error: credentialsActionErrorMessage(authErrorType(error), dict.login.errors, "register") };
+    }
+    console.error("registerWithPassword signIn failed", safeErrorLog(error), databaseRuntimeStatus());
+    return { error: dict.login.errors.signInFailed };
   }
 }
 
@@ -112,19 +133,53 @@ export async function loginWithGithub() {
 }
 
 export async function loginWithGoogle() {
+  await ensureAuthRuntimeEnv();
+  const { dict } = await appCopy();
   if (!googleAuthEnabled()) {
-    const { dict } = await appCopy();
     return { error: dict.login.errors.oauthNotConfigured };
   }
-  await signIn("google", { redirectTo: "/dashboard" });
+  try {
+    await signIn("google", { redirectTo: "/dashboard" });
+  } catch (error) {
+    const redirectCode = redirectDigestErrorCode(error);
+    if (redirectCode) {
+      return { error: oauthActionErrorMessage(redirectCode, dict.login.errors) };
+    }
+    unstable_rethrow(error);
+    console.error("loginWithGoogle", safeErrorLog(error));
+    if (error instanceof AuthError) {
+      return { error: oauthActionErrorMessage(authErrorType(error), dict.login.errors) };
+    }
+    return { error: dict.login.errors.oauthFailed };
+  }
 }
 
 export async function loginWithApple() {
+  await ensureAuthRuntimeEnv();
+  const { dict } = await appCopy();
   if (!appleAuthEnabled()) {
-    const { dict } = await appCopy();
     return { error: dict.login.errors.oauthNotConfigured };
   }
-  await signIn("apple", { redirectTo: "/dashboard" });
+  try {
+    await resolveAppleClientSecret(appleCredentials());
+  } catch (error) {
+    console.error("loginWithApple secret", safeErrorLog(error));
+    return { error: dict.login.errors.appleSecretInvalid };
+  }
+  try {
+    await signIn("apple", { redirectTo: "/dashboard" });
+  } catch (error) {
+    const redirectCode = redirectDigestErrorCode(error);
+    if (redirectCode) {
+      return { error: oauthActionErrorMessage(redirectCode, dict.login.errors) };
+    }
+    unstable_rethrow(error);
+    console.error("loginWithApple", safeErrorLog(error));
+    if (error instanceof AuthError) {
+      return { error: oauthActionErrorMessage(authErrorType(error), dict.login.errors) };
+    }
+    return { error: dict.login.errors.oauthFailed };
+  }
 }
 
 export async function loginWithMagicLink(formData: FormData) {
@@ -141,8 +196,13 @@ export async function loginWithMagicLink(formData: FormData) {
       redirectTo: "/dashboard",
     });
   } catch (error) {
+    const { dict } = await appCopy();
+    const redirectCode = redirectDigestErrorCode(error);
+    if (redirectCode) {
+      return { error: dict.login.errors.magicFailed };
+    }
+    unstable_rethrow(error);
     if (error instanceof AuthError) {
-      const { dict } = await appCopy();
       return { error: dict.login.errors.magicFailed };
     }
     throw error;

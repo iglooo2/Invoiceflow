@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { Wordmark } from "@/components/brand";
 import { LanguageSwitcher } from "@/components/marketing/language-switcher";
-import { Button } from "@/components/ui/button";
+import { btnRowClass, Button } from "@/components/ui/button";
 import type { Dictionary } from "@/lib/dictionary";
 import { CONTACT_PATH, SITE_DOMAIN, SITE_STUDIO, startFreeHref } from "@/lib/site";
 import { localizedPath, type Locale } from "@/lib/i18n";
+import { cn } from "@/lib/utils";
 
 export function MarketingHeader({
   signedIn,
@@ -18,9 +19,9 @@ export function MarketingHeader({
   copy: Dictionary["nav"];
 }) {
   return (
-    <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-5">
+    <header className="mx-auto flex w-full min-w-0 max-w-6xl flex-col gap-2 overflow-x-clip px-4 py-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-x-3 sm:gap-y-2">
       <Wordmark href={localizedPath(locale, "/")} />
-      <nav className="hidden items-center gap-6 text-sm text-muted-foreground sm:flex">
+      <nav className="hidden items-center gap-5 text-sm text-muted-foreground lg:flex">
         <Link href={`${localizedPath(locale, "/")}#how`} className="hover:text-foreground">
           {copy.how}
         </Link>
@@ -37,7 +38,7 @@ export function MarketingHeader({
           {copy.messageUs}
         </Link>
       </nav>
-      <div className="flex items-center gap-3">
+      <div className={cn(btnRowClass, "w-full min-w-0 justify-end sm:w-auto")}>
         <LanguageSwitcher locale={locale} path={path} label={copy.language} />
         {signedIn ? (
           <Button asChild>

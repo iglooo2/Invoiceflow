@@ -63,7 +63,7 @@ export default async function EstimateDetailPage({
           </div>
           <p className="text-muted-foreground">{estimate.clientName}</p>
         </div>
-        <div className="no-print flex flex-wrap gap-2">
+        <div className="btn-row no-print">
           <CopyLinkButton value={share} label={dict.app.copyLink} copiedLabel={dict.app.copied} />
           <Button asChild variant="outline">
             <a href={`/api/proposals/${estimate.id}/pdf`}>{dict.app.downloadPdf}</a>
@@ -92,7 +92,7 @@ export default async function EstimateDetailPage({
           : activity.waiting}{" "}
         {activity.email}
       </div>
-      <div className="no-print flex flex-wrap gap-2">
+      <div className="btn-row no-print">
         <form action={emailProposal}>
           <input type="hidden" name="proposalId" value={estimate.id} />
           <Button type="submit" variant="secondary">

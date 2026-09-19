@@ -53,7 +53,7 @@ export default async function EstimatesPage({
           <h1 className="font-display text-4xl">{dict.app.estimates}</h1>
           <p className="text-muted-foreground">{copy.lede}</p>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="btn-row">
           <Button asChild variant="outline">
             <a href={csvExportHref("estimates", filters)}>{dict.app.exportCsv}</a>
           </Button>
@@ -66,9 +66,9 @@ export default async function EstimatesPage({
       {usedLegacySchema ? (
         <p className="rounded-2xl bg-primary/10 px-4 py-3 text-sm">{ESTIMATE_SCHEMA_WARNING}</p>
       ) : null}
-      <form className="flex flex-col gap-2 sm:flex-row">
-        <Input name="q" placeholder={dict.app.search} defaultValue={q} />
-        <Select name="status" defaultValue={status || ""}>
+      <form className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <Input name="q" placeholder={dict.app.search} defaultValue={q} className="min-w-0 sm:flex-1" />
+        <Select name="status" defaultValue={status || ""} className="min-w-0 sm:max-w-48">
           <option value="">{dict.app.allStatuses}</option>
           {ESTIMATE_STATUSES.map((value) => (
             <option key={value} value={value}>
@@ -76,7 +76,7 @@ export default async function EstimatesPage({
             </option>
           ))}
         </Select>
-        <Button type="submit" variant="outline">
+        <Button type="submit" variant="outline" className="w-full sm:w-auto">
           {dict.app.filter}
         </Button>
       </form>

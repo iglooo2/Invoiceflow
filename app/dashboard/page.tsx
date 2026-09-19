@@ -58,7 +58,7 @@ export default async function DashboardPage() {
                 })}
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="btn-row">
           <Button asChild>
             <Link href="/dashboard/invoices/new">{dict.app.newInvoice}</Link>
           </Button>

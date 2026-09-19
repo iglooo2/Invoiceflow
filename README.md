@@ -55,12 +55,13 @@ See `.env.example`. Placeholders only — never commit real secrets.
 | `DATABASE_URL` | `file:./dev.db` | Neon/Supabase **pooled** `postgresql://…` | App cannot store data |
 | `DATABASE_URL_UNPOOLED` | — | Neon **direct** URL for `db push` / migrate | Use `DATABASE_URL` if you are not on a pooler |
 | `PRISMA_PROVIDER` | unset (sqlite from URL) | `postgresql` if the build URL is not postgres yet | Provider is inferred from `DATABASE_URL` |
-| `AUTH_SECRET` | generate locally | **required** secret | Dev fallback only; do not ship that |
-| `AUTH_URL` | `http://localhost:3000` | `https://invoiceflowstudio.com` | Defaults to localhost / production domain |
+| `AUTH_SECRET` | generate locally | **required Runtime Secret** (Build-only is **not** enough) | Auth.js signs JWTs from Worker `env`. Missing Runtime secret → `Configuration` / `CredentialsSignin` |
+| `AUTH_URL` | `http://localhost:3000` | **required** Runtime var `https://invoiceflowstudio.com` | Host is also inferred (`trustHost: true`); still set AUTH_URL so callbacks are not localhost from a build `.env` |
+| `AUTH_TRUST_HOST` | unset | unset (code sets `trustHost: true`) | Optional extra; not required |
 | `NEXT_PUBLIC_APP_URL` | `http://localhost:3000` | `https://invoiceflowstudio.com` | Share links and Stripe redirects |
-| `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | optional | optional **runtime** Worker secrets | Google button enabled at request time; disabled with a hint if missing. Not a `NEXT_PUBLIC_*` flag |
-| `AUTH_APPLE_ID` / `AUTH_APPLE_SECRET` | optional | optional **runtime** Worker secrets | Apple button enabled at request time; disabled with a hint if missing. Apple needs HTTPS (not localhost HTTP). Generate the JWT secret with your Team ID + key (`npx auth add apple`) |
-| `AUTH_APPLE_TEAM` / `AUTH_APPLE_KEY_ID` | optional | optional (console only) | Used when creating `AUTH_APPLE_SECRET`; the Worker reads the JWT, not these directly |
+| `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | optional | optional **runtime** Worker secrets | Auth.js v5 names. Google button enabled at request time; disabled with a hint if missing. `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` are aliases only |
+| `AUTH_APPLE_ID` / `AUTH_APPLE_SECRET` | optional | optional **runtime** Worker secrets | Apple button enabled at request time; disabled with a hint if missing. Apple needs HTTPS (not localhost HTTP). `AUTH_APPLE_SECRET` may be a client-secret JWT **or** the `.p8` private key. |
+| `AUTH_APPLE_TEAM` / `AUTH_APPLE_KEY_ID` | optional | optional **runtime** Worker secrets | Required when `AUTH_APPLE_SECRET` is the `.p8` key. The Worker mints the ES256 client-secret JWT with Web Crypto (Workers-safe). Not needed if `AUTH_APPLE_SECRET` is already a JWT. |
 | `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET` | optional | optional | GitHub button hidden |
 | `AUTH_RESEND_KEY` / `EMAIL_FROM` | optional | optional | Magic link hidden; share-link email logs to console |
 | `STRIPE_SECRET_KEY` | optional test key | **runtime secret** `sk_test_…` or `sk_live_…` | Checkout disabled |
@@ -71,7 +72,26 @@ See `.env.example`. Placeholders only — never commit real secrets.
 | `INTUIT_CLIENT_ID` / `INTUIT_CLIENT_SECRET` | optional | optional Worker secrets | Settings shows Connect QuickBooks; live OAuth is not in this release |
 | `INTUIT_REDIRECT_URI` | optional | optional | Defaults to `{APP_URL}/dashboard/settings` |
 
-Auth.js is configured with `trustHost: true` so it trusts the `Host` header Cloudflare sends.
+Auth.js is configured with `trustHost: true` so it trusts the `Host` header Cloudflare sends. The Worker also writes `AUTH_TRUST_HOST=true` onto `process.env` at request time.
+
+### Auth.js Runtime secrets (Cloudflare Workers)
+
+Set these under Worker **Settings → Variables and Secrets** (Runtime), not only Build variables. Next/`cf:build` can inline an empty `process.env.AUTH_*` from a missing `.env`; OpenNext then reads Cloudflare `env` via `getCloudflareContext()`.
+
+| Name | Required | Notes |
+|---|---|---|
+| `AUTH_SECRET` | **yes (Runtime Secret)** | `openssl rand -base64 32`. **A Cloudflare Build variable is not enough** — Auth.js reads Worker `env` at request time via `getCloudflareContext()`. Also accepts `NEXTAUTH_SECRET`. |
+| `AUTH_URL` | **yes (Runtime variable)** | `https://invoiceflowstudio.com`. Build-only is not enough. Also accepts `NEXTAUTH_URL`. |
+| `DATABASE_URL` | **yes** | Neon pooled URL (signup is the first path that queries Postgres). |
+| `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | Google button | Auth.js v5 names. Callback `https://invoiceflowstudio.com/api/auth/callback/google`. `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` (Google Cloud Console / NextAuth v4) work as aliases; prefer the `AUTH_GOOGLE_*` names. |
+| `AUTH_APPLE_ID` / `AUTH_APPLE_SECRET` | Apple button | Callback `https://invoiceflowstudio.com/api/auth/callback/apple`. `AUTH_APPLE_SECRET` may be a `.p8` key or a client-secret JWT. |
+| `AUTH_APPLE_TEAM` / `AUTH_APPLE_KEY_ID` | Apple `.p8` | Required when `AUTH_APPLE_SECRET` is the `.p8` key so the Worker can mint the JWT. |
+| `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET` | GitHub button | Hidden until both are set. |
+| `AUTH_RESEND_KEY` / `EMAIL_FROM` | Magic link | Optional. |
+
+Email/password signup does **not** need Google or Apple secrets. If account creation fails, the form shows a database or credentials message — not “check the Google/Apple Worker secrets.” That copy is reserved for Google/Apple (`OAuthSignin`, `OAuthCallback`, …). `OAuthAccountNotLinked` means an email/password user already exists for that Gmail — sign in with email and password (Google/Apple with a **verified** email can link to that user). `Configuration` / missing `AUTH_SECRET` means the secret is not on **Runtime** (a Build variable will not do).
+
+**AUTH_SECRET as a Build variable is not enough.** Cloudflare Build vars exist during `npm run cf:build`. Auth.js signs session JWTs on the Worker from `getCloudflareContext().env`. If `AUTH_GOOGLE_ID` is a Runtime secret (so the Google button works) but `AUTH_SECRET` is only a Build var, Google callbacks and `/login` POSTs fail (`OAuthAccountNotLinked` is a separate email-collision error; `CredentialsSignin` is often a missing Runtime `AUTH_SECRET`). Add `AUTH_SECRET` under **Settings → Variables and Secrets → Runtime → Secret**, and `AUTH_URL=https://invoiceflowstudio.com` as a Runtime variable. Re-adding the same value as Runtime does not require a rebuild.
 
 ## Production Postgres (before first deploy)
 
@@ -215,8 +235,8 @@ Do this in the Cloudflare dashboard — the agent cannot click it for you:
    | Name | Type | Example |
    |---|---|---|
    | `DATABASE_URL` | Secret | `postgresql://…` (Neon pooled or Supabase) |
-   | `AUTH_SECRET` | Secret | `openssl rand -base64 32` |
-   | `AUTH_URL` | Variable | `https://invoiceflowstudio.com` |
+   | `AUTH_SECRET` | Secret (**runtime**, not Build-only) | `openssl rand -base64 32`. Auth.js will not see a Build variable at request time. |
+   | `AUTH_URL` | Variable | `https://invoiceflowstudio.com` (**required** Runtime) |
    | `NEXT_PUBLIC_APP_URL` | Variable | `https://invoiceflowstudio.com` |
    | `AUTH_DEV_MODE` | Variable | `false` |
    | `PRISMA_PROVIDER` | Variable | `postgresql` |
@@ -224,8 +244,11 @@ Do this in the Cloudflare dashboard — the agent cannot click it for you:
    | `STRIPE_WEBHOOK_SECRET` | Secret (**runtime**) | Live endpoint `whsec_…` |
    | `STRIPE_PRO_PRICE_ID` | Secret (**runtime**) | Live-mode `price_…` (Dashboard Live toggle). Must be encrypted — a plaintext Variable is wiped on Git deploy if `keep_vars` is off. Never put the live id in the repo. |
    | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | unused | Do not rely on this — see Stripe section |
-   | `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | Secret (**runtime**) | Google Sign-In. Read on the Worker at request time (not a Build/`NEXT_PUBLIC_*` flag). Callback `https://invoiceflowstudio.com/api/auth/callback/google` |
-   | `AUTH_APPLE_ID` / `AUTH_APPLE_SECRET` | Secret (**runtime**) | Apple Sign-In (Services ID + client-secret JWT). Same runtime read as Google. Callback `https://invoiceflowstudio.com/api/auth/callback/apple`. Create the JWT with your Apple Team ID and private key. |
+   | `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | Secret (**runtime**) | Auth.js v5 names for Google Sign-In. Read on the Worker at request time (not a Build/`NEXT_PUBLIC_*` flag). Callback `https://invoiceflowstudio.com/api/auth/callback/google`. `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` are aliases only — prefer `AUTH_GOOGLE_*`. |
+   | `AUTH_APPLE_ID` | Secret (**runtime**) | Apple **Services ID** (e.g. `com.invoiceflowstudio.web`), not the App ID |
+   | `AUTH_APPLE_SECRET` | Secret (**runtime**) | `.p8` private key contents **or** a client-secret JWT. Prefer the `.p8` key — JWTs expire in ~6 months |
+   | `AUTH_APPLE_TEAM` | Secret (**runtime**) | 10-character Apple Team ID. Required when `AUTH_APPLE_SECRET` is a `.p8` key |
+   | `AUTH_APPLE_KEY_ID` | Secret (**runtime**) | 10-character Key ID. Required when `AUTH_APPLE_SECRET` is a `.p8` key |
    | `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET` | Secret | if using GitHub login |
    | `AUTH_RESEND_KEY` | Secret | if using magic links |
    | `EMAIL_FROM` | Variable | `InvoiceFlow Studio <noreply@invoiceflowstudio.com>` |
@@ -238,7 +261,7 @@ Do this in the Cloudflare dashboard — the agent cannot click it for you:
 7. **Custom domain:** Worker → **Settings → Domains & Routes → Add** → `invoiceflowstudio.com`. Because the zone is already on Cloudflare, accept the proxied record it offers. Optionally add `www` and redirect it to apex in the zone.
 8. OAuth apps (if used):
    - **Google:** OAuth client, homepage `https://invoiceflowstudio.com`, authorized redirect `https://invoiceflowstudio.com/api/auth/callback/google`.
-   - **Apple:** Services ID with Sign In with Apple, return URL `https://invoiceflowstudio.com/api/auth/callback/apple`. Create a client-secret JWT from your Team ID + key and store it as `AUTH_APPLE_SECRET`. Apple does not accept localhost HTTP.
+   - **Apple:** See [Apple Sign-In on Cloudflare Workers](#apple-sign-in-on-cloudflare-workers) below. Return URL must be exactly `https://invoiceflowstudio.com/api/auth/callback/apple`. Apple does not accept localhost HTTP.
    - **GitHub:** Homepage `https://invoiceflowstudio.com`, callback `https://invoiceflowstudio.com/api/auth/callback/github`.
 9. Stripe webhook endpoint: `https://invoiceflowstudio.com/api/stripe/webhook` (events: `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`).
 
@@ -252,6 +275,40 @@ Worker name in `wrangler.jsonc` is `invoiceflow` (must match the Cloudflare Git-
 - Attach **invoiceflowstudio.com** as a custom domain
 - (Optional) Enable R2 and bind `NEXT_INC_CACHE_R2_BUCKET` for durable Next.js incremental cache — not required for the MVP
 
+## Apple Sign-In on Cloudflare Workers
+
+Continue with Apple is always visible on `/login` (sign-in and register). The button is enabled only when the Worker has a complete Apple secret set. If secrets are missing, the button stays visible but disabled with a hint. Apple requires HTTPS; it will not complete on `http://localhost`.
+
+**Callback URL (must match Apple Console exactly):** `https://invoiceflowstudio.com/api/auth/callback/apple`
+
+### 1. Apple Developer
+
+1. [Identifiers → App IDs](https://developer.apple.com/account/resources/identifiers/list/bundleId): create or edit an App ID and enable **Sign In with Apple**.
+2. [Identifiers → Services IDs](https://developer.apple.com/account/resources/identifiers/list/serviceId): create a Services ID such as `com.invoiceflowstudio.web`. This string is **`AUTH_APPLE_ID`** — do not use the App ID / bundle id.
+3. Enable **Sign In with Apple** on that Services ID → **Configure**:
+   - Primary App ID: the App ID from step 1
+   - Domains and Subdomains: `invoiceflowstudio.com` (add `www.invoiceflowstudio.com` only if you serve Apple on www)
+   - Return URLs: `https://invoiceflowstudio.com/api/auth/callback/apple`
+4. [Keys](https://developer.apple.com/account/resources/authkeys/list): create a key, enable **Sign In with Apple**, download **`AuthKey_XXXXXXXXXX.p8`** (shown once). Copy the **Key ID**.
+5. Copy the **Team ID** from the top-right of the Apple Developer account.
+
+### 2. Cloudflare Worker runtime secrets
+
+Worker → **Settings → Variables and Secrets**. Use **encrypted Secrets** (not Build variables, not plaintext Variables that `wrangler deploy` can wipe):
+
+| Secret | Value |
+|---|---|
+| `AUTH_APPLE_ID` | Services ID (`com.invoiceflowstudio.web`) |
+| `AUTH_APPLE_SECRET` | Full `.p8` file contents, including `BEGIN PRIVATE KEY` lines. Cloudflare may store newlines as `\n` — the Worker accepts that. A pre-minted client-secret JWT also works until it expires (~6 months). |
+| `AUTH_APPLE_TEAM` | 10-character Team ID (required when the secret is a `.p8` key) |
+| `AUTH_APPLE_KEY_ID` | 10-character Key ID (required when the secret is a `.p8` key) |
+| `AUTH_URL` | `https://invoiceflowstudio.com` |
+| `AUTH_SECRET` | existing Auth.js secret (`openssl rand -base64 32`) |
+
+Do **not** invent placeholder values. After saving secrets, Continue with Apple enables on the next request (login is `force-dynamic`; no rebuild required for these runtime secrets). A new deploy is required for this Apple callback / JWT-minting code.
+
+Optional: `npx auth add apple` still mints a JWT locally if you would rather store `AUTH_APPLE_SECRET` as a JWT and skip Team / Key ID. Rotate that JWT before the 6-month expiry.
+
 ## Stripe (test locally, live on Workers)
 
 Checkout is a **server action** (`startProCheckout` → `stripe.checkout.sessions.create`). The Billing button label follows the **runtime** `STRIPE_SECRET_KEY` prefix (`sk_test_` vs `sk_live_` / restricted `rk_test_` / `rk_live_`). `AUTH_*` is not used for Stripe mode. `AUTH_DEV_MODE` only shows the local “Unlock Pro” demo button.
@@ -261,7 +318,8 @@ Checkout is a **server action** (`startProCheckout` → `stripe.checkout.session
 | Variable | When it is read | Notes |
 |---|---|---|
 | `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | **Runtime** Worker secret | Preferred via `getCloudflareContext()`. Login is `force-dynamic` so the Continue with Google button enables without a rebuild. Do not use a `NEXT_PUBLIC_*` flag — Next would inline it at `cf:build`. |
-| `AUTH_APPLE_ID` / `AUTH_APPLE_SECRET` | **Runtime** Worker secret | Same as Google. Continue with Apple stays visible when unset (disabled + hint). |
+| `AUTH_APPLE_ID` / `AUTH_APPLE_SECRET` | **Runtime** Worker secret | Same as Google. Continue with Apple stays visible when unset (disabled + hint). Secret may be a `.p8` key or a JWT. |
+| `AUTH_APPLE_TEAM` / `AUTH_APPLE_KEY_ID` | **Runtime** Worker secret | Read by the Worker to mint the Apple client-secret JWT when `AUTH_APPLE_SECRET` is a `.p8` key. |
 | `STRIPE_SECRET_KEY` | **Runtime** Worker secret | Preferred via `getCloudflareContext()`. Do not rely on a Build var — Next may inline an empty/placeholder `process.env` at `cf:build`. |
 | `STRIPE_PRO_PRICE_ID` | **Runtime** Worker secret | Encrypted secret, same as the Stripe key. Must be created in the **same** Stripe mode as the secret. A test `price_…` with `sk_live_` fails (`No such price`). A dashboard **plaintext Variable** is deleted on `wrangler deploy` because `wrangler.jsonc` `vars` only lists `NEXTJS_ENV` — Secrets survive. |
 | `STRIPE_WEBHOOK_SECRET` | **Runtime** Worker secret | Live Dashboard endpoint for production; Stripe CLI `whsec_…` locally. |
@@ -309,7 +367,7 @@ Without Stripe keys locally, keep `AUTH_DEV_MODE=true` and use **Unlock Pro for 
 | `npm run preview` | Worker runtime locally (Wrangler) |
 | `npm run deploy` | OpenNext build + `wrangler deploy` |
 | `npm run db:push:prod` | `prisma db push` against Postgres only |
-| `npm test` | Money, plan limits, DB URL/adapter helpers, invoice/estimate form parsing, sequential Neon HTTP writes, Prisma postgres engine rewrite, Workers-safe PDF writer |
+| `npm test` | Money, plan limits, DB URL/adapter helpers, invoice/estimate form parsing, sequential Neon HTTP writes, Prisma postgres engine rewrite, Workers-safe PDF writer, Auth.js login error mapping |
 
 ## Demo path (no paid keys)
 
@@ -333,7 +391,7 @@ InvoiceFlow Studio can show the Connect QuickBooks story in Settings and on `/es
 
 - **OpenNext vs vinext:** Cloudflare’s newest Next.js path is [vinext](https://developers.cloudflare.com/workers/frameworks/framework-guides/nextjs/). This repo uses **`@opennextjs/cloudflare`** (still a documented Workers path) so we keep the App Router + `next build` toolchain.
 - **Prisma:** production uses the rust-free client engine + driver adapters (no query-engine binary on Workers). The Prisma client is a lazy proxy so `DATABASE_URL` is read after OpenNext copies Worker secrets onto `process.env`. Local SQLite does not use an adapter. Neon HTTP **cannot run transactions**, so invoice/estimate saves insert the parent row and then each line/section as separate statements (no nested `create`, no `prisma.$transaction`). Signup stays a single `user.create`. Estimate **reads** retry without the new Proposal columns if Postgres has not been pushed yet, and render an in-page message instead of Cloudflare’s generic error page. After this release, run `npm run db:push:prod` so estimate columns (`taxRate`, `markupRate`, `viewedAt`, `signedName`, `signedAt`, `attachments`) **and** Settings tables (`StudioSettings`, `TaxRate`, `Contract`) exist on Postgres.
-- **Signup / login check after deploy:** open `/login` → Create account with a new email and 8+ character password. You should land on **Let’s get started** (name + phone), then **Add business details**, then `/dashboard`. Existing accounts that already finished onboarding (or were created before this release) skip those steps. Sign out, sign back in with the same credentials. If the form says **DATABASE_URL is missing at runtime**, add the Neon pooled URL under Worker **runtime** Variables and Secrets (not only build vars) and redeploy. If it mentions missing tables, run `npm run db:push:prod` from a laptop. If it mentions a SQLite Prisma client, set **Build** `PRISMA_PROVIDER=postgresql` and rebuild with `npm run cf:build`. `npm test` covers adapter selection, Neon URL sanitization (`channel_binding` / `sslmode`), Prisma error hints, and postgres generate without a real DATABASE_URL.
+- **Signup / login check after deploy:** open `/login` → Create account with a new email and 8+ character password. You should land on **Let’s get started** (name + phone), then **Add business details**, then `/dashboard`. Existing accounts that already finished onboarding (or were created before this release) skip those steps. Sign out, sign back in with the same credentials. If the form says **DATABASE_URL is missing at runtime**, add the Neon pooled URL under Worker **runtime** Variables and Secrets (not only build vars) and redeploy. If it mentions missing `AUTH_SECRET` / `AUTH_URL`, set those Runtime secrets (a Build variable is not enough). Email signup must **not** say “check the Google/Apple Worker secrets” — that message is only for the Google/Apple buttons (`OAuthCallback`, missing `AUTH_GOOGLE_ID`, …). `OAuthAccountNotLinked` means an email/password user already exists — sign in with that password (Google/Apple with a verified email can link). If it mentions missing tables, run `npm run db:push:prod` from a laptop. If it mentions a SQLite Prisma client, set **Build** `PRISMA_PROVIDER=postgresql` and rebuild with `npm run cf:build`. `npm test` covers adapter selection, Neon URL sanitization (`channel_binding` / `sslmode`), Prisma error hints, Auth.js login error mapping (`CredentialsSignin` vs `OAuthCallback` vs `OAuthAccountNotLinked`), and postgres generate without a real DATABASE_URL.
 - **Onboarding columns on Neon:** after this release, run `npm run db:push:prod` (direct/unpooled URL) so `User` gains `phone`, `employeeCount`, `industry`, and `onboardingComplete` (boolean, default `true` so existing studios stay ungated). New signups set `onboardingComplete=false` until both steps finish. Equivalent SQL if you prefer the Neon console:
 
 ```sql

@@ -59,7 +59,7 @@ export default async function BillingPage({
         ))}
       </div>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="btn-row">
         {stripeReady ? (
           <form action={startProCheckout}>
             <Button type="submit">{stripeUpgradeButtonLabel(stripeMode)}</Button>

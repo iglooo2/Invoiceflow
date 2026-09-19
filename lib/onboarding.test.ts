@@ -91,7 +91,8 @@ test("Google and Apple Sign-In require both id and secret", () => {
     process.env.AUTH_GOOGLE_ID = "id";
     process.env.AUTH_GOOGLE_SECRET = "secret";
     process.env.AUTH_APPLE_ID = "com.invoiceflowstudio.web";
-    process.env.AUTH_APPLE_SECRET = "jwt";
+    process.env.AUTH_APPLE_SECRET =
+      "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZWFtIn0.dGVzdA";
     assert.equal(googleAuthEnabled(), true);
     assert.equal(appleAuthEnabled(), true);
   } finally {
@@ -128,7 +129,9 @@ test("login always renders Google and Apple buttons; dashboard gates new users",
   assert.match(auth, /next-auth\/providers\/google/);
   assert.match(auth, /next-auth\/providers\/apple/);
   assert.match(auth, /NextAuth\(authOptions\)/);
-  assert.match(auth, /readAuthSecret\("AUTH_GOOGLE_ID"\)/);
+  assert.match(auth, /ensureAuthRuntimeEnv\(\)/);
+  assert.match(auth, /allowDangerousEmailAccountLinking/);
+  assert.match(auth, /resolveAppleClientSecret/);
   assert.match(auth, /createUser/);
   assert.match(layout, /needsOnboarding/);
   assert.match(register, /onboardingComplete: false/);

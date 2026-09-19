@@ -40,7 +40,7 @@ export default async function InvoiceDetailPage({
             <StatusBadge status={invoice.status} labels={dict.app.status} />
           </div>
         </div>
-        <div className="no-print flex flex-wrap gap-2">
+        <div className="btn-row no-print">
           <CopyLinkButton value={share} label={dict.app.copyLink} copiedLabel={dict.app.copied} />
           <Button asChild variant="outline">
             <a href={`/api/invoices/${invoice.id}/pdf`}>{dict.app.downloadPdf}</a>
@@ -54,7 +54,7 @@ export default async function InvoiceDetailPage({
         </div>
       </div>
       {error ? <p className="rounded-2xl bg-primary/10 px-4 py-3 text-sm">{error}</p> : null}
-      <div className="no-print flex flex-wrap gap-2">
+      <div className="btn-row no-print">
         <form action={emailInvoice}>
           <input type="hidden" name="invoiceId" value={invoice.id} />
           <Button type="submit" variant="secondary">
