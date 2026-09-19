@@ -23,7 +23,7 @@ test("contact mailto uses inquiry subject without exposing the address as link t
   );
 
   const footer = readFileSync(path.join(import.meta.dirname, "../components/marketing/shell.tsx"), "utf8");
-  assert.match(footer, />Message us</);
+  assert.match(footer, /\{copy\.messageUs\}/);
   assert.match(footer, /href=\{CONTACT_MAILTO\}/);
   assert.equal(footer.includes(CONTACT_EMAIL), false);
 });

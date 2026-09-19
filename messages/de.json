@@ -1,0 +1,128 @@
+{
+  "meta": {
+    "description": "Schnelle, schöne Rechnungen und Angebote für Designer, Videoeditoren und Texter, die sie ungern von Hand machen.",
+    "pricingTitle": "Preise",
+    "loginTitle": "Anmelden",
+    "termsTitle": "Nutzungsbedingungen",
+    "privacyTitle": "Datenschutz"
+  },
+  "nav": {
+    "how": "So funktioniert’s",
+    "pricing": "Preise",
+    "templates": "Vorlagen",
+    "signIn": "Anmelden",
+    "startFree": "Kostenlos starten",
+    "dashboard": "Dashboard",
+    "messageUs": "Schreib uns",
+    "terms": "Bedingungen",
+    "privacy": "Datenschutz",
+    "language": "Sprache"
+  },
+  "home": {
+    "eyebrow": "Für freiberufliche Kreative",
+    "headline": "Rechnungen, die nach deiner Arbeit aussehen. Losgeschickt, bevor der Kaffee kalt wird.",
+    "lede": "InvoiceFlow Studio ist das fokussierte Tool für Designer, Editoren und Texter, die lieber Arbeit ausliefern als mit Word kämpfen. Wähle eine Vorlage, sende ein schönes PDF oder einen Link und sieh, was bezahlt ist — auf invoiceflowstudio.com.",
+    "createInvoice": "Erste Rechnung erstellen",
+    "seePricing": "Preise ansehen",
+    "freeNote": "Kostenlos: 3 Rechnungen und 3 Angebote im Monat. Keine Buchhaltungs-Suite. Kein 47-Schritte-Assistent.",
+    "how": [
+      {
+        "title": "Mit einer Studio-Vorlage starten",
+        "body": "Designprojekt, Retainer oder Videoschnitt — kein leeres Tabellenblatt, das so tut, als wäre es eine Marke."
+      },
+      {
+        "title": "PDF oder öffentlichen Link senden",
+        "body": "Kunden öffnen eine klare Seite auf dem Handy. Du lädst ein PDF herunter, das nicht nach 2009 aussieht."
+      },
+      {
+        "title": "Bezahlt, gesendet und überfällig im Blick",
+        "body": "Eine einfache Liste. Filter. Mehr nicht. QuickBooks kann warten, bis du es wirklich brauchst."
+      }
+    ],
+    "templatesTitle": "Vorlagen, die du wirklich nutzt",
+    "templatesLede": "Gemacht für die Menschen, für die dieses Produkt da ist: unabhängige Designer, Videoeditoren und Texter.",
+    "templates": [
+      {
+        "title": "Rechnung für ein Designprojekt",
+        "body": "Discovery, Identitätssystem, Logo-Suite, Guidelines. 50 % zum Start."
+      },
+      {
+        "title": "Retainer-Rechnung",
+        "body": "Stunden plus asynchrone Art Direction. Text „Zahlung bis zum 5.“ inklusive."
+      },
+      {
+        "title": "Angebot für Videoschnitt",
+        "body": "Der Cut, die Deliverables, das Investment — annehmen oder ablehnen über den Link."
+      }
+    ],
+    "startStarter": "Mit Starter beginnen",
+    "goPro": "Zu Pro wechseln",
+    "freePrice": "Gratis",
+    "perMonthShort": "/Mo."
+  },
+  "pricing": {
+    "headline": "Einfacher Preis für eine einfache Aufgabe.",
+    "lede": "InvoiceFlow Studio ist keine Buchhaltungs-Suite. Es ist der schnellste Weg, eine schöne Rechnung oder ein Angebot zu senden und zu wissen, ob sie bezahlt wurde — auf invoiceflowstudio.com.",
+    "perMonth": "/ Monat",
+    "useStarter": "Starter nutzen",
+    "upgradePro": "Auf Pro upgraden"
+  },
+  "plans": {
+    "free": {
+      "name": "Starter",
+      "blurb": "Reicht, um diesen Monat keine hässlichen Word-Docs mehr zu schicken.",
+      "features": [
+        "3 Rechnungen / Monat",
+        "3 Angebote / Monat",
+        "PDF-Download + teilbare Kundenlinks",
+        "Studio-Vorlagen",
+        "InvoiceFlow-Kennzeichnung auf öffentlichen Seiten"
+      ]
+    },
+    "pro": {
+      "name": "Pro",
+      "blurb": "Unbegrenzte Rechnungen und Angebote für ein arbeitendes Studio.",
+      "features": [
+        "Unbegrenzte Rechnungen & Angebote",
+        "PDF-Download + teilbare Kundenlinks",
+        "Eigene Studiodaten auf jedem Dokument",
+        "Kein InvoiceFlow-Kennzeichen in der Kundenansicht",
+        "Stripe-Abrechnungsportal"
+      ]
+    }
+  },
+  "login": {
+    "headline": "Zurück an die Arbeit. Um das PDF kümmern wir uns.",
+    "lede": "E-Mail und Passwort funktionieren ohne API-Keys. GitHub oder Resend kannst du ergänzen, wenn du Production-Auth brauchst.",
+    "signIn": "Anmelden",
+    "createAccount": "Konto erstellen",
+    "name": "Name",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "magicLabel": "Oder einen Magic Link per E-Mail",
+    "sendMagic": "Magic Link senden",
+    "github": "Mit GitHub weiter",
+    "githubHint": "GitHub OAuth erscheint hier, wenn AUTH_GITHUB_ID und AUTH_GITHUB_SECRET gesetzt sind.",
+    "demoPrefix": "Demo:"
+  },
+  "terms": {
+    "title": "Nutzungsbedingungen",
+    "updated": "Zuletzt aktualisiert am 15. September 2026. Das ist ein MVP-Entwurf — vor dem Produktionseinsatz rechtlich prüfen lassen.",
+    "paragraphs": [
+      "InvoiceFlow Studio (invoiceflowstudio.com) ist ein Werkzeug zum Erstellen, Versenden und Verfolgen von Rechnungen und Angeboten. In diesem MVP ist es keine Bank, kein Buchhalter, kein Steuerberater und kein Zahlungsdienstleister für die Rechnungen deiner Kunden.",
+      "Du bleibst Eigentümer der Inhalte, die du hochlädst. Du bist verantwortlich für die Richtigkeit von Rechnungen, Steuern und Kundenkommunikation. Wir können Konten sperren, die den Dienst missbrauchen.",
+      "Abos (Pro) verlängern sich monatlich über Stripe, bis sie gekündigt werden. Limits des kostenlosen Plans werden in der Software durchgesetzt und können mit Hinweis geändert werden.",
+      "Die Software wird „wie besehen“ ohne Gewähr bereitgestellt. Die Haftung ist auf den Betrag begrenzt, den du uns in den vorangegangenen drei Monaten gezahlt hast."
+    ]
+  },
+  "privacy": {
+    "title": "Datenschutz",
+    "updated": "Zuletzt aktualisiert am 15. September 2026. MVP-Entwurf — vor dem Launch durch eine geprüfte Richtlinie ersetzen.",
+    "paragraphs": [
+      "Wir erfassen Konto-E-Mail, Studio-Profildaten, Rechnungen, Angebote und Abrechnungsmetadaten, die wir zum Betrieb des Produkts brauchen.",
+      "Die Anmeldung kann E-Mail/Passwort, GitHub OAuth und optional Resend-Magic-Links nutzen. Zahlungen laufen über Stripe; wir speichern Kunden- und Abo-IDs, keine vollständigen Kartennummern.",
+      "Öffentliche Share-Links sind schwer zu erratende Tokens. Jeder mit dem Link kann das Dokument sehen. Schicke keine Tokens, die privat bleiben sollen.",
+      "Kontaktiere den Betreiber unter invoiceflowstudio.com, um Export oder Löschung deiner Kontodaten anzufordern."
+    ]
+  }
+}

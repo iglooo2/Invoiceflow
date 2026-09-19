@@ -1,0 +1,128 @@
+{
+  "meta": {
+    "description": "Facturas y propuestas rápidas y hermosas para diseñadores, editores de video y redactores que odian hacerlas a mano.",
+    "pricingTitle": "Precios",
+    "loginTitle": "Iniciar sesión",
+    "termsTitle": "Términos del servicio",
+    "privacyTitle": "Política de privacidad"
+  },
+  "nav": {
+    "how": "Cómo funciona",
+    "pricing": "Precios",
+    "templates": "Plantillas",
+    "signIn": "Iniciar sesión",
+    "startFree": "Empezar gratis",
+    "dashboard": "Panel",
+    "messageUs": "Escríbenos",
+    "terms": "Términos",
+    "privacy": "Privacidad",
+    "language": "Idioma"
+  },
+  "home": {
+    "eyebrow": "Para creativos freelance",
+    "headline": "Facturas que se parecen a tu trabajo. Enviadas antes de que se enfríe el café.",
+    "lede": "InvoiceFlow Studio es la herramienta enfocada para diseñadores, editores y redactores que prefieren entregar trabajo antes que pelearse con un Word. Elige una plantilla, envía un PDF o un enlace impecable y mira qué está pagado — en invoiceflowstudio.com.",
+    "createInvoice": "Crea tu primera factura",
+    "seePricing": "Ver precios",
+    "freeNote": "Gratis: 3 facturas y 3 propuestas al mes. Sin suite contable. Sin un asistente de 47 pasos.",
+    "how": [
+      {
+        "title": "Empieza con una plantilla de estudio",
+        "body": "Proyecto de diseño, retainer o edición de video — no una hoja en blanco haciéndose pasar por una marca."
+      },
+      {
+        "title": "Envía PDF o un enlace público",
+        "body": "Tus clientes abren una página limpia en el teléfono. Tú descargas un PDF que no parece de 2009."
+      },
+      {
+        "title": "Sigue pagado, enviado y vencido",
+        "body": "Una lista simple. Filtros. Nada más. QuickBooks puede esperar hasta que de verdad lo necesites."
+      }
+    ],
+    "templatesTitle": "Plantillas que sí vas a usar",
+    "templatesLede": "Pensadas para quienes es este producto: diseñadores independientes, editores de video y redactores.",
+    "templates": [
+      {
+        "title": "Factura de proyecto de diseño",
+        "body": "Discovery, sistema de identidad, suite de logo, guidelines. 50% para empezar."
+      },
+      {
+        "title": "Factura de retainer",
+        "body": "Horas más dirección de arte asíncrona. Incluye el texto de pago antes del día 5."
+      },
+      {
+        "title": "Propuesta de edición de video",
+        "body": "El corte, los entregables, la inversión — aceptar o rechazar desde el enlace."
+      }
+    ],
+    "startStarter": "Empezar en Starter",
+    "goPro": "Pasar a Pro",
+    "freePrice": "Gratis",
+    "perMonthShort": "/mes"
+  },
+  "pricing": {
+    "headline": "Precio simple para un trabajo simple.",
+    "lede": "InvoiceFlow Studio no es una suite contable. Es la forma más rápida de enviar una factura o propuesta hermosa y saber si se pagó — en invoiceflowstudio.com.",
+    "perMonth": "/ mes",
+    "useStarter": "Usar Starter",
+    "upgradePro": "Mejorar a Pro"
+  },
+  "plans": {
+    "free": {
+      "name": "Starter",
+      "blurb": "Suficiente para dejar de enviar Word feos este mes.",
+      "features": [
+        "3 facturas / mes",
+        "3 propuestas / mes",
+        "Descarga PDF + enlaces para clientes",
+        "Plantillas de estudio",
+        "Marca InvoiceFlow en páginas públicas"
+      ]
+    },
+    "pro": {
+      "name": "Pro",
+      "blurb": "Facturas y propuestas ilimitadas para un estudio en marcha.",
+      "features": [
+        "Facturas y propuestas ilimitadas",
+        "Descarga PDF + enlaces para clientes",
+        "Datos de tu estudio en cada documento",
+        "Sin marca InvoiceFlow en la vista del cliente",
+        "Portal de facturación de Stripe"
+      ]
+    }
+  },
+  "login": {
+    "headline": "Vuelve al trabajo. Nosotros nos encargamos del PDF.",
+    "lede": "Email y contraseña funcionan sin claves de API. Añade GitHub o Resend cuando quieras autenticación de producción.",
+    "signIn": "Iniciar sesión",
+    "createAccount": "Crear cuenta",
+    "name": "Nombre",
+    "email": "Email",
+    "password": "Contraseña",
+    "magicLabel": "O envía un enlace mágico",
+    "sendMagic": "Enviar enlace mágico",
+    "github": "Continuar con GitHub",
+    "githubHint": "GitHub OAuth aparece aquí cuando AUTH_GITHUB_ID y AUTH_GITHUB_SECRET están configurados.",
+    "demoPrefix": "Demo:"
+  },
+  "terms": {
+    "title": "Términos del servicio",
+    "updated": "Última actualización: 15 de septiembre de 2026. Es un borrador de MVP — que lo revise un abogado antes de usarlo en producción.",
+    "paragraphs": [
+      "InvoiceFlow Studio (invoiceflowstudio.com) es una herramienta para crear, enviar y seguir facturas y propuestas. En este MVP no es un banco, contador, asesor fiscal ni procesador de pagos de las facturas de tus clientes.",
+      "Tú eres dueño del contenido que subes. Eres responsable de la exactitud de las facturas, impuestos y comunicaciones con clientes. Podemos suspender cuentas que abusen del servicio.",
+      "Las suscripciones (Pro) se renuevan cada mes a través de Stripe hasta que las canceles. Los límites del plan gratuito se aplican en el software y pueden cambiar con aviso.",
+      "El software se ofrece “tal cual”, sin garantías. El límite de responsabilidad es lo que nos pagaste en los tres meses anteriores."
+    ]
+  },
+  "privacy": {
+    "title": "Política de privacidad",
+    "updated": "Última actualización: 15 de septiembre de 2026. Borrador del MVP — sustitúyelo por una política revisada antes del lanzamiento.",
+    "paragraphs": [
+      "Recogemos el email de la cuenta, datos del perfil del estudio, facturas, propuestas y metadatos de facturación necesarios para operar el producto.",
+      "El acceso puede usar email/contraseña, GitHub OAuth y, de forma opcional, enlaces mágicos de Resend. Los pagos van por Stripe; guardamos IDs de cliente y suscripción, no números de tarjeta completos.",
+      "Los enlaces públicos son tokens difíciles de adivinar. Quien tenga el enlace puede ver el documento. No envíes tokens que quieras mantener en privado.",
+      "Contacta al operador en invoiceflowstudio.com para pedir la exportación o eliminación de los datos de tu cuenta."
+    ]
+  }
+}
