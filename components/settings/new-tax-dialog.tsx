@@ -43,7 +43,7 @@ export function NewTaxDialog({
                 <Input id="rate" name="rate" type="number" step="0.01" min="0" max="100" required />
               </div>
             </div>
-            <div className="flex justify-end gap-4 border-t border-border px-6 py-3">
+            <div className="btn-row justify-end border-t border-border px-6 py-3">
               <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
                 {cancelLabel}
               </Button>

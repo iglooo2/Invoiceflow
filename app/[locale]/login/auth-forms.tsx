@@ -39,7 +39,7 @@ export function AuthForms({
 
   return (
     <div className="paper-card rounded-3xl p-6 md:p-8">
-      <div className="mb-6 flex gap-2">
+      <div className="mb-6 flex flex-wrap gap-1.5">
         <Button type="button" variant={mode === "signin" ? "default" : "ghost"} onClick={() => setMode("signin")}>
           {copy.signIn}
         </Button>

@@ -3,7 +3,7 @@ import { SITE_NAME, SITE_STUDIO } from "@/lib/site";
 
 export function Wordmark({ href = "/", light = false }: { href?: string; light?: boolean }) {
   return (
-    <Link href={href} className="flex items-center gap-2">
+    <Link href={href} className="flex min-w-0 items-center gap-2">
       <span
         className={`grid h-8 w-8 place-items-center rounded-full text-sm font-semibold ${
           light ? "bg-primary-foreground/15 text-primary-foreground" : "bg-primary text-primary-foreground"
@@ -13,7 +13,7 @@ export function Wordmark({ href = "/", light = false }: { href?: string; light?:
       </span>
       <span className={`flex items-baseline gap-1.5 ${light ? "text-primary-foreground" : ""}`}>
         <span className="font-display text-xl tracking-tight">{SITE_NAME}</span>
-        <span className={`text-[11px] font-medium uppercase tracking-[0.16em] ${light ? "opacity-80" : "text-muted-foreground"}`}>
+        <span className={`hidden text-[11px] font-medium uppercase tracking-[0.16em] sm:inline ${light ? "opacity-80" : "text-muted-foreground"}`}>
           Studio
         </span>
       </span>

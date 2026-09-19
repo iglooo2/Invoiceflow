@@ -56,7 +56,7 @@ export default async function EstimatesMarketingPage({ params }: PageProps<"/[lo
               {copy.headline}
             </h1>
             <p className="mt-5 max-w-xl text-lg leading-8 text-muted-foreground">{copy.lede}</p>
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="btn-row mt-8">
               <Button asChild size="lg">
                 <Link href={createHref}>{user ? copy.create : copy.startFreeCreate}</Link>
               </Button>
@@ -134,7 +134,7 @@ export default async function EstimatesMarketingPage({ params }: PageProps<"/[lo
               <p className="mt-3 max-w-2xl text-muted-foreground">{copy.notifyLede}</p>
             </div>
           </div>
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="btn-row mt-8">
             <Button asChild size="lg">
               <Link href={createHref}>{user ? copy.create : dict.nav.startFree}</Link>
             </Button>

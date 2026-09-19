@@ -77,7 +77,7 @@ export function ContractDialog({
                   />
                 </div>
               </div>
-              <div className="flex items-center justify-between gap-3 border-t border-border px-6 py-3">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border px-6 py-3">
                 {contract ? (
                   <Button form="delete-contract" type="submit" variant="ghost" className="text-destructive">
                     {copy.delete}
@@ -85,7 +85,7 @@ export function ContractDialog({
                 ) : (
                   <span />
                 )}
-                <div className="flex gap-3">
+                <div className="btn-row">
                   <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
                     {copy.cancel}
                   </Button>

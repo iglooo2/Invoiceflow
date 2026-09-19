@@ -174,6 +174,7 @@ export function InvoiceForm({
             <Button
               type="button"
               variant="ghost"
+              size="sm"
               onClick={() => setItems(items.filter((_, i) => i !== index))}
               disabled={items.length === 1}
             >
@@ -199,7 +200,7 @@ export function InvoiceForm({
           placeholder="Payment schedule, file handoff, late fees…"
         />
       </div>
-      <div className="flex justify-end gap-2">
+      <div className="btn-row justify-end">
         <Button type="submit">Save invoice</Button>
       </div>
     </form>
