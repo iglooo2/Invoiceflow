@@ -16,7 +16,7 @@ This is a focused Micro-SaaS MVP, not an accounting suite. Create from studio te
 - PDF download + public share pages
 - Filters on invoice and proposal lists
 - Free vs Pro limits in code: **Starter = 3 invoices and 3 proposals per month; Pro = unlimited at $24/mo**
-- Stripe Checkout + Customer Portal + webhook (test mode). Local demo upgrade if Stripe keys are missing
+- Stripe Checkout + Customer Portal + webhook (test keys locally, live keys in production). Local demo upgrade if Stripe keys are missing
 - Cloudflare Workers deploy via the **OpenNext** adapter (`@opennextjs/cloudflare`)
 
 ## Stack
@@ -59,10 +59,10 @@ See `.env.example`. Placeholders only — never commit real secrets.
 | `NEXT_PUBLIC_APP_URL` | `http://localhost:3000` | `https://invoiceflowstudio.com` | Share links and Stripe redirects |
 | `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET` | optional | optional | GitHub button hidden |
 | `AUTH_RESEND_KEY` / `EMAIL_FROM` | optional | optional | Magic link hidden; share-link email logs to console |
-| `STRIPE_SECRET_KEY` | optional test key | test or live secret | Checkout disabled |
-| `STRIPE_PRO_PRICE_ID` | optional | `price_…` for Pro | Same |
-| `STRIPE_WEBHOOK_SECRET` | from Stripe CLI | from Dashboard endpoint | Webhook route returns 501 |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | optional | optional | Not required for server Checkout |
+| `STRIPE_SECRET_KEY` | optional test key | **runtime** `sk_test_…` or `sk_live_…` | Checkout disabled |
+| `STRIPE_PRO_PRICE_ID` | optional | **runtime** `price_…` in the **same mode** as the secret | Same |
+| `STRIPE_WEBHOOK_SECRET` | from Stripe CLI | **runtime** `whsec_…` from the matching-mode endpoint | Webhook route returns 501 |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | unused | unused | Not read by Checkout or the Billing button |
 | `AUTH_DEV_MODE` | `true` | **`false`** | Production hides login demo credentials and “Unlock Pro for local demo” |
 
 Auth.js is configured with `trustHost: true` so it trusts the `Host` header Cloudflare sends.
@@ -140,10 +140,10 @@ Do this in the Cloudflare dashboard — the agent cannot click it for you:
    | `NEXT_PUBLIC_APP_URL` | Variable | `https://invoiceflowstudio.com` |
    | `AUTH_DEV_MODE` | Variable | `false` |
    | `PRISMA_PROVIDER` | Variable | `postgresql` |
-   | `STRIPE_SECRET_KEY` | Secret | `sk_test_…` or live |
-   | `STRIPE_WEBHOOK_SECRET` | Secret | `whsec_…` |
-   | `STRIPE_PRO_PRICE_ID` | Variable | `price_…` |
-   | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Variable | `pk_…` |
+   | `STRIPE_SECRET_KEY` | Secret (**runtime**) | `sk_live_…` for production charges |
+   | `STRIPE_WEBHOOK_SECRET` | Secret (**runtime**) | Live endpoint `whsec_…` |
+   | `STRIPE_PRO_PRICE_ID` | Variable (**runtime**) | Live-mode `price_…` (Dashboard Live toggle) |
+   | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | unused | Do not rely on this — see Stripe section |
    | `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET` | Secret | if using GitHub login |
    | `AUTH_RESEND_KEY` | Secret | if using magic links |
    | `EMAIL_FROM` | Variable | `InvoiceFlow Studio <noreply@invoiceflowstudio.com>` |
@@ -165,11 +165,39 @@ Worker name in `wrangler.jsonc` is `invoiceflow` (must match the Cloudflare Git-
 - Attach **invoiceflowstudio.com** as a custom domain
 - (Optional) Enable R2 and bind `NEXT_INC_CACHE_R2_BUCKET` for durable Next.js incremental cache — not required for the MVP
 
-## Stripe test-mode steps
+## Stripe (test locally, live on Workers)
+
+Checkout is a **server action** (`startProCheckout` → `stripe.checkout.sessions.create`). The Billing button label follows the **runtime** `STRIPE_SECRET_KEY` prefix (`sk_test_` vs `sk_live_` / restricted `rk_test_` / `rk_live_`). `AUTH_*` is not used for Stripe mode. `AUTH_DEV_MODE` only shows the local “Unlock Pro” demo button.
+
+### Build vs Runtime on Cloudflare / OpenNext
+
+| Variable | When it is read | Notes |
+|---|---|---|
+| `STRIPE_SECRET_KEY` | **Runtime** Worker secret | Preferred via `getCloudflareContext()`. Do not rely on a Build var — Next may inline an empty/placeholder `process.env` at `cf:build`. |
+| `STRIPE_PRO_PRICE_ID` | **Runtime** | Must be created in the **same** Stripe mode as the secret. A test `price_…` with `sk_live_` fails (`No such price`). |
+| `STRIPE_WEBHOOK_SECRET` | **Runtime** | Live Dashboard endpoint for production; Stripe CLI `whsec_…` locally. |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | **Not used** | This app never calls Stripe.js. Setting `pk_live_…` as a Runtime var will **not** change the Billing button or Checkout. If you later add client Stripe.js, `NEXT_PUBLIC_*` **must be a Build variable** — Next.js inlines it into the client bundle at `next build` / `npm run cf:build`. |
+| `NEXT_PUBLIC_APP_URL` | Build inlines if referenced; runtime fallback is `AUTH_URL` then `https://invoiceflowstudio.com` | Used for Checkout `success_url` / `cancel_url`. |
+| `PRISMA_PROVIDER` | **Build** (required) | Unrelated to Stripe; still required so Prisma is Postgres. |
+
+Changing live Stripe secrets on **Runtime** does **not** require a rebuild. After this deploy, Billing shows “Upgrade with Stripe (test mode)” only when the Worker secret is `sk_test_` / `rk_test_`.
+
+### Live mode checklist
+
+1. In the Stripe Dashboard, switch to **Live** (not Test).
+2. Create product “InvoiceFlow Pro” with a **$24/month** recurring **live** price. Copy that `price_…` (it is not the test-mode id).
+3. Set Worker **runtime** secrets: `STRIPE_SECRET_KEY=sk_live_…`, `STRIPE_PRO_PRICE_ID=<live price>`, `STRIPE_WEBHOOK_SECRET` from a Live endpoint at `https://invoiceflowstudio.com/api/stripe/webhook`.
+4. You do not need `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` for Checkout.
+5. Accounts that already clicked Upgrade under test keys may have a test `cus_…` stored. Checkout now creates a new customer if Stripe returns “No such customer”.
+6. Live accounts often have **Managed Payments** on by default. Checkout writes Stripe tax code `txcd_10103001` (SaaS — business use) onto the Pro product when it is missing. If Stripe still rejects the session, Checkout retries with `managed_payments[enabled]=false` so Upgrade can complete without a Dashboard tax-code edit.
+
+If Checkout still fails, Billing shows a mapped error (bad key, wrong-mode price, leftover customer, missing tax code, network) or the fallback **Couldn’t complete the Stripe request (Name Code)** from `stripeFailureMessage` — check Worker logs for the raw Stripe error.
+
+### Local test-mode steps
 
 1. Create a Stripe account and switch to **Test mode**.
 2. Create a product “InvoiceFlow Pro” with a **$24/month** recurring price. Copy the `price_...` id.
-3. Copy test secret + publishable keys into `.env` (local) or Cloudflare secrets (prod).
+3. Copy test secret + price id into `.env`.
 4. Install the [Stripe CLI](https://docs.stripe.com/stripe-cli) and run:
 
 ```bash
@@ -177,7 +205,7 @@ stripe listen --forward-to localhost:3000/api/stripe/webhook
 ```
 
 5. Paste the CLI `whsec_...` into `STRIPE_WEBHOOK_SECRET`.
-6. In the app: Billing → Upgrade with Stripe. Card: `4242 4242 4242 4242`, any future expiry, any CVC.
+6. In the app: Billing → Upgrade with Stripe (test mode). Card: `4242 4242 4242 4242`, any future expiry, any CVC.
 
 Without Stripe keys locally, keep `AUTH_DEV_MODE=true` and use **Unlock Pro for local demo**.
 

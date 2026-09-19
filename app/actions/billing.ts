@@ -7,8 +7,12 @@ import { prisma } from "@/lib/db";
 import { errorRedirect, safeErrorLog } from "@/lib/db-errors";
 import { requireUser } from "@/lib/session";
 import {
+  buildProCheckoutSessionParams,
+  ensureStripeProductSaaSTaxCode,
   getStripe,
   getStripeProPriceId,
+  isMissingStripeCustomerError,
+  isStripeTaxCodeError,
   stripeEnabled,
   stripeFailureMessage,
   stripeMisconfiguredMessage,
@@ -17,6 +21,28 @@ import { getAppUrl, isDevMode } from "@/lib/utils";
 
 function redirectBillingError(message: string): never {
   redirect(errorRedirect("/dashboard/billing", message));
+}
+
+async function createStripeCustomerForUser(user: {
+  id: string;
+  email: string;
+  name?: string | null;
+  businessName?: string | null;
+}) {
+  const stripe = getStripe();
+  if (!stripe) {
+    redirectBillingError(stripeMisconfiguredMessage());
+  }
+  const customer = await stripe.customers.create({
+    email: user.email,
+    name: user.businessName || user.name || undefined,
+    metadata: { userId: user.id },
+  });
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { stripeCustomerId: customer.id },
+  });
+  return customer.id;
 }
 
 export async function startProCheckout() {
@@ -33,27 +59,49 @@ export async function startProCheckout() {
 
     let customerId = user.stripeCustomerId;
     if (!customerId) {
-      const customer = await stripe.customers.create({
-        email: user.email,
-        name: user.businessName || user.name || undefined,
-        metadata: { userId: user.id },
-      });
-      customerId = customer.id;
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { stripeCustomerId: customerId },
-      });
+      customerId = await createStripeCustomerForUser(user);
     }
 
-    const session = await stripe.checkout.sessions.create({
-      mode: "subscription",
-      customer: customerId,
-      line_items: [{ price: priceId, quantity: 1 }],
-      success_url: `${getAppUrl()}/dashboard/billing?status=success`,
-      cancel_url: `${getAppUrl()}/dashboard/billing?status=cancelled`,
-      allow_promotion_codes: true,
-      metadata: { userId: user.id },
-    });
+    try {
+      await ensureStripeProductSaaSTaxCode(stripe, priceId);
+    } catch (error) {
+      unstable_rethrow(error);
+      console.error("ensureStripeProductSaaSTaxCode failed", safeErrorLog(error));
+    }
+
+    const createSession = (customer: string, managedPaymentsEnabled?: boolean) =>
+      stripe.checkout.sessions.create(
+        buildProCheckoutSessionParams({
+          customerId: customer,
+          priceId,
+          userId: user.id,
+          appUrl: getAppUrl(),
+          managedPaymentsEnabled,
+        }),
+      );
+
+    let session;
+    try {
+      session = await createSession(customerId);
+    } catch (error) {
+      unstable_rethrow(error);
+      // Test-mode cus_… ids are invisible to live keys (and the reverse).
+      if (customerId && isMissingStripeCustomerError(error)) {
+        customerId = await createStripeCustomerForUser(user);
+        try {
+          session = await createSession(customerId);
+        } catch (retryError) {
+          unstable_rethrow(retryError);
+          if (!isStripeTaxCodeError(retryError)) throw retryError;
+          session = await createSession(customerId, false);
+        }
+      } else if (isStripeTaxCodeError(error)) {
+        // Account default is Managed Payments; session can opt out if tax still fails.
+        session = await createSession(customerId, false);
+      } else {
+        throw error;
+      }
+    }
 
     if (!session.url) {
       redirectBillingError("Stripe did not return a checkout URL.");
