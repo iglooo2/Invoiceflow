@@ -74,7 +74,7 @@ export default async function DashboardPage() {
         <Stat label={dict.app.home.estimatesThisMonth} value={String(proposalCount)} />
       </div>
 
-      <section>
+      <section id="templates">
         <h2 className="font-display text-2xl">{dict.app.home.startTemplate}</h2>
         <div className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
           <form action={createInvoiceFromTemplate.bind(null, "design-project-invoice")}>

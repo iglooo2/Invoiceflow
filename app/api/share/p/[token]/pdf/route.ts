@@ -4,6 +4,7 @@ import { prismaReadFailureMessage, safeErrorLog } from "@/lib/db-errors";
 import { buildProposalPdf, pdfDownloadHeaders } from "@/lib/pdf";
 import { currentPlanId } from "@/lib/plans";
 import { findEstimateByPublicToken } from "@/lib/proposal-queries";
+import { withDocumentFooter } from "@/lib/studio-settings-store";
 
 export async function GET(
   _request: Request,
@@ -29,7 +30,7 @@ export async function GET(
       stripeCurrentPeriodEnd?: Date | null;
     };
     const bytes = await buildProposalPdf({
-      studio,
+      studio: await withDocumentFooter(proposal.userId, studio),
       proposal,
       branded: currentPlanId(studio) !== "pro",
     });

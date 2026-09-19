@@ -111,7 +111,7 @@ export default async function EstimatesMarketingPage({ params }: PageProps<"/[lo
               <code className="text-xs">INTUIT_CLIENT_ID</code> / <code className="text-xs">INTUIT_CLIENT_SECRET</code>{" "}
               {copy.qbNoteMid}{" "}
               <Link
-                href={user ? "/dashboard/settings" : localizedPath(locale, "/login")}
+                href={user ? "/dashboard/settings/quickbooks" : localizedPath(locale, "/login")}
                 className="underline"
               >
                 {dict.app.settings}
@@ -119,7 +119,7 @@ export default async function EstimatesMarketingPage({ params }: PageProps<"/[lo
               {copy.qbNoteAfter}
             </p>
             <Button asChild variant="outline" className="mt-6">
-              <Link href={user ? "/dashboard/settings" : localizedPath(locale, "/login")}>
+              <Link href={user ? "/dashboard/settings/quickbooks" : localizedPath(locale, "/login")}>
                 {copy.qbCta}
               </Link>
             </Button>

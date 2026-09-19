@@ -12,6 +12,7 @@ import { assertCanCreate, newPublicToken, nextInvoiceNumber, redirectIfLimitReac
 import { SEED_TEMPLATES, type InvoiceTemplatePayload } from "@/lib/templates";
 import { sendDocumentEmail, publicInvoiceUrl } from "@/lib/email";
 import { appCopy } from "@/lib/i18n-request";
+import { loadStudioSettings } from "@/lib/studio-settings-store";
 
 export type InvoiceActionResult = { error: string };
 
@@ -36,6 +37,7 @@ export async function createInvoice(formData: FormData): Promise<InvoiceActionRe
     }
     const parsed = parseInvoiceForm(formData);
     if (!parsed.success) return { error: parsed.error };
+    const settings = await loadStudioSettings(user.id);
     const invoice = await insertInvoiceWithItems(
       prisma,
       {
@@ -52,6 +54,7 @@ export async function createInvoice(formData: FormData): Promise<InvoiceActionRe
         clientEmail: parsed.data.clientEmail,
         clientCompany: parsed.data.clientCompany,
         clientAddress: parsed.data.clientAddress,
+        currency: settings.settings.defaultCurrency,
       },
       parsed.data.items,
     );
@@ -174,6 +177,7 @@ export async function createInvoiceFromTemplate(slug: string) {
       throw new Error("Template not found");
     }
     const payload = template.payload as InvoiceTemplatePayload;
+    const settings = await loadStudioSettings(user.id);
     const invoice = await insertInvoiceWithItems(
       prisma,
       {
@@ -186,6 +190,7 @@ export async function createInvoiceFromTemplate(slug: string) {
         notes: payload.notes,
         publicToken: newPublicToken(),
         clientName: "New client",
+        currency: settings.settings.defaultCurrency,
       },
       payload.items,
     );
@@ -222,7 +227,7 @@ export async function emailInvoice(formData: FormData) {
       to: invoice.clientEmail,
       subject: `Invoice ${invoice.number} from ${user.businessName || user.name || "your freelancer"}`,
       heading: `Invoice ${invoice.number}`,
-      body: "Here’s a link to view and download the invoice.",
+      body: (await loadStudioSettings(user.id)).settings.emailInvoiceMessage,
       link: publicInvoiceUrl(invoice.publicToken),
     });
     if (invoice.status === "draft") {
