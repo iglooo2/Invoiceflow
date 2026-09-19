@@ -55,7 +55,7 @@ See `.env.example`. Placeholders only — never commit real secrets.
 | `DATABASE_URL` | `file:./dev.db` | Neon/Supabase **pooled** `postgresql://…` | App cannot store data |
 | `DATABASE_URL_UNPOOLED` | — | Neon **direct** URL for `db push` / migrate | Use `DATABASE_URL` if you are not on a pooler |
 | `PRISMA_PROVIDER` | unset (sqlite from URL) | `postgresql` if the build URL is not postgres yet | Provider is inferred from `DATABASE_URL` |
-| `AUTH_SECRET` | generate locally | **required** Runtime secret | Dev fallback only; do not ship that. Auth.js throws `Configuration` without it in production |
+| `AUTH_SECRET` | generate locally | **required Runtime Secret** (Build-only is **not** enough) | Auth.js signs JWTs from Worker `env`. Missing Runtime secret → `Configuration` / `CredentialsSignin` |
 | `AUTH_URL` | `http://localhost:3000` | **required** Runtime var `https://invoiceflowstudio.com` | Host is also inferred (`trustHost: true`); still set AUTH_URL so callbacks are not localhost from a build `.env` |
 | `AUTH_TRUST_HOST` | unset | unset (code sets `trustHost: true`) | Optional extra; not required |
 | `NEXT_PUBLIC_APP_URL` | `http://localhost:3000` | `https://invoiceflowstudio.com` | Share links and Stripe redirects |
@@ -80,15 +80,17 @@ Set these under Worker **Settings → Variables and Secrets** (Runtime), not onl
 
 | Name | Required | Notes |
 |---|---|---|
-| `AUTH_SECRET` | **yes** | `openssl rand -base64 32`. Also accepts `NEXTAUTH_SECRET`. |
-| `AUTH_URL` | **yes** | `https://invoiceflowstudio.com`. Also accepts `NEXTAUTH_URL`. |
+| `AUTH_SECRET` | **yes (Runtime Secret)** | `openssl rand -base64 32`. **A Cloudflare Build variable is not enough** — Auth.js reads Worker `env` at request time via `getCloudflareContext()`. Also accepts `NEXTAUTH_SECRET`. |
+| `AUTH_URL` | **yes (Runtime variable)** | `https://invoiceflowstudio.com`. Build-only is not enough. Also accepts `NEXTAUTH_URL`. |
 | `DATABASE_URL` | **yes** | Neon pooled URL (signup is the first path that queries Postgres). |
 | `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | Google button | Auth.js v5 names. Callback `https://invoiceflowstudio.com/api/auth/callback/google`. `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` (Google Cloud Console / NextAuth v4) work as aliases; prefer the `AUTH_GOOGLE_*` names. |
 | `AUTH_APPLE_ID` / `AUTH_APPLE_SECRET` | Apple button | Callback `https://invoiceflowstudio.com/api/auth/callback/apple`. |
 | `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET` | GitHub button | Hidden until both are set. |
 | `AUTH_RESEND_KEY` / `EMAIL_FROM` | Magic link | Optional. |
 
-Email/password signup does **not** need Google or Apple secrets. If account creation fails, the form shows a database or credentials message — not “check the Google/Apple Worker secrets.” That copy is reserved for Google/Apple (`OAuthSignin`, `OAuthCallback`, …). `Configuration` / missing `AUTH_SECRET` tells you to set `AUTH_SECRET` and `AUTH_URL`.
+Email/password signup does **not** need Google or Apple secrets. If account creation fails, the form shows a database or credentials message — not “check the Google/Apple Worker secrets.” That copy is reserved for Google/Apple (`OAuthSignin`, `OAuthCallback`, …). `OAuthAccountNotLinked` means an email/password user already exists for that Gmail — sign in with email and password (Google/Apple with a **verified** email can link to that user). `Configuration` / missing `AUTH_SECRET` means the secret is not on **Runtime** (a Build variable will not do).
+
+**AUTH_SECRET as a Build variable is not enough.** Cloudflare Build vars exist during `npm run cf:build`. Auth.js signs session JWTs on the Worker from `getCloudflareContext().env`. If `AUTH_GOOGLE_ID` is a Runtime secret (so the Google button works) but `AUTH_SECRET` is only a Build var, Google callbacks and `/login` POSTs fail (`OAuthAccountNotLinked` is a separate email-collision error; `CredentialsSignin` is often a missing Runtime `AUTH_SECRET`). Add `AUTH_SECRET` under **Settings → Variables and Secrets → Runtime → Secret**, and `AUTH_URL=https://invoiceflowstudio.com` as a Runtime variable. Re-adding the same value as Runtime does not require a rebuild.
 
 ## Production Postgres (before first deploy)
 
@@ -231,7 +233,7 @@ Do this in the Cloudflare dashboard — the agent cannot click it for you:
    | Name | Type | Example |
    |---|---|---|
    | `DATABASE_URL` | Secret | `postgresql://…` (Neon pooled or Supabase) |
-   | `AUTH_SECRET` | Secret | `openssl rand -base64 32` (**required** Runtime) |
+   | `AUTH_SECRET` | Secret (**runtime**, not Build-only) | `openssl rand -base64 32`. Auth.js will not see a Build variable at request time. |
    | `AUTH_URL` | Variable | `https://invoiceflowstudio.com` (**required** Runtime) |
    | `NEXT_PUBLIC_APP_URL` | Variable | `https://invoiceflowstudio.com` |
    | `AUTH_DEV_MODE` | Variable | `false` |

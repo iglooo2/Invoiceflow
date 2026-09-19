@@ -32,6 +32,10 @@ function normalizeAuthErrorCode(code: string): string {
   return match ?? trimmed;
 }
 
+export function isOauthAccountNotLinkedCode(code: string | null | undefined): boolean {
+  return normalizeAuthErrorCode(code ?? "") === "OAuthAccountNotLinked";
+}
+
 export function isCredentialsAuthCode(code: string | null | undefined): boolean {
   if (!code) return false;
   return CREDENTIALS_CODES.has(normalizeAuthErrorCode(code));

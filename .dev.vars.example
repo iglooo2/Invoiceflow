@@ -7,6 +7,8 @@
 NEXTJS_ENV=development
 DATABASE_URL="postgresql://USER:PASSWORD@HOST/DB?sslmode=require"
 AUTH_SECRET="replace-with-a-long-random-string"
+# Production: AUTH_SECRET + AUTH_URL must be Worker Runtime secrets/vars,
+# not only Cloudflare Build variables.
 AUTH_URL="http://localhost:8787"
 NEXT_PUBLIC_APP_URL="http://localhost:8787"
 AUTH_DEV_MODE="false"

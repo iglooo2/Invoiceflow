@@ -128,7 +128,8 @@ test("login always renders Google and Apple buttons; dashboard gates new users",
   assert.match(auth, /next-auth\/providers\/google/);
   assert.match(auth, /next-auth\/providers\/apple/);
   assert.match(auth, /NextAuth\(authOptions\)/);
-  assert.match(auth, /googleClientId\(\)/);
+  assert.match(auth, /ensureAuthRuntimeEnv\(\)/);
+  assert.match(auth, /allowDangerousEmailAccountLinking/);
   assert.match(auth, /createUser/);
   assert.match(layout, /needsOnboarding/);
   assert.match(register, /onboardingComplete: false/);

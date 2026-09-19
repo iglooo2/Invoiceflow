@@ -3,12 +3,14 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import {
+  AUTH_SECRET_RUNTIME_MISSING,
   appleAuthEnabled,
   applyAuthRuntimeEnv,
   githubAuthEnabled,
   googleAuthEnabled,
   googleClientId,
   googleClientSecret,
+  isPlaceholderAuthSecret,
   oauthPairEnabled,
   readAuthSecret,
   resendEnabled,
@@ -137,6 +139,32 @@ test("Google Sign-In accepts GOOGLE_CLIENT_ID as an Auth.js alias", () => {
   }
 });
 
+test("placeholder AUTH_SECRET values are treated as missing", () => {
+  assert.equal(isPlaceholderAuthSecret(""), true);
+  assert.equal(isPlaceholderAuthSecret("replace-with-a-long-random-string"), true);
+  assert.equal(isPlaceholderAuthSecret("dev-insecure-secret-change-me"), true);
+  assert.equal(isPlaceholderAuthSecret("a-real-secret-value"), false);
+
+  const previous = process.env.AUTH_SECRET;
+  const previousNext = process.env.NEXTAUTH_SECRET;
+  try {
+    process.env.AUTH_SECRET = "replace-with-a-long-random-string";
+    delete process.env.NEXTAUTH_SECRET;
+    assert.equal(resolvedAuthSecret(), "");
+    process.env.AUTH_SECRET = "runtime-secret-from-worker";
+    assert.equal(resolvedAuthSecret(), "runtime-secret-from-worker");
+  } finally {
+    restoreEnv("AUTH_SECRET", previous);
+    restoreEnv("NEXTAUTH_SECRET", previousNext);
+  }
+});
+
+test("missing AUTH_SECRET message tells operators to use Worker Runtime, not Build", () => {
+  assert.match(AUTH_SECRET_RUNTIME_MISSING, /Runtime Secret/);
+  assert.match(AUTH_SECRET_RUNTIME_MISSING, /Build variable/);
+  assert.match(AUTH_SECRET_RUNTIME_MISSING, /AUTH_URL/);
+});
+
 test("OAuth enablement reads Cloudflare runtime secrets, not a NEXT_PUBLIC flag", () => {
   const authEnv = readFileSync(path.join(import.meta.dirname, "auth-env.ts"), "utf8");
   const runtime = readFileSync(path.join(import.meta.dirname, "runtime-env.ts"), "utf8");
@@ -147,24 +175,32 @@ test("OAuth enablement reads Cloudflare runtime secrets, not a NEXT_PUBLIC flag"
   const actions = readFileSync(path.join(import.meta.dirname, "../app/actions/auth.ts"), "utf8");
 
   assert.match(runtime, /readCloudflareString/);
+  assert.match(runtime, /getCloudflareContext\(\{ async: true \}\)/);
+  assert.match(runtime, /copyCloudflareAuthEnvToProcess/);
   assert.match(runtime, /process\.env\[name\]/);
   assert.match(authEnv, /readRuntimeSecret/);
+  assert.match(authEnv, /copyCloudflareAuthEnvToProcess/);
   assert.match(authEnv, /AUTH_GOOGLE_ID/);
   assert.match(authEnv, /AUTH_APPLE_ID/);
   assert.doesNotMatch(authEnv, /NEXT_PUBLIC_/);
   assert.doesNotMatch(utils, /googleAuthEnabled/);
   assert.doesNotMatch(utils, /AUTH_GOOGLE_ID/);
   assert.match(auth, /NextAuth\(authOptions\)/);
-  assert.match(auth, /function authOptions\(\)/);
+  assert.match(auth, /async function authOptions\(\)/);
   assert.match(auth, /function buildAuthProviders\(\)/);
   assert.match(auth, /googleClientId\(\)/);
   assert.match(auth, /googleClientSecret\(\)/);
-  assert.match(auth, /applyAuthRuntimeEnv\(\)/);
+  assert.match(auth, /ensureAuthRuntimeEnv\(\)/);
+  assert.match(auth, /allowDangerousEmailAccountLinking/);
   assert.match(auth, /trustHost: true/);
   assert.match(auth, /resolvedAuthSecret\(\)/);
+  assert.match(auth, /NODE_ENV === "production" \? undefined/);
+  assert.doesNotMatch(auth, /secret: process\.env\.AUTH_SECRET/);
   assert.doesNotMatch(auth, /process\.env\.AUTH_GOOGLE_ID/);
   assert.match(authEnv, /GOOGLE_CLIENT_ID/);
   assert.match(authEnv, /AUTH_GOOGLE_ID/);
+  assert.match(authEnv, /ensureCloudflareContext/);
+  assert.match(runtime, /getCloudflareContext\(\{ async: true \}\)/);
   assert.match(login, /from "@\/lib\/auth-env"/);
   assert.match(login, /force-dynamic/);
   assert.match(login, /await connection\(\)/);
@@ -180,9 +216,15 @@ test("OAuth enablement reads Cloudflare runtime secrets, not a NEXT_PUBLIC flag"
     "Google/Apple must render above email/password on login and register",
   );
   assert.match(actions, /from "@\/lib\/auth-env"/);
+  assert.match(actions, /ensureAuthRuntimeEnv/);
   assert.match(actions, /redirectDigestErrorCode/);
   assert.match(actions, /credentialsActionErrorMessage/);
   assert.match(actions, /oauthActionErrorMessage/);
   assert.match(login, /loginQueryErrorMessage/);
+  assert.match(login, /ensureAuthRuntimeEnv/);
+  assert.match(login, /isOauthAccountNotLinkedCode/);
   assert.doesNotMatch(login, /dict\.login\.errors\.oauthFailed/);
+  const route = readFileSync(path.join(import.meta.dirname, "../app/api/auth/[...nextauth]/route.ts"), "utf8");
+  assert.match(route, /ensureAuthRuntimeEnv/);
+  assert.match(route, /force-dynamic/);
 });

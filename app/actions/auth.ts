@@ -19,7 +19,7 @@ import {
 } from "@/lib/db-errors";
 import { localizedPath } from "@/lib/i18n";
 import { appCopy } from "@/lib/i18n-request";
-import { appleAuthEnabled, googleAuthEnabled } from "@/lib/auth-env";
+import { appleAuthEnabled, ensureAuthRuntimeEnv, googleAuthEnabled } from "@/lib/auth-env";
 
 const credentialsSchema = z.object({
   email: z.string().email(),
@@ -27,6 +27,7 @@ const credentialsSchema = z.object({
 });
 
 export async function loginWithPassword(formData: FormData) {
+  await ensureAuthRuntimeEnv();
   const parsed = credentialsSchema.pick({ email: true, password: true }).safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
@@ -60,6 +61,7 @@ export async function loginWithPassword(formData: FormData) {
 }
 
 export async function registerWithPassword(formData: FormData) {
+  await ensureAuthRuntimeEnv();
   const parsed = credentialsSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
@@ -130,6 +132,7 @@ export async function loginWithGithub() {
 }
 
 export async function loginWithGoogle() {
+  await ensureAuthRuntimeEnv();
   const { dict } = await appCopy();
   if (!googleAuthEnabled()) {
     return { error: dict.login.errors.oauthNotConfigured };
@@ -151,6 +154,7 @@ export async function loginWithGoogle() {
 }
 
 export async function loginWithApple() {
+  await ensureAuthRuntimeEnv();
   const { dict } = await appCopy();
   if (!appleAuthEnabled()) {
     return { error: dict.login.errors.oauthNotConfigured };

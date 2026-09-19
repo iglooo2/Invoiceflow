@@ -4,6 +4,7 @@ import { getDictionary } from "./dictionary";
 import {
   credentialsActionErrorMessage,
   errorCodeFromRedirectDigest,
+  isOauthAccountNotLinkedCode,
   loginQueryErrorMessage,
   oauthActionErrorMessage,
   redirectDigestErrorCode,
@@ -32,7 +33,15 @@ test("OAuth Auth.js codes use Google/Apple messaging", () => {
   assert.equal(loginQueryErrorMessage("OAuthCallback", errors), errors.oauthFailed);
   assert.equal(loginQueryErrorMessage("OAuthCreateAccount", errors), errors.oauthFailed);
   assert.equal(loginQueryErrorMessage("AccessDenied", errors), errors.oauthFailed);
+  assert.equal(isOauthAccountNotLinkedCode("OAuthAccountNotLinked"), true);
+  assert.equal(isOauthAccountNotLinkedCode("CredentialsSignin"), false);
   assert.equal(loginQueryErrorMessage("OAuthAccountNotLinked", errors), errors.oauthAccountNotLinked);
+  assert.match(errors.oauthAccountNotLinked, /email and password/i);
+  assert.match(errors.oauthAccountNotLinked, /already exists/i);
+  assert.match(errors.oauthAccountNotLinked, /link/i);
+  assert.equal(errors.oauthAccountNotLinked.toLowerCase().includes("already linked to a different"), false);
+  assert.match(errors.configuration, /Runtime Secret/);
+  assert.match(errors.configuration, /Build/);
   assert.match(errors.oauthFailed, /AUTH_GOOGLE_ID/);
   assert.equal(oauthActionErrorMessage("Configuration", errors), errors.oauthFailed);
   assert.equal(oauthActionErrorMessage("OAuthCallback", errors), errors.oauthFailed);

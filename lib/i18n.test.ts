@@ -116,6 +116,8 @@ test("login and dashboard common errors exist in every locale", () => {
     assert.ok(dict.login.errors.configuration.length > 0, locale);
     assert.ok(dict.login.errors.signInIncomplete.length > 0, locale);
     assert.ok(dict.login.errors.oauthAccountNotLinked.length > 0, locale);
+    assert.match(dict.login.errors.oauthAccountNotLinked, /email|e-mail|E-Mail|senha|contraseña|Passwort/i);
+    assert.match(dict.login.errors.oauthAccountNotLinked, /link|vincular|lier|verknüpf/i);
     assert.equal(dict.login.errors.signInIncomplete.includes("Google"), false, locale);
     assert.equal(dict.login.errors.invalidCredentials.includes("Google"), false, locale);
     assert.ok(dict.onboarding.errors.phone.length > 0, locale);

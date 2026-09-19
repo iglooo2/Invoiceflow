@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { connection } from "next/server";
 import { redirect } from "next/navigation";
-import { appleAuthEnabled, githubAuthEnabled, googleAuthEnabled, resendEnabled } from "@/lib/auth-env";
-import { loginQueryErrorMessage } from "@/lib/auth-errors";
+import { appleAuthEnabled, ensureAuthRuntimeEnv, githubAuthEnabled, googleAuthEnabled, resendEnabled } from "@/lib/auth-env";
+import { isOauthAccountNotLinkedCode, loginQueryErrorMessage } from "@/lib/auth-errors";
 import { getCurrentUser } from "@/lib/session";
 import { isDevMode } from "@/lib/utils";
 import { MarketingFooter, MarketingHeader } from "@/components/marketing/shell";
@@ -29,14 +29,15 @@ export default async function LoginPage({
   searchParams,
 }: PageProps<"/[locale]/login">) {
   await connection();
+  await ensureAuthRuntimeEnv();
   const { locale, dict } = marketingCopy((await params).locale);
   const user = await getCurrentUser();
   if (user) redirect(nextOnboardingPath(user, locale));
   const query = await searchParams;
-  const authError = loginQueryErrorMessage(
-    typeof query.error === "string" ? query.error : null,
-    dict.login.errors,
-  );
+  const errorCode = typeof query.error === "string" ? query.error : null;
+  const authError = loginQueryErrorMessage(errorCode, dict.login.errors);
+  const registerRequested = typeof query.mode === "string" && query.mode === "register";
+  const initialMode = isOauthAccountNotLinkedCode(errorCode) ? "signin" : registerRequested ? "register" : "signin";
   return (
     <div>
       <MarketingHeader signedIn={false} locale={locale} path="/login" copy={dict.nav} />
@@ -54,7 +55,7 @@ export default async function LoginPage({
           magicEnabled={resendEnabled()}
           showDemoCredentials={isDevMode()}
           callbackUrl={typeof query.callbackUrl === "string" ? query.callbackUrl : "/dashboard"}
-          initialMode={typeof query.mode === "string" && query.mode === "register" ? "register" : "signin"}
+          initialMode={initialMode}
           copy={dict.login}
           initialError={authError}
         />

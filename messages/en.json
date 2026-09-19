@@ -128,9 +128,9 @@
       "magicEmail": "Enter the email for your magic link.",
       "magicFailed": "Couldn’t send a magic link. Check AUTH_RESEND_KEY.",
       "oauthFailed": "Google or Apple sign-in didn’t complete. Check AUTH_GOOGLE_ID / AUTH_GOOGLE_SECRET (or AUTH_APPLE_ID / AUTH_APPLE_SECRET) as Worker Runtime secrets, and the OAuth callback URL.",
-      "oauthAccountNotLinked": "That Google or Apple account is already linked to a different InvoiceFlow user. Sign in with email and password.",
+      "oauthAccountNotLinked": "An InvoiceFlow account already exists for that email. Sign in with email and password (the password you created for that address), or use Google again so the accounts can be linked.",
       "oauthNotConfigured": "That sign-in method is not configured on this server.",
-      "configuration": "Auth isn’t configured. Set AUTH_SECRET and AUTH_URL=https://invoiceflowstudio.com as Cloudflare Worker Runtime secrets (not only Build variables).",
+      "configuration": "AUTH_SECRET is missing at Worker runtime. Add AUTH_SECRET as a Cloudflare Runtime Secret (not only a Build variable) and AUTH_URL=https://invoiceflowstudio.com as a Runtime variable.",
       "signInIncomplete": "That sign-in didn’t complete. Try email and password, or try again."
     }
   },

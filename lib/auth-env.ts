@@ -1,5 +1,12 @@
 import { SITE_URL } from "./site";
-import { readRuntimeSecret } from "./runtime-env";
+import {
+  copyCloudflareAuthEnvToProcess,
+  ensureCloudflareContext,
+  readRuntimeSecret,
+} from "./runtime-env";
+
+export const AUTH_SECRET_RUNTIME_MISSING =
+  "AUTH_SECRET is missing at Worker runtime. Set it as a Cloudflare Runtime Secret (Settings → Variables and Secrets), not only a Build variable. Also set AUTH_URL=https://invoiceflowstudio.com as a Runtime variable.";
 
 export function readAuthSecret(name: string) {
   return readRuntimeSecret(name);
@@ -11,6 +18,15 @@ export function firstAuthSecret(...names: string[]) {
     if (value) return value;
   }
   return "";
+}
+
+export function isPlaceholderAuthSecret(value: string) {
+  const secret = value.trim();
+  return (
+    !secret ||
+    secret === "replace-with-a-long-random-string" ||
+    secret === "dev-insecure-secret-change-me"
+  );
 }
 
 export function oauthPairEnabled(id: string, secret: string) {
@@ -43,7 +59,11 @@ export function appleClientSecret() {
 }
 
 export function resolvedAuthSecret() {
-  return firstAuthSecret("AUTH_SECRET", "NEXTAUTH_SECRET");
+  for (const name of ["AUTH_SECRET", "NEXTAUTH_SECRET"] as const) {
+    const value = readAuthSecret(name);
+    if (!isPlaceholderAuthSecret(value)) return value;
+  }
+  return "";
 }
 
 export function resolvedAuthUrl() {
@@ -76,8 +96,8 @@ function writeProcessEnv(name: string, value: string) {
 
 /**
  * Copy Worker runtime secrets onto `process.env` under the Auth.js names.
- * Auth.js reads `process.env.AUTH_*` internally (dot access may be empty from
- * `cf:build`); Cloudflare secrets live on `getCloudflareContext().env`.
+ * Auth.js `setEnvDefaults` reads `process.env.AUTH_SECRET` / `AUTH_URL`.
+ * Cloudflare Build variables are not on Worker `env` — Runtime secrets are.
  */
 export function applyAuthRuntimeEnv() {
   const secret = resolvedAuthSecret();
@@ -98,4 +118,13 @@ export function applyAuthRuntimeEnv() {
   const appleSecret = appleClientSecret();
   writeProcessEnv("AUTH_APPLE_ID", appleId);
   writeProcessEnv("AUTH_APPLE_SECRET", appleSecret);
+}
+
+export async function ensureAuthRuntimeEnv() {
+  await ensureCloudflareContext();
+  copyCloudflareAuthEnvToProcess();
+  applyAuthRuntimeEnv();
+  if (process.env.NODE_ENV === "production" && !resolvedAuthSecret()) {
+    console.error(AUTH_SECRET_RUNTIME_MISSING);
+  }
 }

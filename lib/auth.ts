@@ -12,7 +12,7 @@ import {
   appleAuthEnabled,
   appleClientId,
   appleClientSecret,
-  applyAuthRuntimeEnv,
+  ensureAuthRuntimeEnv,
   githubAuthEnabled,
   googleAuthEnabled,
   googleClientId,
@@ -21,6 +21,7 @@ import {
   resendEnabled,
   resolvedAuthSecret,
 } from "@/lib/auth-env";
+import { allowVerifiedOauthAccountLinking } from "@/lib/auth-oauth";
 import { databaseRuntimeStatus, prisma } from "@/lib/db";
 import { safeErrorLog } from "@/lib/db-errors";
 import { sendMagicLinkEmail } from "@/lib/email";
@@ -64,6 +65,9 @@ function buildAuthProviders(): Provider[] {
       Google({
         clientId: googleClientId(),
         clientSecret: googleClientSecret(),
+        // Safe for Google: it verifies email ownership. Without this, an
+        // email/password user hitting Continue with Google gets OAuthAccountNotLinked.
+        allowDangerousEmailAccountLinking: true,
       }),
     );
   }
@@ -73,6 +77,7 @@ function buildAuthProviders(): Provider[] {
       Apple({
         clientId: appleClientId(),
         clientSecret: appleClientSecret(),
+        allowDangerousEmailAccountLinking: true,
       }),
     );
   }
@@ -101,8 +106,9 @@ function buildAuthProviders(): Provider[] {
   return providers;
 }
 
-function authOptions(): NextAuthConfig {
-  applyAuthRuntimeEnv();
+async function authOptions(): Promise<NextAuthConfig> {
+  await ensureAuthRuntimeEnv();
+  const secret = resolvedAuthSecret();
   return {
     adapter: PrismaAdapter(prisma),
     session: { strategy: "jwt" },
@@ -110,7 +116,10 @@ function authOptions(): NextAuthConfig {
     // be https://invoiceflowstudio.com in production. AUTH_TRUST_HOST is also
     // written onto process.env so Auth.js internals match this flag.
     trustHost: true,
-    secret: resolvedAuthSecret() || "dev-insecure-secret-change-me",
+    // Production must not fall back to a dummy secret: Auth.js then signs JWTs
+    // that fail on the next request (`CredentialsSignin`) when AUTH_SECRET is
+    // only a Cloudflare *Build* variable.
+    secret: secret || (process.env.NODE_ENV === "production" ? undefined : "dev-insecure-secret-change-me"),
     pages: {
       signIn: "/login",
       error: "/login",
@@ -130,6 +139,15 @@ function authOptions(): NextAuthConfig {
       },
     },
     callbacks: {
+      async signIn({ account, profile }) {
+        if (account?.provider === "google" || account?.provider === "apple") {
+          return allowVerifiedOauthAccountLinking(
+            account.provider,
+            profile as { email_verified?: boolean | string } | undefined,
+          );
+        }
+        return true;
+      },
       async jwt({ token, user }) {
         if (user?.id) token.sub = user.id;
         return token;
