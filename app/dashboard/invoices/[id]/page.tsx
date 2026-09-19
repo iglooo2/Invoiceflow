@@ -10,6 +10,7 @@ import { InvoicePreview } from "@/components/document-preview";
 import { StatusBadge } from "@/components/status-badge";
 import { deleteInvoice, emailInvoice, markInvoiceStatus } from "@/app/actions/invoices";
 import { appCopy } from "@/lib/i18n-request";
+import { withDocumentFooter } from "@/lib/studio-settings-store";
 
 export default async function InvoiceDetailPage({
   params,
@@ -76,7 +77,7 @@ export default async function InvoiceDetailPage({
           </Button>
         </form>
       </div>
-      <InvoicePreview studio={user} invoice={invoice} branded={currentPlanId(user) !== "pro"} />
+      <InvoicePreview studio={await withDocumentFooter(user.id, user)} invoice={invoice} branded={currentPlanId(user) !== "pro"} />
     </div>
   );
 }

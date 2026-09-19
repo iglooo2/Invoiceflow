@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ProposalPreview } from "@/components/document-preview";
 import { Wordmark } from "@/components/brand";
 import { ProposalResponse } from "./respond-buttons";
+import { withDocumentFooter } from "@/lib/studio-settings-store";
 
 export default async function PublicProposalPage({
   params,
@@ -69,7 +70,11 @@ export default async function PublicProposalPage({
           <ProposalResponse token={token} status={proposal.status} />
         </div>
       </div>
-      <ProposalPreview studio={studio} proposal={proposal} branded={branded} />
+      <ProposalPreview
+        studio={await withDocumentFooter(proposal.userId, studio)}
+        proposal={proposal}
+        branded={branded}
+      />
     </div>
   );
 }

@@ -13,6 +13,8 @@ import { assertCanCreate, newPublicToken, redirectIfLimitReached } from "@/lib/d
 import { SEED_TEMPLATES, type ProposalTemplatePayload } from "@/lib/templates";
 import { publicProposalUrl, sendDocumentEmail } from "@/lib/email";
 import { appCopy } from "@/lib/i18n-request";
+import { shouldNotify } from "@/lib/studio-settings";
+import { loadStudioSettings } from "@/lib/studio-settings-store";
 
 export type ProposalActionResult = { error: string };
 
@@ -45,6 +47,7 @@ export async function createProposal(formData: FormData): Promise<ProposalAction
     }
     const parsed = parseProposalForm(formData);
     if (!parsed.success) return { error: parsed.error };
+    const settings = await loadStudioSettings(user.id);
     const proposal = await insertProposalWithSections(
       prisma,
       {
@@ -61,6 +64,7 @@ export async function createProposal(formData: FormData): Promise<ProposalAction
         taxRate: parsed.data.taxRate,
         markupRate: parsed.data.markupRate,
         attachments: parsed.data.attachments,
+        currency: settings.settings.defaultCurrency,
       },
       parsed.data.sections,
     );
@@ -149,6 +153,7 @@ export async function createProposalFromTemplate(slug: string) {
       throw new Error("Template not found");
     }
     const payload = template.payload as ProposalTemplatePayload;
+    const settings = await loadStudioSettings(user.id);
     const proposal = await insertProposalWithSections(
       prisma,
       {
@@ -159,6 +164,9 @@ export async function createProposalFromTemplate(slug: string) {
         notes: payload.notes,
         publicToken: newPublicToken(),
         clientName: "New client",
+        taxRate: 0,
+        markupRate: settings.settings.defaultMarkupPercent,
+        currency: settings.settings.defaultCurrency,
       },
       payload.sections.map((section) => ({
         heading: section.heading,
@@ -199,7 +207,7 @@ export async function emailProposal(formData: FormData) {
       to: proposal.clientEmail,
       subject: `${proposal.title} — estimate from ${user.businessName || user.name || "your freelancer"}`,
       heading: proposal.title,
-      body: "Open the estimate to review the price, then approve or decline online.",
+      body: (await loadStudioSettings(user.id)).settings.emailEstimateMessage,
       link: publicProposalUrl(proposal.publicToken),
     });
     if (proposal.status === "draft") {
@@ -226,7 +234,8 @@ export async function markEstimateOpened(token: string) {
       data: { viewedAt: new Date() },
     });
     const to = ownerEmail(proposal.user);
-    if (to) {
+    const settings = await loadStudioSettings(proposal.userId);
+    if (to && shouldNotify(settings.settings, "opens")) {
       await sendDocumentEmail({
         to,
         subject: `${proposal.title} was opened`,
@@ -268,7 +277,8 @@ export async function respondToProposal(formData: FormData) {
         },
       });
       const to = ownerEmail(proposal.user);
-      if (to) {
+      const settings = await loadStudioSettings(proposal.userId);
+      if (to && shouldNotify(settings.settings, "signs")) {
         const approved = parsed.data.decision === "accepted";
         await sendDocumentEmail({
           to,

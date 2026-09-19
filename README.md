@@ -136,6 +136,31 @@ ALTER TABLE "Proposal" ADD COLUMN IF NOT EXISTS "signedAt" TIMESTAMP(3);
 ALTER TABLE "Proposal" ADD COLUMN IF NOT EXISTS "attachments" TEXT;
 ```
 
+### Studio Settings tables (after this release)
+
+Settings (account, company, license links, preferences, doc settings, taxes, markup) persist on a related **`StudioSettings`** row and a **`TaxRate`** table — not extra columns on `"User"`. Existing `prisma.user.findUnique()` calls (dashboard, invoices, estimates, billing, auth) keep selecting the original User columns, so a delayed `db:push:prod` will not crash those pages.
+
+Until the tables exist, Settings shows an in-page warning. New invoices/estimates fall back to USD, 0% tax, and the built-in email copy.
+
+**Unblock:** same as Estimates — from a laptop, against the Neon **direct / unpooled** URL:
+
+```bash
+npm run db:push:prod
+```
+
+That creates:
+
+| Table | Purpose |
+|---|---|
+| `"StudioSettings"` | 1:1 with `"User"` — name parts, currency, locale, logo data URL, structured address, social URLs, email messages, notification toggles, payment terms, footer, default markup |
+| `"TaxRate"` | named tax rates per user (`name`, `rate`) |
+
+SQL-only equivalent: `prisma/add-settings-columns.sql` (same direct URL, not `*-pooler.*`). Logo / license / insurance files are stored as data URLs up to 400 KB; they are not uploaded to R2.
+
+User fields already used on PDFs (`businessName`, `businessEmail`, `businessPhone`, `businessAddress`, `website`, `name`, `email`, `passwordHash`) are still updated from Settings. `businessAddress` is composed from the structured address fields on save.
+
+QuickBooks remains a **Connect coming soon** stub on `/dashboard/settings/quickbooks`. Live Intuit OAuth is not in this release.
+
 Then reload `https://invoiceflowstudio.com/dashboard/estimates`. Creating or approving estimates that write the new columns also needs this push.
 
 This app build still **loads the list** from older Proposal columns (markup / opened / attachments stay empty) so a missing schema is a banner, not a Cloudflare error page.
@@ -299,12 +324,12 @@ InvoiceFlow Studio can show the Connect QuickBooks story in Settings and on `/es
 1. Create an app in the [Intuit developer portal](https://developer.intuit.com/).
 2. Set redirect URI to `https://invoiceflowstudio.com/dashboard/settings` (or your preview URL).
 3. Add Worker **secrets** `INTUIT_CLIENT_ID` and `INTUIT_CLIENT_SECRET` (optional `INTUIT_REDIRECT_URI`).
-4. Run `npm run db:push:prod` after deploy so estimate columns exist. Invoices, auth, and Stripe billing are unchanged.
+4. Run `npm run db:push:prod` after deploy so estimate columns and Settings tables exist. Invoices, auth, and Stripe billing are unchanged.
 
 ## Cloudflare / Workers notes
 
 - **OpenNext vs vinext:** Cloudflare’s newest Next.js path is [vinext](https://developers.cloudflare.com/workers/frameworks/framework-guides/nextjs/). This repo uses **`@opennextjs/cloudflare`** (still a documented Workers path) so we keep the App Router + `next build` toolchain.
-- **Prisma:** production uses the rust-free client engine + driver adapters (no query-engine binary on Workers). The Prisma client is a lazy proxy so `DATABASE_URL` is read after OpenNext copies Worker secrets onto `process.env`. Local SQLite does not use an adapter. Neon HTTP **cannot run transactions**, so invoice/estimate saves insert the parent row and then each line/section as separate statements (no nested `create`, no `prisma.$transaction`). Signup stays a single `user.create`. Estimate **reads** retry without the new Proposal columns if Postgres has not been pushed yet, and render an in-page message instead of Cloudflare’s generic error page. After this release, run `npm run db:push:prod` so estimate columns (`taxRate`, `markupRate`, `viewedAt`, `signedName`, `signedAt`, `attachments`) exist on Postgres.
+- **Prisma:** production uses the rust-free client engine + driver adapters (no query-engine binary on Workers). The Prisma client is a lazy proxy so `DATABASE_URL` is read after OpenNext copies Worker secrets onto `process.env`. Local SQLite does not use an adapter. Neon HTTP **cannot run transactions**, so invoice/estimate saves insert the parent row and then each line/section as separate statements (no nested `create`, no `prisma.$transaction`). Signup stays a single `user.create`. Estimate **reads** retry without the new Proposal columns if Postgres has not been pushed yet, and render an in-page message instead of Cloudflare’s generic error page. After this release, run `npm run db:push:prod` so estimate columns (`taxRate`, `markupRate`, `viewedAt`, `signedName`, `signedAt`, `attachments`) **and** Settings tables (`StudioSettings`, `TaxRate`) exist on Postgres.
 - **Signup / login check after deploy:** open `/login` → Create account with a new email and 8+ character password. You should land on **Let’s get started** (name + phone), then **Add business details**, then `/dashboard`. Existing accounts that already finished onboarding (or were created before this release) skip those steps. Sign out, sign back in with the same credentials. If the form says **DATABASE_URL is missing at runtime**, add the Neon pooled URL under Worker **runtime** Variables and Secrets (not only build vars) and redeploy. If it mentions missing tables, run `npm run db:push:prod` from a laptop. If it mentions a SQLite Prisma client, set **Build** `PRISMA_PROVIDER=postgresql` and rebuild with `npm run cf:build`. `npm test` covers adapter selection, Neon URL sanitization (`channel_binding` / `sslmode`), Prisma error hints, and postgres generate without a real DATABASE_URL.
 - **Onboarding columns on Neon:** after this release, run `npm run db:push:prod` (direct/unpooled URL) so `User` gains `phone`, `employeeCount`, `industry`, and `onboardingComplete` (boolean, default `true` so existing studios stay ungated). New signups set `onboardingComplete=false` until both steps finish. Equivalent SQL if you prefer the Neon console:
 

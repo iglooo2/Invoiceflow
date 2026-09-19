@@ -4,6 +4,7 @@ import { currentPlanId } from "@/lib/plans";
 import { Button } from "@/components/ui/button";
 import { InvoicePreview } from "@/components/document-preview";
 import { Wordmark } from "@/components/brand";
+import { withDocumentFooter } from "@/lib/studio-settings-store";
 
 export default async function PublicInvoicePage({
   params,
@@ -26,7 +27,11 @@ export default async function PublicInvoicePage({
           <a href={`/api/share/i/${token}/pdf`}>Download PDF</a>
         </Button>
       </div>
-      <InvoicePreview studio={invoice.user} invoice={invoice} branded={branded} />
+      <InvoicePreview
+        studio={await withDocumentFooter(invoice.userId, invoice.user)}
+        invoice={invoice}
+        branded={branded}
+      />
     </div>
   );
 }

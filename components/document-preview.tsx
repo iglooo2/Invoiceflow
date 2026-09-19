@@ -11,6 +11,7 @@ type Studio = {
   businessPhone?: string | null;
   businessAddress?: string | null;
   website?: string | null;
+  footerMessage?: string | null;
 };
 
 export function InvoicePreview({
@@ -97,6 +98,9 @@ export function InvoicePreview({
       </div>
       {invoice.notes ? (
         <p className="mt-8 whitespace-pre-line text-sm text-muted-foreground">{invoice.notes}</p>
+      ) : null}
+      {studio.footerMessage ? (
+        <p className="mt-6 whitespace-pre-line text-sm text-muted-foreground">{studio.footerMessage}</p>
       ) : null}
       {branded ? (
         <p className="mt-10 text-xs text-muted-foreground">Made with InvoiceFlow</p>
@@ -186,6 +190,9 @@ export function ProposalPreview({
         </p>
       ) : null}
       {proposal.notes ? <p className="mt-4 text-sm text-muted-foreground">{proposal.notes}</p> : null}
+      {studio.footerMessage ? (
+        <p className="mt-4 whitespace-pre-line text-sm text-muted-foreground">{studio.footerMessage}</p>
+      ) : null}
       {branded ? <p className="mt-10 text-xs text-muted-foreground">Made with InvoiceFlow</p> : null}
     </article>
   );

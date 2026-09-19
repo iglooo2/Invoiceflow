@@ -57,6 +57,37 @@ async function main() {
     },
   });
 
+  await prisma.studioSettings.upsert({
+    where: { userId: user.id },
+    update: {
+      firstName: "Maya",
+      lastName: "Chen",
+      addressLine1: "14 Shotwell St",
+      city: "San Francisco",
+      region: "CA",
+      country: "United States",
+      postalCode: "94110",
+      industry: "design",
+      emailEstimateMessage: "We are excited about the possibility of working with you.",
+      emailInvoiceMessage: "Thanks for your business!",
+      paymentTermsDays: 14,
+    },
+    create: {
+      userId: user.id,
+      firstName: "Maya",
+      lastName: "Chen",
+      addressLine1: "14 Shotwell St",
+      city: "San Francisco",
+      region: "CA",
+      country: "United States",
+      postalCode: "94110",
+      industry: "design",
+      emailEstimateMessage: "We are excited about the possibility of working with you.",
+      emailInvoiceMessage: "Thanks for your business!",
+      paymentTermsDays: 14,
+    },
+  });
+
   const luna = await prisma.client.upsert({
     where: { id: "seed-client-luna" },
     update: {},

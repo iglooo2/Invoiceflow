@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { logout } from "@/app/actions/auth";
+import { AccountMenu } from "@/components/dashboard/account-menu";
 import { Wordmark } from "@/components/brand";
 import { LanguageSwitcher } from "@/components/marketing/language-switcher";
-import { Button } from "@/components/ui/button";
 import { appCopy } from "@/lib/i18n-request";
 import { needsOnboarding, nextOnboardingPath } from "@/lib/onboarding";
-import { requireUser, studioName, planFromUser } from "@/lib/session";
+import { displayPersonName } from "@/lib/studio-settings";
+import { requireUser, planFromUser } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 
@@ -34,15 +34,14 @@ export default async function DashboardLayout({ children }: { children: React.Re
             <Wordmark href="/dashboard" />
             <div className="flex items-center gap-3 text-sm">
               <LanguageSwitcher locale={locale} path="/dashboard" label={dict.nav.language} persist="cookie" />
-              <span className="hidden text-muted-foreground sm:inline">{studioName(user)}</span>
               <span className="rounded-full bg-muted px-2 py-0.5 text-xs">
                 {plan === "pro" ? dict.plans.pro.name : dict.plans.free.name}
               </span>
-              <form action={logout}>
-                <Button variant="ghost" size="sm">
-                  {dict.app.signOut}
-                </Button>
-              </form>
+              <AccountMenu
+                name={displayPersonName(user)}
+                myAccountLabel={dict.app.myAccount}
+                logoutLabel={dict.app.logout}
+              />
             </div>
           </div>
           <nav className="flex gap-1 overflow-x-auto text-sm">

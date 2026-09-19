@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { CopyLinkButton } from "@/components/copy-link-button";
 import { ProposalPreview } from "@/components/document-preview";
 import { deleteProposal, emailProposal } from "@/app/actions/proposals";
+import { withDocumentFooter } from "@/lib/studio-settings-store";
 
 export default async function EstimateDetailPage({
   params,
@@ -101,7 +102,11 @@ export default async function EstimateDetailPage({
           </Button>
         </form>
       </div>
-      <ProposalPreview studio={user} proposal={estimate} branded={currentPlanId(user) !== "pro"} />
+      <ProposalPreview
+        studio={await withDocumentFooter(user.id, user)}
+        proposal={estimate}
+        branded={currentPlanId(user) !== "pro"}
+      />
     </div>
   );
 }

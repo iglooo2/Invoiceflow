@@ -21,6 +21,7 @@ export type InvoiceWriteInput = {
   clientEmail?: string | null;
   clientCompany?: string | null;
   clientAddress?: string | null;
+  currency?: string;
 };
 
 export type InvoiceLineInput = {
@@ -43,6 +44,7 @@ export type ProposalWriteInput = {
   taxRate?: number;
   markupRate?: number;
   attachments?: string | null;
+  currency?: string;
 };
 
 export type ProposalSectionInput = {
@@ -66,6 +68,7 @@ function invoiceScalars(input: InvoiceWriteInput, now: Date) {
     clientEmail: input.clientEmail ?? null,
     clientCompany: input.clientCompany ?? null,
     clientAddress: input.clientAddress ?? null,
+    ...(input.currency ? { currency: input.currency } : {}),
     updatedAt: now,
   };
 }
@@ -85,6 +88,7 @@ function proposalScalars(input: ProposalWriteInput, now: Date) {
     taxRate: input.taxRate ?? 0,
     markupRate: input.markupRate ?? 0,
     attachments: input.attachments ?? null,
+    ...(input.currency ? { currency: input.currency } : {}),
     updatedAt: now,
   };
 }

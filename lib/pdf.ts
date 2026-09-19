@@ -38,6 +38,7 @@ type Studio = {
   businessPhone?: string | null;
   businessAddress?: string | null;
   website?: string | null;
+  footerMessage?: string | null;
 };
 
 function rgb(r: number, g: number, b: number): RGB {
@@ -429,6 +430,18 @@ export async function buildInvoicePdf(options: {
     }
   }
 
+  if (studio.footerMessage) {
+    y -= 16;
+    ensureRoom(28);
+    page.text("Additional notes", MARGIN_X, y, { font: "F2", size: 9, color: muted });
+    y -= 14;
+    for (const line of wrap(studio.footerMessage, 90).slice(0, 6)) {
+      ensureRoom(12);
+      page.text(line, MARGIN_X, y, { size: 9 });
+      y -= 12;
+    }
+  }
+
   return assemblePdf(pages);
 }
 
@@ -554,6 +567,18 @@ export async function buildProposalPdf(options: {
   if (proposal.notes) {
     y -= 28;
     for (const line of wrap(proposal.notes, 90).slice(0, 4)) {
+      ensureRoom(12);
+      page.text(line, MARGIN_X, y, { size: 9, color: muted });
+      y -= 12;
+    }
+  }
+
+  if (studio.footerMessage) {
+    y -= 16;
+    ensureRoom(28);
+    page.text("Additional notes", MARGIN_X, y, { font: "F2", size: 9, color: muted });
+    y -= 14;
+    for (const line of wrap(studio.footerMessage, 90).slice(0, 6)) {
       ensureRoom(12);
       page.text(line, MARGIN_X, y, { size: 9, color: muted });
       y -= 12;

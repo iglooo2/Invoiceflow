@@ -62,6 +62,17 @@ test("invoice PDF is a small uncompressed standard-font document", async () => {
   assert.match(source, /Made with InvoiceFlow Studio/);
 });
 
+test("invoice PDF includes studio footer message from settings", async () => {
+  const bytes = await buildInvoicePdf({
+    studio: { ...studio, footerMessage: "Pay by ACH. Net due upon receipt." },
+    invoice,
+    branded: false,
+  });
+  const source = asLatin1(bytes);
+  assert.match(source, /Additional notes/);
+  assert.match(source, /Pay by ACH/);
+});
+
 test("proposal PDF includes title, investment, and no branded footer for Pro", async () => {
   const bytes = await buildProposalPdf({
     studio,
