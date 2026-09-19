@@ -5,6 +5,7 @@ import { requireUser } from "@/lib/session";
 import { Button } from "@/components/ui/button";
 import { Input, Select } from "@/components/ui/input";
 import { StatusBadge } from "@/components/status-badge";
+import { appCopy } from "@/lib/i18n-request";
 
 export default async function InvoicesPage({
   searchParams,
@@ -12,6 +13,7 @@ export default async function InvoicesPage({
   searchParams: Promise<{ status?: string; q?: string }>;
 }) {
   const user = await requireUser();
+  const { dict } = await appCopy();
   const { status, q } = await searchParams;
   const invoices = await prisma.invoice.findMany({
     where: {
@@ -33,35 +35,35 @@ export default async function InvoicesPage({
     <div className="grid gap-6">
       <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
         <div>
-          <h1 className="font-display text-4xl">Invoices</h1>
-          <p className="text-muted-foreground">Filter by status or search client and number.</p>
+          <h1 className="font-display text-4xl">{dict.app.invoices}</h1>
+          <p className="text-muted-foreground">{dict.app.invoiceList.lede}</p>
         </div>
         <Button asChild>
-          <Link href="/dashboard/invoices/new">New invoice</Link>
+          <Link href="/dashboard/invoices/new">{dict.app.newInvoice}</Link>
         </Button>
       </div>
       <form className="flex flex-col gap-2 sm:flex-row">
-        <Input name="q" placeholder="Search" defaultValue={q} />
+        <Input name="q" placeholder={dict.app.search} defaultValue={q} />
         <Select name="status" defaultValue={status || ""}>
-          <option value="">All statuses</option>
-          <option value="draft">Draft</option>
-          <option value="sent">Sent</option>
-          <option value="paid">Paid</option>
-          <option value="overdue">Overdue</option>
-          <option value="void">Void</option>
+          <option value="">{dict.app.allStatuses}</option>
+          <option value="draft">{dict.app.status.draft}</option>
+          <option value="sent">{dict.app.status.sent}</option>
+          <option value="paid">{dict.app.status.paid}</option>
+          <option value="overdue">{dict.app.status.overdue}</option>
+          <option value="void">{dict.app.status.void}</option>
         </Select>
         <Button type="submit" variant="outline">
-          Filter
+          {dict.app.filter}
         </Button>
       </form>
       <div className="overflow-x-auto rounded-3xl border border-border bg-card">
         <table className="w-full min-w-[640px] text-sm">
           <thead className="text-left text-muted-foreground">
             <tr className="border-b border-border">
-              <th className="px-4 py-3 font-medium">Number</th>
-              <th className="px-4 py-3 font-medium">Client</th>
-              <th className="px-4 py-3 font-medium">Status</th>
-              <th className="px-4 py-3 font-medium">Total</th>
+              <th className="px-4 py-3 font-medium">{dict.app.invoiceList.number}</th>
+              <th className="px-4 py-3 font-medium">{dict.app.invoiceList.client}</th>
+              <th className="px-4 py-3 font-medium">{dict.app.invoiceList.status}</th>
+              <th className="px-4 py-3 font-medium">{dict.app.invoiceList.total}</th>
             </tr>
           </thead>
           <tbody>
@@ -74,7 +76,7 @@ export default async function InvoicesPage({
                 </td>
                 <td className="px-4 py-3">{invoice.clientName}</td>
                 <td className="px-4 py-3">
-                  <StatusBadge status={invoice.status} />
+                  <StatusBadge status={invoice.status} labels={dict.app.status} />
                 </td>
                 <td className="px-4 py-3">
                   {formatCents(invoiceTotals(invoice.items, invoice.taxRate).totalCents, invoice.currency)}
@@ -84,7 +86,7 @@ export default async function InvoicesPage({
           </tbody>
         </table>
         {invoices.length === 0 ? (
-          <p className="px-4 py-10 text-sm text-muted-foreground">No invoices match those filters.</p>
+          <p className="px-4 py-10 text-sm text-muted-foreground">{dict.app.invoiceList.empty}</p>
         ) : null}
       </div>
     </div>

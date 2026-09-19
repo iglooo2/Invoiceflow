@@ -124,5 +124,102 @@
       "Öffentliche Share-Links sind schwer zu erratende Tokens. Jeder mit dem Link kann das Dokument sehen. Schicke keine Tokens, die privat bleiben sollen.",
       "Kontaktiere den Betreiber unter invoiceflowstudio.com, um Export oder Löschung deiner Kontodaten anzufordern."
     ]
+  },
+  "app": {
+    "signOut": "Abmelden",
+    "overview": "Übersicht",
+    "invoices": "Rechnungen",
+    "proposals": "Angebote",
+    "clients": "Kunden",
+    "billing": "Abrechnung",
+    "settings": "Einstellungen",
+    "newInvoice": "Neue Rechnung",
+    "newProposal": "Neues Angebot",
+    "newInvoiceLede": "Leeres Blatt. Oder zurück und mit einer Vorlage starten.",
+    "newProposalLede": "Abschnitte, optionale Preise, Annehmen/Ablehnen über den öffentlichen Link.",
+    "viewAll": "Alle ansehen",
+    "search": "Suchen",
+    "filter": "Filtern",
+    "allStatuses": "Alle Status",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "save": "Speichern",
+    "remove": "Entfernen",
+    "downloadPdf": "PDF herunterladen",
+    "publicView": "Öffentliche Ansicht",
+    "emailShareLink": "Link per E-Mail",
+    "markPaid": "Als bezahlt markieren",
+    "copyLink": "Link kopieren",
+    "copied": "Kopiert",
+    "status": {
+      "draft": "Entwurf",
+      "sent": "Gesendet",
+      "paid": "Bezahlt",
+      "overdue": "Überfällig",
+      "void": "Ungültig",
+      "accepted": "Angenommen",
+      "declined": "Abgelehnt"
+    },
+    "home": {
+      "title": "Gut — du bist da. Schick etwas raus.",
+      "proOn": "Pro ist aktiv. Unbegrenzte Rechnungen und Angebote in diesem Monat.",
+      "usage": "{invoices}/{invoiceLimit} Rechnungen und {proposals}/{proposalLimit} Angebote in diesem Monat genutzt.",
+      "outstanding": "Offen (aktuell)",
+      "invoicesThisMonth": "Rechnungen in diesem Monat",
+      "proposalsThisMonth": "Angebote in diesem Monat",
+      "startTemplate": "Mit einer Vorlage starten",
+      "tplDesignTitle": "Rechnung für ein Designprojekt",
+      "tplDesignBody": "Brand-Suite-Positionen, 14 Tage Zahlungsziel.",
+      "tplRetainerTitle": "Retainer-Rechnung",
+      "tplRetainerBody": "Stunden + async Direction, fällig in 7 Tagen.",
+      "tplVideoTitle": "Angebot für Videoschnitt",
+      "tplVideoBody": "Cut, Deliverables, Investment, annehmen/ablehnen.",
+      "noInvoices": "Noch keine Rechnungen.",
+      "noProposals": "Noch keine Angebote."
+    },
+    "invoiceList": {
+      "lede": "Nach Status filtern oder Kunde und Nummer suchen.",
+      "number": "Nummer",
+      "client": "Kunde",
+      "status": "Status",
+      "total": "Summe",
+      "empty": "Keine Rechnungen passen zu diesen Filtern."
+    },
+    "proposalList": {
+      "lede": "Gesendete, angenommene und abgelehnte Arbeit im Blick.",
+      "title": "Titel",
+      "client": "Kunde",
+      "status": "Status",
+      "investment": "Investment",
+      "empty": "Keine Angebote passen zu diesen Filtern."
+    },
+    "clientsPage": {
+      "lede": "Speichere die Leute, die du abrechnest, damit die nächste Rechnung 30 Sekunden dauert.",
+      "name": "Name",
+      "email": "E-Mail",
+      "company": "Firma",
+      "address": "Adresse",
+      "save": "Kunde speichern",
+      "empty": "Noch keine Kunden. Das Demokonto enthält Hearth Goods und Oak & Film."
+    },
+    "settingsPage": {
+      "title": "Studio-Daten",
+      "lede": "Das sehen Kunden auf Rechnungen, Angeboten und PDFs.",
+      "yourName": "Dein Name",
+      "studioName": "Studioname",
+      "studioEmail": "Studio-E-Mail",
+      "phone": "Telefon",
+      "website": "Website",
+      "address": "Adresse"
+    },
+    "billingPage": {
+      "lede": "Du bist auf {plan}. Starter ist auf 3 Rechnungen und 3 Angebote pro Monat begrenzt. Pro kostet ${price}/Monat, unbegrenzt.",
+      "success": "Stripe-Checkout abgeschlossen. Neu laden, falls der Plan noch nicht gewechselt hat — der Webhook holt nach.",
+      "demo": "Lokales Demo-Pro für 30 Tage freigeschaltet.",
+      "limit": "Starter umfasst 3 Rechnungen und 3 Angebote pro Monat. Upgrade auf Pro für unbegrenzt.",
+      "portal": "Stripe-Kundenportal",
+      "unlockDemo": "Pro für lokale Demo freischalten",
+      "returnStarter": "Zurück zu Starter"
+    }
   }
 }

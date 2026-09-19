@@ -3,18 +3,20 @@
 import { useRouter } from "next/navigation";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { Check, ChevronDown } from "lucide-react";
-import { isLocale, LOCALES, LOCALE_LABELS, localizedPath, type Locale } from "@/lib/i18n";
+import { isLocale, localeCookieValue, LOCALES, LOCALE_LABELS, localizedPath, type Locale } from "@/lib/i18n";
 
 export function LanguageSwitcher({
   locale,
   path,
   label,
   align = "end",
+  persist = "route",
 }: {
   locale: Locale;
   path: string;
   label: string;
   align?: "start" | "end" | "center";
+  persist?: "route" | "cookie";
 }) {
   const router = useRouter();
   const current = LOCALE_LABELS[locale];
@@ -41,7 +43,13 @@ export function LanguageSwitcher({
           <DropdownMenu.RadioGroup
             value={locale}
             onValueChange={(value) => {
-              if (isLocale(value)) router.push(localizedPath(value, path));
+              if (!isLocale(value)) return;
+              if (persist === "cookie") {
+                document.cookie = localeCookieValue(value);
+                router.refresh();
+                return;
+              }
+              router.push(localizedPath(value, path));
             }}
           >
             {LOCALES.map((code) => {

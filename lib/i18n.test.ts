@@ -6,6 +6,7 @@ import { getDictionary } from "./dictionary";
 import {
   DEFAULT_LOCALE,
   LOCALES,
+  formatMessage,
   localizedPath,
   matchLocale,
   negotiateLocale,
@@ -13,6 +14,13 @@ import {
   shouldSkipLocale,
   splitLocalePath,
 } from "./i18n";
+
+test("formatMessage fills dashboard copy templates", () => {
+  assert.equal(
+    formatMessage("{invoices}/{invoiceLimit} invoices", { invoices: 2, invoiceLimit: 3 }),
+    "2/3 invoices",
+  );
+});
 
 test("localizedPath prefixes marketing routes", () => {
   assert.equal(localizedPath("en", "/"), "/en");
@@ -73,6 +81,7 @@ test("language switcher is a compact dropdown, not a row of locale chips", () =>
   assert.match(source, /DropdownMenu/);
   assert.match(source, /aria-label/);
   assert.match(source, /RadioGroup/);
+  assert.match(source, /persist === "cookie"/);
   assert.equal(source.includes('flex flex-wrap items-center gap-2'), false);
 });
 

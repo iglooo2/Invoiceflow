@@ -124,5 +124,102 @@
       "Public share links are unguessable tokens. Anyone with the link can view the document. Don’t send tokens you want to keep private.",
       "Contact the operator at invoiceflowstudio.com to request export or deletion of your account data."
     ]
+  },
+  "app": {
+    "signOut": "Sign out",
+    "overview": "Overview",
+    "invoices": "Invoices",
+    "proposals": "Proposals",
+    "clients": "Clients",
+    "billing": "Billing",
+    "settings": "Settings",
+    "newInvoice": "New invoice",
+    "newProposal": "New proposal",
+    "newInvoiceLede": "Blank slate. Or go back and start from a template.",
+    "newProposalLede": "Sections, optional prices, accept/decline on the public link.",
+    "viewAll": "View all",
+    "search": "Search",
+    "filter": "Filter",
+    "allStatuses": "All statuses",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "remove": "Remove",
+    "downloadPdf": "Download PDF",
+    "publicView": "Public view",
+    "emailShareLink": "Email share link",
+    "markPaid": "Mark paid",
+    "copyLink": "Copy link",
+    "copied": "Copied",
+    "status": {
+      "draft": "Draft",
+      "sent": "Sent",
+      "paid": "Paid",
+      "overdue": "Overdue",
+      "void": "Void",
+      "accepted": "Accepted",
+      "declined": "Declined"
+    },
+    "home": {
+      "title": "Good — you're here. Send something.",
+      "proOn": "Pro is on. Unlimited invoices and proposals this month.",
+      "usage": "{invoices}/{invoiceLimit} invoices and {proposals}/{proposalLimit} proposals used this month.",
+      "outstanding": "Outstanding (recent)",
+      "invoicesThisMonth": "Invoices this month",
+      "proposalsThisMonth": "Proposals this month",
+      "startTemplate": "Start from a template",
+      "tplDesignTitle": "Design Project Invoice",
+      "tplDesignBody": "Brand suite line items, 14-day terms.",
+      "tplRetainerTitle": "Retainer Invoice",
+      "tplRetainerBody": "Hours + async direction, due in 7 days.",
+      "tplVideoTitle": "Video Edit Proposal",
+      "tplVideoBody": "Cut, deliverables, investment, accept/decline.",
+      "noInvoices": "No invoices yet.",
+      "noProposals": "No proposals yet."
+    },
+    "invoiceList": {
+      "lede": "Filter by status or search client and number.",
+      "number": "Number",
+      "client": "Client",
+      "status": "Status",
+      "total": "Total",
+      "empty": "No invoices match those filters."
+    },
+    "proposalList": {
+      "lede": "Track sent, accepted, and declined work.",
+      "title": "Title",
+      "client": "Client",
+      "status": "Status",
+      "investment": "Investment",
+      "empty": "No proposals match those filters."
+    },
+    "clientsPage": {
+      "lede": "Save the people you invoice so the next one takes thirty seconds.",
+      "name": "Name",
+      "email": "Email",
+      "company": "Company",
+      "address": "Address",
+      "save": "Save client",
+      "empty": "No saved clients yet. The demo account includes Hearth Goods and Oak & Film."
+    },
+    "settingsPage": {
+      "title": "Studio details",
+      "lede": "This is what clients see on invoices, proposals, and PDFs.",
+      "yourName": "Your name",
+      "studioName": "Studio name",
+      "studioEmail": "Studio email",
+      "phone": "Phone",
+      "website": "Website",
+      "address": "Address"
+    },
+    "billingPage": {
+      "lede": "You're on {plan}. Starter is limited to 3 invoices and 3 proposals each month. Pro is ${price}/month, unlimited.",
+      "success": "Stripe checkout completed. Refresh if the plan hasn't flipped yet — webhooks may still be catching up.",
+      "demo": "Local demo Pro unlocked for 30 days.",
+      "limit": "Starter includes 3 invoices and 3 proposals per month. Upgrade to Pro for unlimited.",
+      "portal": "Stripe customer portal",
+      "unlockDemo": "Unlock Pro for local demo",
+      "returnStarter": "Return to Starter"
+    }
   }
 }
