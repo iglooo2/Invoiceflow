@@ -172,10 +172,13 @@ test("billing page labels Upgrade from runtime Stripe mode, not hardcoded test c
 test("wrangler keeps dashboard Stripe bindings and never ships a live price id", () => {
   const wrangler = readFileSync(path.join(import.meta.dirname, "../wrangler.jsonc"), "utf8");
   const readme = readFileSync(path.join(import.meta.dirname, "../README.md"), "utf8");
-  assert.match(wrangler, /"keep_vars"\s*:\s*true/);
-  assert.doesNotMatch(wrangler, /STRIPE_SECRET_KEY/);
-  assert.doesNotMatch(wrangler, /STRIPE_WEBHOOK_SECRET/);
-  assert.doesNotMatch(wrangler, /STRIPE_PRO_PRICE_ID/);
+  const parsed = JSON.parse(wrangler.replace(/^\s*\/\/.*$/gm, "")) as {
+    keep_vars?: boolean;
+    vars?: Record<string, unknown>;
+  };
+  assert.equal(parsed.keep_vars, true);
+  assert.deepEqual(Object.keys(parsed.vars ?? {}), ["NEXTJS_ENV"]);
+  assert.equal(parsed.vars?.NEXTJS_ENV, "production");
   assert.doesNotMatch(wrangler, /price_1/);
   assert.match(readme, /`STRIPE_PRO_PRICE_ID` \| Secret \(\*\*runtime\*\*\)/);
   assert.doesNotMatch(readme, /`STRIPE_PRO_PRICE_ID` \| Variable/);
