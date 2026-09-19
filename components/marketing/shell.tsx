@@ -38,7 +38,7 @@ export function MarketingHeader({
           {copy.messageUs}
         </Link>
       </nav>
-      <div className={cn(btnRowClass, "justify-end")}>
+      <div className={cn(btnRowClass, "min-w-0 max-w-full justify-end")}>
         <LanguageSwitcher locale={locale} path={path} label={copy.language} />
         {signedIn ? (
           <Button asChild>

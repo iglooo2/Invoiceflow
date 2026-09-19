@@ -32,7 +32,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-4">
           <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
             <Wordmark href="/dashboard" />
-            <div className="btn-row justify-end text-sm">
+            <div className="btn-row min-w-0 max-w-full justify-end text-sm">
               <LanguageSwitcher locale={locale} path="/dashboard" label={dict.nav.language} persist="cookie" />
               <span className="rounded-full bg-muted px-2 py-0.5 text-xs">
                 {plan === "pro" ? dict.plans.pro.name : dict.plans.free.name}
