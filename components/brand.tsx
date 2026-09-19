@@ -13,7 +13,7 @@ export function Wordmark({ href = "/", light = false }: { href?: string; light?:
       </span>
       <span className={`flex items-baseline gap-1.5 ${light ? "text-primary-foreground" : ""}`}>
         <span className="font-display text-xl tracking-tight">{SITE_NAME}</span>
-        <span className={`text-[11px] font-medium uppercase tracking-[0.16em] ${light ? "opacity-80" : "text-muted-foreground"}`}>
+        <span className={`hidden text-[11px] font-medium uppercase tracking-[0.16em] sm:inline ${light ? "opacity-80" : "text-muted-foreground"}`}>
           Studio
         </span>
       </span>

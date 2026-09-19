@@ -15,6 +15,11 @@
   --ring: #c45c26;
   --destructive: #b42318;
   --radius: 0.9rem;
+  --btn-height: 2.25rem;
+  --btn-height-touch: 2.5rem;
+  --btn-height-sm: 2rem;
+  --btn-height-lg: 2.5rem;
+  --btn-px: 0.875rem;
 }
 
 @theme inline {
@@ -58,6 +63,19 @@ body {
 
 .font-display {
   font-family: var(--font-display), Georgia, serif;
+}
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+@media (min-width: 640px) {
+  .btn-row {
+    gap: 0.5rem;
+  }
 }
 
 .paper-card {

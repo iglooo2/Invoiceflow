@@ -52,12 +52,9 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         <section className="relative mx-auto w-full max-w-6xl px-4 pb-16 pt-2">
           <StudioProduct />
           <div className="relative z-10 mx-auto -mt-5 flex justify-center sm:-mt-6">
-            <Link
-              href={ctaHref}
-              className="inline-flex min-h-14 items-center justify-center rounded-full bg-white px-7 py-3 text-base font-medium text-foreground shadow-[0_18px_50px_-20px_rgba(28,25,23,0.45)] ring-1 ring-black/5 transition hover:-translate-y-0.5 hover:shadow-[0_22px_56px_-18px_rgba(28,25,23,0.5)]"
-            >
-              {signedIn ? dict.home.openStudio : dict.home.startCta}
-            </Link>
+            <Button asChild variant="soft">
+              <Link href={ctaHref}>{signedIn ? dict.home.openStudio : dict.home.startCta}</Link>
+            </Button>
           </div>
         </section>
 

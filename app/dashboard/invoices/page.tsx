@@ -42,9 +42,9 @@ export default async function InvoicesPage({
           <Link href="/dashboard/invoices/new">{dict.app.newInvoice}</Link>
         </Button>
       </div>
-      <form className="flex flex-col gap-2 sm:flex-row">
-        <Input name="q" placeholder={dict.app.search} defaultValue={q} />
-        <Select name="status" defaultValue={status || ""}>
+      <form className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <Input name="q" placeholder={dict.app.search} defaultValue={q} className="min-w-0 sm:flex-1" />
+        <Select name="status" defaultValue={status || ""} className="min-w-0 sm:max-w-48">
           <option value="">{dict.app.allStatuses}</option>
           <option value="draft">{dict.app.status.draft}</option>
           <option value="sent">{dict.app.status.sent}</option>
@@ -52,7 +52,7 @@ export default async function InvoicesPage({
           <option value="overdue">{dict.app.status.overdue}</option>
           <option value="void">{dict.app.status.void}</option>
         </Select>
-        <Button type="submit" variant="outline">
+        <Button type="submit" variant="outline" className="w-full sm:w-auto">
           {dict.app.filter}
         </Button>
       </form>

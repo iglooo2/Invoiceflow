@@ -21,7 +21,7 @@ export default async function PublicInvoicePage({
 
   return (
     <div className="px-4 py-10">
-      <div className="no-print mx-auto mb-6 flex w-full max-w-3xl items-center justify-between">
+      <div className="no-print mx-auto mb-6 flex w-full max-w-3xl flex-wrap items-center justify-between gap-2">
         {branded ? <Wordmark /> : <span className="font-display text-xl">{invoice.user.businessName || invoice.user.name}</span>}
         <Button asChild variant="outline">
           <a href={`/api/share/i/${token}/pdf`}>Download PDF</a>
