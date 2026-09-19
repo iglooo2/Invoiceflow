@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { parseAttachmentsJson, serializeAttachments } from "./estimates";
+import { ESTIMATE_STATUSES, parseAttachmentsJson, serializeAttachments } from "./estimates";
 import { dollarsFromInput } from "./money";
 
 const sectionSchema = z.object({
@@ -16,7 +16,7 @@ const proposalSchema = z.object({
   clientCompany: z.string().optional(),
   validUntil: z.string().optional(),
   notes: z.string().optional(),
-  status: z.enum(["draft", "sent", "accepted", "declined"]),
+  status: z.enum(ESTIMATE_STATUSES),
   taxRate: z.number().min(0).max(100),
   markupRate: z.number().min(0).max(100),
   attachments: z.string().optional(),
@@ -51,6 +51,16 @@ export function parseProposalDecisionForm(
     return { success: false, error: "Type your name to approve this estimate." };
   }
   return { success: true, data: { token, decision, signedName: signedName || undefined } };
+}
+
+export function parseProposalStatusForm(
+  formData: FormData,
+): ParseResult<{ proposalId: string; status: ParsedProposalForm["status"] }> {
+  const id = parseProposalIdForm(formData);
+  if (!id.success) return id;
+  const parsed = proposalSchema.shape.status.safeParse(String(formData.get("status") || "").trim());
+  if (!parsed.success) return { success: false, error: "That estimate status is not valid." };
+  return { success: true, data: { proposalId: id.data.proposalId, status: parsed.data } };
 }
 
 export function parseProposalForm(formData: FormData): ParseResult<ParsedProposalForm> {

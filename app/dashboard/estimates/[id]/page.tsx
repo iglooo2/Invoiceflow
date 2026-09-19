@@ -12,7 +12,8 @@ import { requireUser } from "@/lib/session";
 import { Button } from "@/components/ui/button";
 import { CopyLinkButton } from "@/components/copy-link-button";
 import { ProposalPreview } from "@/components/document-preview";
-import { deleteProposal, emailProposal } from "@/app/actions/proposals";
+import { StatusBadge } from "@/components/status-badge";
+import { deleteProposal, emailProposal, markProposalStatus } from "@/app/actions/proposals";
 import { withDocumentFooter } from "@/lib/studio-settings-store";
 
 export default async function EstimateDetailPage({
@@ -56,7 +57,10 @@ export default async function EstimateDetailPage({
     <div className="grid gap-6">
       <div className="flex flex-col justify-between gap-3 lg:flex-row lg:items-center">
         <div>
-          <h1 className="font-display text-4xl">{estimate.title}</h1>
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="font-display text-4xl">{estimate.title}</h1>
+            <StatusBadge status={estimate.status} labels={dict.app.status} />
+          </div>
           <p className="text-muted-foreground">{estimate.clientName}</p>
         </div>
         <div className="no-print flex flex-wrap gap-2">
@@ -95,6 +99,15 @@ export default async function EstimateDetailPage({
             {dict.app.emailShareLink}
           </Button>
         </form>
+        {estimate.status !== "pending" ? (
+          <form action={markProposalStatus}>
+            <input type="hidden" name="proposalId" value={estimate.id} />
+            <input type="hidden" name="status" value="pending" />
+            <Button type="submit" variant="outline">
+              {dict.app.markPending}
+            </Button>
+          </form>
+        ) : null}
         <form action={deleteProposal}>
           <input type="hidden" name="proposalId" value={estimate.id} />
           <Button type="submit" variant="ghost">

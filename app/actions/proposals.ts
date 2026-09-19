@@ -7,7 +7,12 @@ import { databaseRuntimeStatus, prisma } from "@/lib/db";
 import { documentWriteFailureMessage, errorRedirect, safeErrorLog } from "@/lib/db-errors";
 import { insertProposalWithSections, replaceProposalSections } from "@/lib/document-writes";
 import { ESTIMATE_LIST_PATH, ESTIMATE_NEW_PATH, estimateDetailPath, estimateEditPath } from "@/lib/estimates";
-import { parseProposalDecisionForm, parseProposalForm, parseProposalIdForm } from "@/lib/proposal-input";
+import {
+  parseProposalDecisionForm,
+  parseProposalForm,
+  parseProposalIdForm,
+  parseProposalStatusForm,
+} from "@/lib/proposal-input";
 import { planFromUser, requireUser } from "@/lib/session";
 import { assertCanCreate, newPublicToken, redirectIfLimitReached } from "@/lib/documents";
 import { SEED_TEMPLATES, type ProposalTemplatePayload } from "@/lib/templates";
@@ -136,6 +141,41 @@ export async function deleteProposal(formData: FormData) {
   }
   await revalidateProposalPaths();
   redirect(ESTIMATE_LIST_PATH);
+}
+
+/**
+ * FormData-only (no `.bind` args). Same constraint as markInvoiceStatus:
+ * OpenNext on Workers has crashed when a server action was invoked with
+ * bound arguments plus the implicit FormData.
+ */
+export async function markProposalStatus(formData: FormData) {
+  const user = await requireUser();
+  const parsed = parseProposalStatusForm(formData);
+  const proposalId = parsed.success ? parsed.data.proposalId : String(formData.get("proposalId") || "");
+  const detailPath = proposalId ? estimateDetailPath(proposalId) : ESTIMATE_LIST_PATH;
+  if (!parsed.success) {
+    redirect(errorRedirect(detailPath, parsed.error));
+  }
+  try {
+    const existing = await prisma.proposal.findFirst({
+      where: { id: parsed.data.proposalId, userId: user.id },
+      select: { id: true },
+    });
+    if (!existing) {
+      const { dict } = await appCopy();
+      redirect(errorRedirect(ESTIMATE_LIST_PATH, dict.app.errors.estimateNotFound));
+    }
+    await prisma.proposal.update({
+      where: { id: existing.id },
+      data: { status: parsed.data.status },
+    });
+  } catch (error) {
+    unstable_rethrow(error);
+    console.error("markProposalStatus failed", safeErrorLog(error), databaseRuntimeStatus());
+    redirect(errorRedirect(detailPath, documentWriteFailureMessage(error)));
+  }
+  await revalidateProposalPaths(parsed.data.proposalId);
+  redirect(estimateDetailPath(parsed.data.proposalId));
 }
 
 export async function createProposalFromTemplate(slug: string) {

@@ -4,6 +4,9 @@ export const ESTIMATE_LIST_PATH = "/dashboard/estimates";
 export const ESTIMATE_NEW_PATH = "/dashboard/estimates/new";
 export const ESTIMATE_MARKETING_PATH = "/estimates";
 
+export const ESTIMATE_STATUSES = ["draft", "sent", "pending", "accepted", "declined"] as const;
+export type EstimateStatus = (typeof ESTIMATE_STATUSES)[number];
+
 export function estimateDetailPath(id: string) {
   return `/dashboard/estimates/${id}`;
 }

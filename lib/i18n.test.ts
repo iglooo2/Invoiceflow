@@ -112,6 +112,8 @@ test("login and dashboard common errors exist in every locale", () => {
     assert.ok(dict.nav.estimates.length > 0, locale);
     assert.ok(dict.estimatesPage.headline.length > 0, locale);
     assert.ok(dict.app.status.approved.length > 0, locale);
+    assert.ok(dict.app.status.pending.length > 0, locale);
+    assert.ok(dict.app.markPending.length > 0, locale);
     assert.ok(dict.meta.contactTitle.length > 0, locale);
     assert.ok(dict.contact.submit.length > 0, locale);
   }
@@ -140,6 +142,9 @@ test("localized landing keeps the studio gallery and register CTA", () => {
   assert.match(forms, /initialMode = "signin"/);
   assert.match(forms, /copy\.google/);
   assert.match(forms, /copy\.apple/);
+  const googleButtonAt = forms.indexOf('provider="google"');
+  const emailFieldAt = forms.indexOf('htmlFor="email"');
+  assert.ok(googleButtonAt > 0 && googleButtonAt < emailFieldAt, "oauth above email");
   for (const locale of LOCALES) {
     const dict = getDictionary(locale);
     assert.ok(dict.home.startCta.length > 0, locale);

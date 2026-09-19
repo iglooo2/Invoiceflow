@@ -2,16 +2,17 @@ import "server-only";
 import { Resend } from "resend";
 import type { ContactTopic } from "@/lib/contact";
 import { CONTACT_EMAIL } from "@/lib/site";
-import { getAppUrl, isDevMode, resendEnabled } from "@/lib/utils";
+import { readAuthSecret, resendEnabled } from "@/lib/auth-env";
+import { getAppUrl, isDevMode } from "@/lib/utils";
 
 function getResend() {
-  const key = process.env.AUTH_RESEND_KEY || process.env.RESEND_API_KEY;
+  const key = readAuthSecret("AUTH_RESEND_KEY") || readAuthSecret("RESEND_API_KEY");
   if (!key) return null;
   return new Resend(key);
 }
 
 export async function sendMagicLinkEmail(identifier: string, url: string) {
-  const from = process.env.EMAIL_FROM || "InvoiceFlow Studio <noreply@invoiceflowstudio.com>";
+  const from = readAuthSecret("EMAIL_FROM") || "InvoiceFlow Studio <noreply@invoiceflowstudio.com>";
   const resend = getResend();
   if (!resend) {
     console.info(`[InvoiceFlow] Magic link for ${identifier}: ${url}`);
@@ -33,7 +34,7 @@ export async function sendDocumentEmail(options: {
   link: string;
 }) {
   const resend = getResend();
-  const from = process.env.EMAIL_FROM || "InvoiceFlow Studio <noreply@invoiceflowstudio.com>";
+  const from = readAuthSecret("EMAIL_FROM") || "InvoiceFlow Studio <noreply@invoiceflowstudio.com>";
   if (!resend) {
     console.info(
       `[InvoiceFlow] Email skipped (no Resend key). Would send to ${options.to}: ${options.subject} ${options.link}`,
@@ -57,7 +58,7 @@ export async function sendContactRequest(options: {
   description: string;
   attachments?: { filename: string; content: Buffer }[];
 }) {
-  const from = process.env.EMAIL_FROM || "InvoiceFlow Studio <noreply@invoiceflowstudio.com>";
+  const from = readAuthSecret("EMAIL_FROM") || "InvoiceFlow Studio <noreply@invoiceflowstudio.com>";
   const resend = getResend();
   const html = `
     <p><strong>Topic:</strong> ${options.topic}</p>
