@@ -33,10 +33,13 @@ export function AccountMenu({
           <Link href="/dashboard/settings/account">{myAccountLabel}</Link>
         </DropdownMenuItem>
         <form action={logout}>
-          <DropdownMenuItem asChild>
-            <button type="submit" className="w-full text-left">
-              {logoutLabel}
-            </button>
+          <DropdownMenuItem
+            onSelect={(event) => {
+              event.preventDefault();
+              event.currentTarget.closest("form")?.requestSubmit();
+            }}
+          >
+            {logoutLabel}
           </DropdownMenuItem>
         </form>
       </DropdownMenuContent>
