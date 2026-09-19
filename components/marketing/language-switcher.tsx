@@ -1,37 +1,73 @@
-import Link from "next/link";
-import { LOCALES, LOCALE_LABELS, localizedPath, type Locale } from "@/lib/i18n";
+"use client";
+
+import { useRouter } from "next/navigation";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { Check, ChevronDown } from "lucide-react";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { isLocale, LOCALES, LOCALE_LABELS, localizedPath, type Locale } from "@/lib/i18n";
 
 export function LanguageSwitcher({
   locale,
   path,
   label,
+  align = "end",
 }: {
   locale: Locale;
   path: string;
   label: string;
+  align?: "start" | "end" | "center";
 }) {
+  const router = useRouter();
+  const current = LOCALE_LABELS[locale];
+
   return (
-    <nav aria-label={label} className="flex flex-wrap items-center gap-2 text-xs font-medium">
-      {LOCALES.map((code) => {
-        const active = code === locale;
-        return (
-          <Link
-            key={code}
-            href={localizedPath(code, path)}
-            hrefLang={LOCALE_LABELS[code].html}
-            lang={LOCALE_LABELS[code].html}
-            aria-current={active ? "true" : undefined}
-            className={
-              active
-                ? "rounded-full bg-foreground px-2 py-0.5 text-background"
-                : "rounded-full px-2 py-0.5 text-muted-foreground hover:text-foreground"
-            }
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger
+        className={cn(
+          buttonVariants({ variant: "outline", size: "sm" }),
+          "h-10 min-w-11 gap-1.5 px-3 text-xs",
+        )}
+        aria-label={`${label}: ${current.native}`}
+      >
+        <span className="sm:hidden">{current.short}</span>
+        <span className="hidden sm:inline">{current.native}</span>
+        <ChevronDown className="h-3.5 w-3.5 opacity-70" aria-hidden="true" />
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content
+          align={align}
+          sideOffset={6}
+          className="z-50 min-w-44 rounded-2xl border border-border bg-card p-1 shadow-[0_16px_40px_-24px_rgba(28,25,23,0.45)]"
+        >
+          <DropdownMenu.Label className="px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+            {label}
+          </DropdownMenu.Label>
+          <DropdownMenu.RadioGroup
+            value={locale}
+            onValueChange={(value) => {
+              if (isLocale(value)) router.push(localizedPath(value, path));
+            }}
           >
-            {LOCALE_LABELS[code].short}
-            <span className="sr-only"> {LOCALE_LABELS[code].native}</span>
-          </Link>
-        );
-      })}
-    </nav>
+            {LOCALES.map((code) => {
+              const option = LOCALE_LABELS[code];
+              return (
+                <DropdownMenu.RadioItem
+                  key={code}
+                  value={code}
+                  lang={option.html}
+                  className="relative flex cursor-pointer items-center rounded-xl py-2 pl-8 pr-3 text-sm text-foreground outline-none data-[highlighted]:bg-muted data-[state=checked]:font-medium"
+                >
+                  <DropdownMenu.ItemIndicator className="absolute left-2.5 inline-flex">
+                    <Check className="h-3.5 w-3.5" aria-hidden="true" />
+                  </DropdownMenu.ItemIndicator>
+                  {option.native}
+                </DropdownMenu.RadioItem>
+              );
+            })}
+          </DropdownMenu.RadioGroup>
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
   );
 }

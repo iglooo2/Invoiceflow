@@ -65,6 +65,17 @@ test("every locale dictionary has the same keys as English", () => {
   }
 });
 
+test("language switcher is a compact dropdown, not a row of locale chips", () => {
+  const source = readFileSync(
+    path.join(import.meta.dirname, "../components/marketing/language-switcher.tsx"),
+    "utf8",
+  );
+  assert.match(source, /DropdownMenu/);
+  assert.match(source, /aria-label/);
+  assert.match(source, /RadioGroup/);
+  assert.equal(source.includes('flex flex-wrap items-center gap-2'), false);
+});
+
 test("Message us stays a translated label and never prints the contact address", () => {
   const email = "galit.igor@yahoo.com";
   for (const locale of LOCALES) {
