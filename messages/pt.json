@@ -116,7 +116,7 @@
     "apple": "Continuar com Apple",
     "github": "Continuar com GitHub",
     "googleHint": "O Google Sign-In não está configurado. Adicione AUTH_GOOGLE_ID e AUTH_GOOGLE_SECRET como segredos do Worker da Cloudflare.",
-    "appleHint": "O Apple Sign-In não está configurado. Adicione AUTH_APPLE_ID e AUTH_APPLE_SECRET como segredos do Worker. Crie o segredo com seu Apple Team ID e chave.",
+    "appleHint": "O Apple Sign-In não está configurado. Adicione AUTH_APPLE_ID e AUTH_APPLE_SECRET (chave .p8 ou JWT) como segredos do Worker. Se AUTH_APPLE_SECRET for o .p8, defina também AUTH_APPLE_TEAM e AUTH_APPLE_KEY_ID.",
     "githubHint": "O GitHub OAuth aparece aqui quando AUTH_GITHUB_ID e AUTH_GITHUB_SECRET estão definidos.",
     "demoPrefix": "Demo:",
     "errors": {
@@ -129,7 +129,8 @@
       "magicEmail": "Informe o e-mail para o link mágico.",
       "magicFailed": "Não foi possível enviar o link mágico. Verifique AUTH_RESEND_KEY.",
       "oauthFailed": "Esse acesso não foi concluído. Tente e-mail e senha, ou confira os segredos Google/Apple do Worker.",
-      "oauthNotConfigured": "Esse método de acesso não está configurado neste servidor."
+      "oauthNotConfigured": "Esse método de acesso não está configurado neste servidor.",
+      "appleSecretInvalid": "O Apple Sign-In está mal configurado. AUTH_APPLE_SECRET deve ser um JWT, ou uma chave .p8 com AUTH_APPLE_TEAM e AUTH_APPLE_KEY_ID."
     }
   },
   "onboarding": {
