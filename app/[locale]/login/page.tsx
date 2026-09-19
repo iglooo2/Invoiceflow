@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
-import { githubAuthEnabled, isDevMode, resendEnabled } from "@/lib/utils";
+import { appleAuthEnabled, githubAuthEnabled, googleAuthEnabled, isDevMode, resendEnabled } from "@/lib/utils";
 import { MarketingFooter, MarketingHeader } from "@/components/marketing/shell";
 import { getDictionary } from "@/lib/dictionary";
 import { marketingCopy } from "@/lib/i18n-request";
 import { isLocale } from "@/lib/i18n";
+import { nextOnboardingPath } from "@/lib/onboarding";
 import { AuthForms } from "./auth-forms";
 
 export async function generateMetadata({
@@ -22,8 +23,12 @@ export default async function LoginPage({
 }: PageProps<"/[locale]/login">) {
   const { locale, dict } = marketingCopy((await params).locale);
   const user = await getCurrentUser();
-  if (user) redirect("/dashboard");
+  if (user) redirect(nextOnboardingPath(user, locale));
   const query = await searchParams;
+  const oauthError =
+    typeof query.error === "string" && query.error
+      ? dict.login.errors.oauthFailed
+      : null;
   return (
     <div>
       <MarketingHeader signedIn={false} locale={locale} path="/login" copy={dict.nav} />
@@ -36,11 +41,14 @@ export default async function LoginPage({
         </div>
         <AuthForms
           githubEnabled={githubAuthEnabled()}
+          googleEnabled={googleAuthEnabled()}
+          appleEnabled={appleAuthEnabled()}
           magicEnabled={resendEnabled()}
           showDemoCredentials={isDevMode()}
           callbackUrl={typeof query.callbackUrl === "string" ? query.callbackUrl : "/dashboard"}
           initialMode={typeof query.mode === "string" && query.mode === "register" ? "register" : "signin"}
           copy={dict.login}
+          oauthError={oauthError}
         />
       </main>
       <MarketingFooter locale={locale} path="/login" copy={dict.nav} />

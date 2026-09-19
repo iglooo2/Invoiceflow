@@ -1,14 +1,17 @@
 import type { Provider } from "next-auth/providers";
 import NextAuth from "next-auth";
+import Apple from "next-auth/providers/apple";
 import Credentials from "next-auth/providers/credentials";
 import GitHub from "next-auth/providers/github";
+import Google from "next-auth/providers/google";
 import Resend from "next-auth/providers/resend";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
 import { databaseRuntimeStatus, prisma } from "@/lib/db";
 import { safeErrorLog } from "@/lib/db-errors";
 import { sendMagicLinkEmail } from "@/lib/email";
-import { githubAuthEnabled, resendEnabled } from "@/lib/utils";
+import { markNewUserOnboarding } from "@/lib/onboarding";
+import { appleAuthEnabled, githubAuthEnabled, googleAuthEnabled, resendEnabled } from "@/lib/utils";
 
 const providers: Provider[] = [
   Credentials({
@@ -41,6 +44,24 @@ const providers: Provider[] = [
     },
   }),
 ];
+
+if (googleAuthEnabled()) {
+  providers.push(
+    Google({
+      clientId: process.env.AUTH_GOOGLE_ID,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET,
+    }),
+  );
+}
+
+if (appleAuthEnabled()) {
+  providers.push(
+    Apple({
+      clientId: process.env.AUTH_APPLE_ID,
+      clientSecret: process.env.AUTH_APPLE_SECRET,
+    }),
+  );
+}
 
 if (githubAuthEnabled()) {
   providers.push(
@@ -75,6 +96,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     error: "/login",
   },
   providers,
+  events: {
+    async createUser({ user }) {
+      if (!user.id) return;
+      try {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: markNewUserOnboarding(),
+        });
+      } catch (error) {
+        console.error("createUser onboarding flag failed", safeErrorLog(error), databaseRuntimeStatus());
+      }
+    },
+  },
   callbacks: {
     async jwt({ token, user }) {
       if (user?.id) token.sub = user.id;

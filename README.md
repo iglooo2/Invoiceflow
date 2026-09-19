@@ -9,7 +9,7 @@ This is a focused Micro-SaaS MVP, not an accounting suite. Create from studio te
 ## What you get
 
 - Marketing landing + pricing + `/estimates` + Terms/Privacy stubs
-- Auth: email/password (works with zero API keys), optional GitHub OAuth, optional Resend magic link
+- Auth: email/password (works with zero API keys), Google and Apple Sign-In (buttons always visible; disabled until secrets are set), optional GitHub OAuth, optional Resend magic link. New accounts finish a two-step InvoiceFlow Studio onboarding (name + phone, then business details) before the dashboard.
 - Dashboard: invoices, estimates, clients, studio settings, billing
 - Invoice editor (client, line items, tax, notes, due date, status)
 - Estimate editor (line items, markup, tax, attachments list, online approve with a typed name)
@@ -58,6 +58,9 @@ See `.env.example`. Placeholders only — never commit real secrets.
 | `AUTH_SECRET` | generate locally | **required** secret | Dev fallback only; do not ship that |
 | `AUTH_URL` | `http://localhost:3000` | `https://invoiceflowstudio.com` | Defaults to localhost / production domain |
 | `NEXT_PUBLIC_APP_URL` | `http://localhost:3000` | `https://invoiceflowstudio.com` | Share links and Stripe redirects |
+| `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | optional | optional Worker secrets | Google button visible but disabled |
+| `AUTH_APPLE_ID` / `AUTH_APPLE_SECRET` | optional | optional Worker secrets | Apple button visible but disabled. Apple needs HTTPS (not localhost HTTP). Generate the JWT secret with your Team ID + key (`npx auth add apple`) |
+| `AUTH_APPLE_TEAM` / `AUTH_APPLE_KEY_ID` | optional | optional (console only) | Used when creating `AUTH_APPLE_SECRET`; the Worker reads the JWT, not these directly |
 | `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET` | optional | optional | GitHub button hidden |
 | `AUTH_RESEND_KEY` / `EMAIL_FROM` | optional | optional | Magic link hidden; share-link email logs to console |
 | `STRIPE_SECRET_KEY` | optional test key | **runtime secret** `sk_test_…` or `sk_live_…` | Checkout disabled |
@@ -195,6 +198,8 @@ Do this in the Cloudflare dashboard — the agent cannot click it for you:
    | `STRIPE_WEBHOOK_SECRET` | Secret (**runtime**) | Live endpoint `whsec_…` |
    | `STRIPE_PRO_PRICE_ID` | Secret (**runtime**) | Live-mode `price_…` (Dashboard Live toggle). Must be encrypted — a plaintext Variable is wiped on Git deploy if `keep_vars` is off. Never put the live id in the repo. |
    | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | unused | Do not rely on this — see Stripe section |
+   | `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | Secret | Google Sign-In. Callback `https://invoiceflowstudio.com/api/auth/callback/google` |
+   | `AUTH_APPLE_ID` / `AUTH_APPLE_SECRET` | Secret | Apple Sign-In (Services ID + client-secret JWT). Callback `https://invoiceflowstudio.com/api/auth/callback/apple`. Create the JWT with your Apple Team ID and private key. |
    | `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET` | Secret | if using GitHub login |
    | `AUTH_RESEND_KEY` | Secret | if using magic links |
    | `EMAIL_FROM` | Variable | `InvoiceFlow Studio <noreply@invoiceflowstudio.com>` |
@@ -205,7 +210,10 @@ Do this in the Cloudflare dashboard — the agent cannot click it for you:
 
 6. Save, then **Retry build** / push to `main`.
 7. **Custom domain:** Worker → **Settings → Domains & Routes → Add** → `invoiceflowstudio.com`. Because the zone is already on Cloudflare, accept the proxied record it offers. Optionally add `www` and redirect it to apex in the zone.
-8. GitHub OAuth app (if used): Homepage `https://invoiceflowstudio.com`, callback `https://invoiceflowstudio.com/api/auth/callback/github`.
+8. OAuth apps (if used):
+   - **Google:** OAuth client, homepage `https://invoiceflowstudio.com`, authorized redirect `https://invoiceflowstudio.com/api/auth/callback/google`.
+   - **Apple:** Services ID with Sign In with Apple, return URL `https://invoiceflowstudio.com/api/auth/callback/apple`. Create a client-secret JWT from your Team ID + key and store it as `AUTH_APPLE_SECRET`. Apple does not accept localhost HTTP.
+   - **GitHub:** Homepage `https://invoiceflowstudio.com`, callback `https://invoiceflowstudio.com/api/auth/callback/github`.
 9. Stripe webhook endpoint: `https://invoiceflowstudio.com/api/stripe/webhook` (events: `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`).
 
 Worker name in `wrangler.jsonc` is `invoiceflow` (must match the Cloudflare Git-connected Worker).
@@ -297,7 +305,15 @@ InvoiceFlow Studio can show the Connect QuickBooks story in Settings and on `/es
 
 - **OpenNext vs vinext:** Cloudflare’s newest Next.js path is [vinext](https://developers.cloudflare.com/workers/frameworks/framework-guides/nextjs/). This repo uses **`@opennextjs/cloudflare`** (still a documented Workers path) so we keep the App Router + `next build` toolchain.
 - **Prisma:** production uses the rust-free client engine + driver adapters (no query-engine binary on Workers). The Prisma client is a lazy proxy so `DATABASE_URL` is read after OpenNext copies Worker secrets onto `process.env`. Local SQLite does not use an adapter. Neon HTTP **cannot run transactions**, so invoice/estimate saves insert the parent row and then each line/section as separate statements (no nested `create`, no `prisma.$transaction`). Signup stays a single `user.create`. Estimate **reads** retry without the new Proposal columns if Postgres has not been pushed yet, and render an in-page message instead of Cloudflare’s generic error page. After this release, run `npm run db:push:prod` so estimate columns (`taxRate`, `markupRate`, `viewedAt`, `signedName`, `signedAt`, `attachments`) exist on Postgres.
-- **Signup / login check after deploy:** open `/login` → Create account with a new email and 8+ character password. You should land on `/dashboard`. Sign out, sign back in with the same credentials. If the form says **DATABASE_URL is missing at runtime**, add the Neon pooled URL under Worker **runtime** Variables and Secrets (not only build vars) and redeploy. If it mentions missing tables, run `npm run db:push:prod` from a laptop. If it mentions a SQLite Prisma client, set **Build** `PRISMA_PROVIDER=postgresql` and rebuild with `npm run cf:build`. `npm test` covers adapter selection, Neon URL sanitization (`channel_binding` / `sslmode`), Prisma error hints, and postgres generate without a real DATABASE_URL.
+- **Signup / login check after deploy:** open `/login` → Create account with a new email and 8+ character password. You should land on **Let’s get started** (name + phone), then **Add business details**, then `/dashboard`. Existing accounts that already finished onboarding (or were created before this release) skip those steps. Sign out, sign back in with the same credentials. If the form says **DATABASE_URL is missing at runtime**, add the Neon pooled URL under Worker **runtime** Variables and Secrets (not only build vars) and redeploy. If it mentions missing tables, run `npm run db:push:prod` from a laptop. If it mentions a SQLite Prisma client, set **Build** `PRISMA_PROVIDER=postgresql` and rebuild with `npm run cf:build`. `npm test` covers adapter selection, Neon URL sanitization (`channel_binding` / `sslmode`), Prisma error hints, and postgres generate without a real DATABASE_URL.
+- **Onboarding columns on Neon:** after this release, run `npm run db:push:prod` (direct/unpooled URL) so `User` gains `phone`, `employeeCount`, `industry`, and `onboardingComplete` (boolean, default `true` so existing studios stay ungated). New signups set `onboardingComplete=false` until both steps finish. Equivalent SQL if you prefer the Neon console:
+
+```sql
+ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "phone" TEXT;
+ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "employeeCount" TEXT;
+ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "industry" TEXT;
+ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "onboardingComplete" BOOLEAN NOT NULL DEFAULT true;
+```
 - **Save invoice check after deploy:** `/dashboard/invoices/new` → client name + line description → **Save invoice**. You should land on `/dashboard/invoices/[id]`, not Cloudflare’s generic “This page couldn’t load”. Validation and Prisma errors (including missing `Invoice` / `InvoiceItem` tables) render on the form. If the form says tables are missing or out of date, from a laptop run `npm run db:push:prod` against the Neon **direct/unpooled** URL (`DATABASE_URL_UNPOOLED` or `DATABASE_URL`), then retry save. `npm test` also covers invoice form parsing and sequential (non-transaction) writes.
 - **`pg-cloudflare`:** OpenNext’s package copy does not include `pg-cloudflare`’s `workerd` build. `open-next.config.ts` sets `useWorkerdCondition: false` so `pg` uses `nodejs_compat` sockets. Prefer **Neon HTTP** in production to avoid that path.
 - **Node.js middleware:** Next.js 16 `proxy.ts` (dashboard cookie gate) is **experimental** on Cloudflare OpenNext. Do not set `export const runtime = "edge"` — OpenNext expects the Node.js runtime. If a future OpenNext release rejects Node middleware, the app still authenticates in layouts; only the early `/dashboard` redirect would need a rewrite.

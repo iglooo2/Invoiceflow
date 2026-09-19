@@ -27,6 +27,13 @@ function spawnEnv(
   return env;
 }
 
+test("User onboarding columns stay in the source schema", () => {
+  assert.match(source, /phone\s+String\?/);
+  assert.match(source, /employeeCount\s+String\?/);
+  assert.match(source, /industry\s+String\?/);
+  assert.match(source, /onboardingComplete Boolean @default\(true\)/);
+});
+
 test("sqlite runtime schema keeps default client engine", () => {
   const runtime = buildRuntimeSchema(source, "sqlite");
   const generator = runtime.match(/generator client \{[\s\S]*?\}/)?.[0] ?? "";

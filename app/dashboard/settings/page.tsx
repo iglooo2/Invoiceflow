@@ -1,6 +1,7 @@
 import { requestQuickbooksConnect, updateStudio } from "@/app/actions/settings";
 import { Button } from "@/components/ui/button";
-import { Input, Label, Textarea } from "@/components/ui/input";
+import { Input, Label, Select, Textarea } from "@/components/ui/input";
+import { EMPLOYEE_COUNT_KEYS, INDUSTRY_KEYS } from "@/lib/onboarding";
 import { appCopy } from "@/lib/i18n-request";
 import {
   INTUIT_CLIENT_ID_ENV,
@@ -31,7 +32,29 @@ export default async function SettingsPage({
           <Field label={copy.yourName} name="name" defaultValue={user.name} />
           <Field label={copy.studioName} name="businessName" defaultValue={user.businessName} />
           <Field label={copy.studioEmail} name="businessEmail" defaultValue={user.businessEmail} />
-          <Field label={copy.phone} name="businessPhone" defaultValue={user.businessPhone} />
+          <Field label={copy.phone} name="businessPhone" defaultValue={user.businessPhone || user.phone} />
+          <div className="grid gap-2">
+            <Label htmlFor="employeeCount">{copy.employeeCount}</Label>
+            <Select id="employeeCount" name="employeeCount" defaultValue={user.employeeCount ?? ""}>
+              <option value="">{copy.employeeCount}</option>
+              {EMPLOYEE_COUNT_KEYS.map((key) => (
+                <option key={key} value={key}>
+                  {dict.onboarding.employees[key]}
+                </option>
+              ))}
+            </Select>
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="industry">{copy.industry}</Label>
+            <Select id="industry" name="industry" defaultValue={user.industry ?? ""}>
+              <option value="">{copy.industry}</option>
+              {INDUSTRY_KEYS.map((key) => (
+                <option key={key} value={key}>
+                  {dict.onboarding.industries[key]}
+                </option>
+              ))}
+            </Select>
+          </div>
           <Field label={copy.website} name="website" defaultValue={user.website} />
           <div className="grid gap-2">
             <Label htmlFor="businessAddress">{copy.address}</Label>
