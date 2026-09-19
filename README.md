@@ -58,8 +58,8 @@ See `.env.example`. Placeholders only — never commit real secrets.
 | `AUTH_SECRET` | generate locally | **required** secret | Dev fallback only; do not ship that |
 | `AUTH_URL` | `http://localhost:3000` | `https://invoiceflowstudio.com` | Defaults to localhost / production domain |
 | `NEXT_PUBLIC_APP_URL` | `http://localhost:3000` | `https://invoiceflowstudio.com` | Share links and Stripe redirects |
-| `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | optional | optional Worker secrets | Google button visible but disabled |
-| `AUTH_APPLE_ID` / `AUTH_APPLE_SECRET` | optional | optional Worker secrets | Apple button visible but disabled. Apple needs HTTPS (not localhost HTTP). Generate the JWT secret with your Team ID + key (`npx auth add apple`) |
+| `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | optional | optional **runtime** Worker secrets | Google button enabled at request time; disabled with a hint if missing. Not a `NEXT_PUBLIC_*` flag |
+| `AUTH_APPLE_ID` / `AUTH_APPLE_SECRET` | optional | optional **runtime** Worker secrets | Apple button enabled at request time; disabled with a hint if missing. Apple needs HTTPS (not localhost HTTP). Generate the JWT secret with your Team ID + key (`npx auth add apple`) |
 | `AUTH_APPLE_TEAM` / `AUTH_APPLE_KEY_ID` | optional | optional (console only) | Used when creating `AUTH_APPLE_SECRET`; the Worker reads the JWT, not these directly |
 | `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET` | optional | optional | GitHub button hidden |
 | `AUTH_RESEND_KEY` / `EMAIL_FROM` | optional | optional | Magic link hidden; share-link email logs to console |
@@ -223,8 +223,8 @@ Do this in the Cloudflare dashboard — the agent cannot click it for you:
    | `STRIPE_WEBHOOK_SECRET` | Secret (**runtime**) | Live endpoint `whsec_…` |
    | `STRIPE_PRO_PRICE_ID` | Secret (**runtime**) | Live-mode `price_…` (Dashboard Live toggle). Must be encrypted — a plaintext Variable is wiped on Git deploy if `keep_vars` is off. Never put the live id in the repo. |
    | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | unused | Do not rely on this — see Stripe section |
-   | `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | Secret | Google Sign-In. Callback `https://invoiceflowstudio.com/api/auth/callback/google` |
-   | `AUTH_APPLE_ID` / `AUTH_APPLE_SECRET` | Secret | Apple Sign-In (Services ID + client-secret JWT). Callback `https://invoiceflowstudio.com/api/auth/callback/apple`. Create the JWT with your Apple Team ID and private key. |
+   | `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | Secret (**runtime**) | Google Sign-In. Read on the Worker at request time (not a Build/`NEXT_PUBLIC_*` flag). Callback `https://invoiceflowstudio.com/api/auth/callback/google` |
+   | `AUTH_APPLE_ID` / `AUTH_APPLE_SECRET` | Secret (**runtime**) | Apple Sign-In (Services ID + client-secret JWT). Same runtime read as Google. Callback `https://invoiceflowstudio.com/api/auth/callback/apple`. Create the JWT with your Apple Team ID and private key. |
    | `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET` | Secret | if using GitHub login |
    | `AUTH_RESEND_KEY` | Secret | if using magic links |
    | `EMAIL_FROM` | Variable | `InvoiceFlow Studio <noreply@invoiceflowstudio.com>` |
@@ -259,6 +259,8 @@ Checkout is a **server action** (`startProCheckout` → `stripe.checkout.session
 
 | Variable | When it is read | Notes |
 |---|---|---|
+| `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | **Runtime** Worker secret | Preferred via `getCloudflareContext()`. Login is `force-dynamic` so the Continue with Google button enables without a rebuild. Do not use a `NEXT_PUBLIC_*` flag — Next would inline it at `cf:build`. |
+| `AUTH_APPLE_ID` / `AUTH_APPLE_SECRET` | **Runtime** Worker secret | Same as Google. Continue with Apple stays visible when unset (disabled + hint). |
 | `STRIPE_SECRET_KEY` | **Runtime** Worker secret | Preferred via `getCloudflareContext()`. Do not rely on a Build var — Next may inline an empty/placeholder `process.env` at `cf:build`. |
 | `STRIPE_PRO_PRICE_ID` | **Runtime** Worker secret | Encrypted secret, same as the Stripe key. Must be created in the **same** Stripe mode as the secret. A test `price_…` with `sk_live_` fails (`No such price`). A dashboard **plaintext Variable** is deleted on `wrangler deploy` because `wrangler.jsonc` `vars` only lists `NEXTJS_ENV` — Secrets survive. |
 | `STRIPE_WEBHOOK_SECRET` | **Runtime** Worker secret | Live Dashboard endpoint for production; Stripe CLI `whsec_…` locally. |

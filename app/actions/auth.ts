@@ -12,7 +12,7 @@ import {
 } from "@/lib/db-errors";
 import { localizedPath } from "@/lib/i18n";
 import { appCopy } from "@/lib/i18n-request";
-import { appleAuthEnabled, googleAuthEnabled } from "@/lib/utils";
+import { appleAuthEnabled, googleAuthEnabled } from "@/lib/auth-env";
 
 const credentialsSchema = z.object({
   email: z.string().email(),

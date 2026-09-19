@@ -1,13 +1,19 @@
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import { redirect } from "next/navigation";
+import { appleAuthEnabled, githubAuthEnabled, googleAuthEnabled, resendEnabled } from "@/lib/auth-env";
 import { getCurrentUser } from "@/lib/session";
-import { appleAuthEnabled, githubAuthEnabled, googleAuthEnabled, isDevMode, resendEnabled } from "@/lib/utils";
+import { isDevMode } from "@/lib/utils";
 import { MarketingFooter, MarketingHeader } from "@/components/marketing/shell";
 import { getDictionary } from "@/lib/dictionary";
 import { marketingCopy } from "@/lib/i18n-request";
 import { isLocale } from "@/lib/i18n";
 import { nextOnboardingPath } from "@/lib/onboarding";
 import { AuthForms } from "./auth-forms";
+
+// Request-time so AUTH_GOOGLE_* / AUTH_APPLE_* Worker secrets are visible.
+// Do not SSG this page — Next may otherwise bake disabled OAuth buttons at cf:build.
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -21,6 +27,7 @@ export default async function LoginPage({
   params,
   searchParams,
 }: PageProps<"/[locale]/login">) {
+  await connection();
   const { locale, dict } = marketingCopy((await params).locale);
   const user = await getCurrentUser();
   if (user) redirect(nextOnboardingPath(user, locale));

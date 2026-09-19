@@ -14,3 +14,13 @@ export function readCloudflareString(name: string): string {
     return "";
   }
 }
+
+/**
+ * Prefer the Worker secret, then `process.env[name]` (bracket access so Next
+ * does not replace the lookup with a build-time empty string).
+ */
+export function readRuntimeSecret(name: string): string {
+  const fromCloudflare = readCloudflareString(name);
+  if (fromCloudflare) return fromCloudflare;
+  return (process.env[name] ?? "").trim();
+}

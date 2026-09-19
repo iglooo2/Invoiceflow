@@ -15,8 +15,8 @@ import type { Dictionary } from "@/lib/dictionary";
 
 export function AuthForms({
   githubEnabled,
-  googleEnabled,
-  appleEnabled,
+  googleEnabled = false,
+  appleEnabled = false,
   magicEnabled,
   callbackUrl,
   showDemoCredentials,
@@ -25,8 +25,8 @@ export function AuthForms({
   oauthError,
 }: {
   githubEnabled: boolean;
-  googleEnabled: boolean;
-  appleEnabled: boolean;
+  googleEnabled?: boolean;
+  appleEnabled?: boolean;
   magicEnabled: boolean;
   callbackUrl: string;
   showDemoCredentials: boolean;
@@ -49,6 +49,43 @@ export function AuthForms({
       </div>
       {error ? <p className="mb-4 text-sm text-destructive">{error}</p> : null}
 
+      {/* Google/Apple always mount on sign-in and register. `enabled` only toggles click vs hint. */}
+      <div className="grid gap-3">
+        <OauthButton
+          enabled={googleEnabled}
+          provider="google"
+          label={copy.google}
+          hint={copy.googleHint}
+          action={loginWithGoogle}
+          onError={setError}
+          icon={<GoogleMark />}
+        />
+        <OauthButton
+          enabled={appleEnabled}
+          provider="apple"
+          label={copy.apple}
+          hint={copy.appleHint}
+          action={loginWithApple}
+          onError={setError}
+          icon={<AppleMark />}
+        />
+        {githubEnabled ? (
+          <form action={loginWithGithub}>
+            <Button type="submit" variant="secondary" className="w-full">
+              {copy.github}
+            </Button>
+          </form>
+        ) : (
+          <p className="text-xs text-muted-foreground">{copy.githubHint}</p>
+        )}
+      </div>
+
+      <div className="my-6 flex items-center gap-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">
+        <span className="h-px flex-1 bg-border" />
+        {copy.orContinue}
+        <span className="h-px flex-1 bg-border" />
+      </div>
+
       <form
         className="grid gap-4"
         action={async (formData) => {
@@ -69,40 +106,6 @@ export function AuthForms({
         </div>
         <Button type="submit">{mode === "register" ? copy.createAccount : copy.signIn}</Button>
       </form>
-
-      <div className="my-6 flex items-center gap-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">
-        <span className="h-px flex-1 bg-border" />
-        {copy.orContinue}
-        <span className="h-px flex-1 bg-border" />
-      </div>
-
-      <div className="grid gap-3">
-        <OauthButton
-          enabled={googleEnabled}
-          label={copy.google}
-          hint={copy.googleHint}
-          action={loginWithGoogle}
-          onError={setError}
-          icon={<GoogleMark />}
-        />
-        <OauthButton
-          enabled={appleEnabled}
-          label={copy.apple}
-          hint={copy.appleHint}
-          action={loginWithApple}
-          onError={setError}
-          icon={<AppleMark />}
-        />
-        {githubEnabled ? (
-          <form action={loginWithGithub}>
-            <Button type="submit" variant="secondary" className="w-full">
-              {copy.github}
-            </Button>
-          </form>
-        ) : (
-          <p className="text-xs text-muted-foreground">{copy.githubHint}</p>
-        )}
-      </div>
 
       {magicEnabled ? (
         <form
@@ -133,6 +136,7 @@ export function AuthForms({
 
 function OauthButton({
   enabled,
+  provider,
   label,
   hint,
   action,
@@ -140,26 +144,38 @@ function OauthButton({
   icon,
 }: {
   enabled: boolean;
+  provider: "google" | "apple";
   label: string;
   hint: string;
   action: () => Promise<{ error?: string } | void>;
   onError: (message: string | null) => void;
   icon: ReactNode;
 }) {
+  const hintId = `${provider}-oauth-hint`;
   if (!enabled) {
     return (
-      <div>
-        <Button type="button" variant="outline" className="w-full justify-center" disabled>
+      <div data-oauth={provider} data-oauth-enabled="false">
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full justify-center disabled:opacity-70"
+          disabled
+          aria-describedby={hintId}
+        >
           {icon}
           {label}
         </Button>
-        <p className="mt-2 text-xs text-muted-foreground">{hint}</p>
+        <p id={hintId} className="mt-2 text-xs text-muted-foreground">
+          {hint}
+        </p>
       </div>
     );
   }
 
   return (
     <form
+      data-oauth={provider}
+      data-oauth-enabled="true"
       action={async () => {
         onError(null);
         const result = await action();
