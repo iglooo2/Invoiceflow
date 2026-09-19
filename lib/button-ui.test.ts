@@ -31,8 +31,11 @@ test("shared Button uses tokens instead of oversized padding", () => {
 test("marketing CTAs and chrome reuse the shared button system", () => {
   const landing = read("app/[locale]/page.tsx");
   assert.match(landing, /variant="soft"/);
+  assert.match(landing, /mt-5 flex justify-center/);
   assert.equal(landing.includes("min-h-14"), false);
   assert.equal(landing.includes("px-7 py-3"), false);
+  assert.equal(landing.includes("-mt-5"), false);
+  assert.equal(landing.includes("-mt-6"), false);
 
   const header = read("components/marketing/shell.tsx");
   assert.match(header, /flex-wrap/);
