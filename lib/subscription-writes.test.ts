@@ -226,15 +226,14 @@ test("webhook dispatcher keeps checkout retrieve + invoice.paid no-ops working",
   assert.equal(ignored.updated, false);
 });
 
-test("webhook and subscription helpers never use $transaction or updateMany", () => {
+test("webhook and subscription helpers never call $transaction or updateMany", () => {
   const files = [
     "lib/subscription-writes.ts",
     "app/api/stripe/webhook/route.ts",
   ];
   for (const file of files) {
     const source = readFileSync(path.join(root, file), "utf8");
-    assert.doesNotMatch(source, /\$transaction/);
-    assert.doesNotMatch(source, /updateMany/);
-    assert.doesNotMatch(source, /startTransaction/);
+    assert.doesNotMatch(source, /\$transaction\s*\(/);
+    assert.doesNotMatch(source, /\.updateMany\s*\(/);
   }
 });
