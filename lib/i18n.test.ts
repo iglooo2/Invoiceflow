@@ -111,6 +111,30 @@ test("unauthenticated dashboard redirects to the cookie locale login, not /en", 
   assert.match(response.headers.get("set-cookie") ?? "", /invoiceflow-locale=es/);
 });
 
+test("dashboard and contact labels say Subscription instead of Billing", () => {
+  const expected = {
+    en: "Subscription",
+    es: "Suscripción",
+    fr: "Abonnement",
+    de: "Abonnement",
+    pt: "Assinatura",
+  } as const;
+
+  for (const locale of LOCALES) {
+    const dict = getDictionary(locale);
+    assert.equal(dict.app.billing, expected[locale], locale);
+    assert.equal(dict.contact.topics.billing, expected[locale], locale);
+  }
+
+  const layout = readFileSync(path.join(import.meta.dirname, "../app/dashboard/layout.tsx"), "utf8");
+  const page = readFileSync(path.join(import.meta.dirname, "../app/dashboard/billing/page.tsx"), "utf8");
+  assert.match(layout, /dict\.app\.billing/);
+  assert.match(layout, /"\/dashboard\/billing"/);
+  assert.match(page, /<h1 className="font-display text-4xl">\{dict\.app\.billing\}<\/h1>/);
+  assert.match(page, /title: dict\.app\.billing/);
+  assert.doesNotMatch(page, /\/dashboard\/subscription/);
+});
+
 test("login and dashboard common errors exist in every locale", () => {
   for (const locale of LOCALES) {
     const dict = getDictionary(locale);
