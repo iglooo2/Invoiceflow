@@ -5,7 +5,7 @@ import path from "node:path";
 import { getDictionary } from "./dictionary";
 import { LOCALES } from "./i18n";
 import { smsAuthEnabled } from "./auth-env";
-import { genericPhoneSendCopy, phoneExistenceLeak, twilioMessagesUrl, twilioVerifySendUrl } from "./phone-otp";
+import { accountConfirmedSmsBody, genericPhoneSendCopy, phoneExistenceLeak, twilioMessagesUrl, twilioVerifySendUrl } from "./phone-otp";
 import { sendRegistrationConfirmedSms, twilioFormPost } from "./phone-auth";
 
 function restoreEnv(key: string, value: string | undefined) {
@@ -123,6 +123,7 @@ test("login phone copy is translated and does not leak whether a number exists",
     assert.ok(dict.login.resendCode.length > 0, locale);
     assert.match(dict.login.resendIn, /\{seconds\}s/, locale);
     assert.match(dict.login.phoneConfirmedSms, /InvoiceFlow Studio/, locale);
+    assert.equal(accountConfirmedSmsBody(locale), dict.login.phoneConfirmedSms, locale);
     assert.equal(/\d{4,}/.test(dict.login.phoneConfirmedSms), false, locale);
     assert.equal(phoneExistenceLeak(dict.login.errors.phoneSendFailed), false, locale);
     assert.equal(phoneExistenceLeak(dict.login.errors.phoneCodeInvalid), false, locale);
@@ -152,10 +153,12 @@ test("phone SMS is wired through Auth.js credentials and the login card", () => 
   assert.match(forms, /one-time-code/);
   assert.match(forms, /copy\.codeGate/);
   assert.match(forms, /data-testid="phone-resend"/);
-  assert.match(forms, /PHONE_OTP_COOLDOWN_SECONDS/);
+  assert.match(forms, /retryAfterSeconds \?\? 60/);
   assert.match(forms, /text-xs text-muted-foreground/);
   assert.match(forms, /copy\.resendCode/);
   assert.match(forms, /copy\.resendIn/);
+  assert.doesNotMatch(forms, /from ["']@\/lib\/phone-otp["']/);
+  assert.doesNotMatch(phoneOtp, /from ["']@\/lib\/dictionary["']/);
   assert.match(login, /smsEnabled=\{smsAuthEnabled\(\)\}/);
   assert.match(phoneAuth, /typeof fetch = fetch/);
   assert.match(phoneAuth, /twilioVerifySendUrl/);

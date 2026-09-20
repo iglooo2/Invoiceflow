@@ -15,7 +15,6 @@ import { Input, Label, Select } from "@/components/ui/input";
 import type { Dictionary } from "@/lib/dictionary";
 import { formatMessage } from "@/lib/i18n";
 import { COUNTRY_OPTIONS, DEFAULT_COUNTRY_ISO } from "@/lib/onboarding";
-import { PHONE_OTP_COOLDOWN_SECONDS } from "@/lib/phone-otp";
 
 export function AuthForms({
   githubEnabled,
@@ -196,7 +195,7 @@ function PhoneAuthPanel({
       setHasSent(true);
       setStep("code");
       setCode("");
-      setRetryAfter(result.retryAfterSeconds ?? PHONE_OTP_COOLDOWN_SECONDS);
+      setRetryAfter(result.retryAfterSeconds ?? 60);
     } finally {
       setPending(false);
     }

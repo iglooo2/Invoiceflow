@@ -1,4 +1,3 @@
-import { getDictionary } from "@/lib/dictionary";
 import { isLocale } from "@/lib/i18n";
 import { composePhone, digitsOnly, isValidPhone } from "@/lib/onboarding";
 
@@ -168,9 +167,16 @@ export function programmableSmsBody(code: string) {
   return `Your InvoiceFlow Studio verification code is ${code}. It expires in 10 minutes.`;
 }
 
+const ACCOUNT_CONFIRMED_SMS: Record<"en" | "es" | "fr" | "de" | "pt", string> = {
+  en: "Your InvoiceFlow Studio account is confirmed.",
+  es: "Tu cuenta de InvoiceFlow Studio está confirmada.",
+  fr: "Votre compte InvoiceFlow Studio est confirmé.",
+  de: "Dein InvoiceFlow Studio-Konto ist bestätigt.",
+  pt: "Sua conta InvoiceFlow Studio está confirmada.",
+};
+
 export function accountConfirmedSmsBody(locale: string) {
-  const dict = getDictionary(isLocale(locale) ? locale : "en");
-  return dict.login.phoneConfirmedSms;
+  return ACCOUNT_CONFIRMED_SMS[isLocale(locale) ? locale : "en"];
 }
 
 export function genericPhoneSendCopy() {
