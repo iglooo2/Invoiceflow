@@ -158,7 +158,9 @@
     "resendCode": "Code erneut senden",
     "resendIn": "Erneut senden in {seconds}s",
     "changePhone": "Andere Nummer verwenden",
-    "codeSent": "Wir haben eine SMS mit einem Anmeldecode gesendet.",
+    "codeSent": "Wir haben eine SMS mit einem Bestätigungscode gesendet.",
+    "codeGate": "Gib ihn hier ein, um fortzufahren. Ein neues Konto wird erst erstellt, wenn dieser Code stimmt — danach senden wir eine Bestätigungs-SMS.",
+    "phoneConfirmedSms": "Dein InvoiceFlow Studio-Konto ist bestätigt.",
     "demoPrefix": "Demo:",
     "errors": {
       "invalidEmailPassword": "Gib eine gültige E-Mail und ein Passwort ein.",

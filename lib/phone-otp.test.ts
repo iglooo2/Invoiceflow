@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   PHONE_OTP_COOLDOWN_MS,
   PHONE_OTP_MAX_SENDS_PER_PHONE,
+  accountConfirmedSmsBody,
   createPhoneTicket,
   encodeBasicAuth,
   genericPhoneSendCopy,
@@ -91,18 +92,26 @@ test("Twilio URLs are public HTTPS Verify or Messages endpoints", () => {
   assert.equal(encodeBasicAuth("ACabc", "token"), btoa("ACabc:token"));
   assert.match(programmableSmsBody("123456"), /123456/);
   assert.equal(phoneExistenceLeak(genericPhoneSendCopy()), false);
-  assert.equal(phoneExistenceLeak("We sent a text with a sign-in code."), false);
+  assert.equal(phoneExistenceLeak("We sent a text with a verification code."), false);
   assert.equal(phoneExistenceLeak("No account exists for that phone"), true);
 });
 
-test("phone tickets HMAC-expire and OTP hashes compare in constant time", async () => {
+test("confirmation SMS copy is not a second OTP and is translated", () => {
+  assert.equal(accountConfirmedSmsBody("en"), "Your InvoiceFlow Studio account is confirmed.");
+  assert.match(accountConfirmedSmsBody("es"), /InvoiceFlow Studio/);
+  assert.match(accountConfirmedSmsBody("fr"), /confirm/i);
+  assert.equal(/\d{4,}/.test(accountConfirmedSmsBody("en")), false);
+  assert.equal(phoneExistenceLeak(accountConfirmedSmsBody("en")), false);
+});
+
+test("phone tickets HMAC-expire, carry locale, and OTP hashes compare in constant time", async () => {
   const secret = "test-secret";
   const phone = "+14155550148";
-  const ticket = await createPhoneTicket(secret, phone, 1_700_000_000_000);
-  assert.equal(await verifyPhoneTicket(secret, phone, ticket, 1_700_000_000_000), true);
-  assert.equal(await verifyPhoneTicket(secret, phone, ticket, 1_700_000_000_000 + 3 * 60 * 1000), false);
-  assert.equal(await verifyPhoneTicket("other", phone, ticket, 1_700_000_000_000), false);
-  assert.equal(await verifyPhoneTicket(secret, "+15555550100", ticket, 1_700_000_000_000), false);
+  const ticket = await createPhoneTicket(secret, phone, 1_700_000_000_000, "es");
+  assert.deepEqual(await verifyPhoneTicket(secret, phone, ticket, 1_700_000_000_000), { locale: "es" });
+  assert.equal(await verifyPhoneTicket(secret, phone, ticket, 1_700_000_000_000 + 3 * 60 * 1000), null);
+  assert.equal(await verifyPhoneTicket("other", phone, ticket, 1_700_000_000_000), null);
+  assert.equal(await verifyPhoneTicket(secret, "+15555550100", ticket, 1_700_000_000_000), null);
   const hash = await hashOtpCode(secret, phone, "123456");
   const same = await hashOtpCode(secret, phone, "123456");
   const other = await hashOtpCode(secret, phone, "000000");

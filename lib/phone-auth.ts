@@ -16,6 +16,7 @@ import {
   PHONE_OTP_MAX_SENDS_PER_IP,
   PHONE_OTP_MAX_SENDS_PER_PHONE,
   PHONE_OTP_TTL_MS,
+  accountConfirmedSmsBody,
   createPhoneTicket,
   encodeBasicAuth,
   hashClientIp,
@@ -168,13 +169,48 @@ async function sendViaTwilioVerify(phone: string, locale: string) {
   }, credentials);
 }
 
-async function sendViaTwilioSms(phone: string, code: string) {
+async function sendViaTwilioSms(phone: string, body: string, fetcher: typeof fetch = fetch) {
   const credentials = twilioCredentials();
-  return twilioFormPost(twilioMessagesUrl(credentials.accountSid), {
-    To: phone,
-    From: twilioFromNumber(),
-    Body: programmableSmsBody(code),
-  }, credentials);
+  const from = twilioFromNumber();
+  if (!from) {
+    return { ok: false as const, status: 0, json: { error: "missing_from" }, skipped: true as const };
+  }
+  return twilioFormPost(
+    twilioMessagesUrl(credentials.accountSid),
+    {
+      To: phone,
+      From: from,
+      Body: body,
+    },
+    credentials,
+    fetcher,
+  );
+}
+
+export async function sendRegistrationConfirmedSms(
+  phone: string,
+  locale: string,
+  fetcher: typeof fetch = fetch,
+) {
+  const e164 = toE164(phone);
+  if (!e164) return { ok: false as const, skipped: true as const };
+  const from = twilioFromNumber();
+  if (!from) {
+    console.error("registration confirmation SMS skipped: set TWILIO_FROM_NUMBER as a Worker Runtime secret");
+    return { ok: false as const, skipped: true as const };
+  }
+  try {
+    const sent = await sendViaTwilioSms(e164, accountConfirmedSmsBody(locale), fetcher);
+    if ("skipped" in sent && sent.skipped) return { ok: false as const, skipped: true as const };
+    if (!sent.ok) {
+      console.error("registration confirmation SMS failed", maskPhone(e164), sent.status, sent.json.code);
+      return { ok: false as const, skipped: false as const };
+    }
+    return { ok: true as const };
+  } catch (error) {
+    console.error("registration confirmation SMS failed", maskPhone(e164), safeErrorLog(error));
+    return { ok: false as const, skipped: false as const };
+  }
 }
 
 async function storeHashedCode(phone: string, code: string, schemaMissing: boolean) {
@@ -188,6 +224,7 @@ async function storeHashedCode(phone: string, code: string, schemaMissing: boole
   });
 }
 
+/** Sends the verification SMS only. Never creates a User. */
 export async function sendPhoneOtp(options: { phone: string; ip: string; locale: string }) {
   const phone = toE164(options.phone);
   if (!phone) return { ok: false as const, errorKey: "phoneInvalid" as PhoneAuthErrorKey };
@@ -230,7 +267,7 @@ export async function sendPhoneOtp(options: { phone: string; ip: string; locale:
     } else {
       const code = randomOtp();
       await storeHashedCode(phone, code, schemaMissing);
-      const sent = await sendViaTwilioSms(phone, code);
+      const sent = await sendViaTwilioSms(phone, programmableSmsBody(code));
       if (twilioRateLimited(sent.status, sent.json)) {
         return {
           ok: false as const,
@@ -278,7 +315,11 @@ async function loadChallenge(phone: string) {
   }
 }
 
-export async function confirmPhoneOtp(options: { phone: string; code: string }) {
+/**
+ * Checks the SMS code. On success issues a short-lived ticket.
+ * Does not create a User — that happens in authorizePhoneTicket after this check.
+ */
+export async function confirmPhoneOtp(options: { phone: string; code: string; locale?: string }) {
   const phone = toE164(options.phone);
   const code = options.code.replace(/\s+/g, "");
   if (!phone) return { ok: false as const, errorKey: "phoneInvalid" as PhoneAuthErrorKey };
@@ -338,24 +379,28 @@ export async function confirmPhoneOtp(options: { phone: string; code: string }) 
     }
   }
 
-  const ticket = await createPhoneTicket(signingSecret(), phone);
+  const ticket = await createPhoneTicket(signingSecret(), phone, Date.now(), options.locale ?? "en");
   return { ok: true as const, phone, ticket };
 }
 
 export async function authorizePhoneTicket(phoneRaw: string, ticket: string) {
   const phone = toE164(phoneRaw);
   if (!phone || !ticket) return null;
-  const valid = await verifySignedPhoneTicket(signingSecret(), phone, ticket);
-  if (!valid) return null;
-  return findOrCreatePhoneUser(phone);
+  const verified = await verifySignedPhoneTicket(signingSecret(), phone, ticket);
+  if (!verified) return null;
+  const result = await findOrCreatePhoneUser(phone);
+  if (result.created) {
+    await sendRegistrationConfirmedSms(phone, verified.locale);
+  }
+  return result.user;
 }
 
 export async function findOrCreatePhoneUser(phone: string) {
   const existing = await prisma.user.findUnique({ where: { phone } });
-  if (existing) return existing;
+  if (existing) return { user: existing, created: false as const };
   const now = new Date();
   try {
-    return await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         id: crypto.randomUUID(),
         phone,
@@ -365,9 +410,10 @@ export async function findOrCreatePhoneUser(phone: string) {
         ...markNewUserOnboarding(),
       },
     });
+    return { user, created: true as const };
   } catch (error) {
     const raced = await prisma.user.findUnique({ where: { phone } });
-    if (raced) return raced;
+    if (raced) return { user: raced, created: false as const };
     throw error;
   }
 }

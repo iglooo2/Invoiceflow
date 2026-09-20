@@ -21,7 +21,8 @@ AUTH_DEV_MODE="false"
 # GOOGLE_CLIENT_ID=""
 # GOOGLE_CLIENT_SECRET=""
 
-# Optional phone SMS sign-in (Worker runtime secrets). Prefer Twilio Verify.
+# Optional phone SMS (Worker runtime secrets). Verify for the OTP; From number for
+# the new-account confirmation SMS (and as OTP fallback if Verify is unset).
 # TWILIO_ACCOUNT_SID=""
 # TWILIO_AUTH_TOKEN=""
 # TWILIO_VERIFY_SERVICE_SID=""

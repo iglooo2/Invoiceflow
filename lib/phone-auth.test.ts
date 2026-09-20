@@ -5,8 +5,8 @@ import path from "node:path";
 import { getDictionary } from "./dictionary";
 import { LOCALES } from "./i18n";
 import { smsAuthEnabled } from "./auth-env";
-import { genericPhoneSendCopy, phoneExistenceLeak, twilioVerifySendUrl } from "./phone-otp";
-import { twilioFormPost } from "./phone-auth";
+import { genericPhoneSendCopy, phoneExistenceLeak, twilioMessagesUrl, twilioVerifySendUrl } from "./phone-otp";
+import { sendRegistrationConfirmedSms, twilioFormPost } from "./phone-auth";
 
 function restoreEnv(key: string, value: string | undefined) {
   if (value === undefined) delete process.env[key];
@@ -74,6 +74,41 @@ test("Twilio posts use fetch Basic auth, not the Node SDK", async () => {
   assert.equal("twilio" in (pkg.devDependencies ?? {}), false);
 });
 
+test("new-account confirmation SMS uses Programmable Messages, not a second Verify OTP", async () => {
+  const previous = {
+    sid: process.env.TWILIO_ACCOUNT_SID,
+    token: process.env.TWILIO_AUTH_TOKEN,
+    from: process.env.TWILIO_FROM_NUMBER,
+  };
+  const calls: Array<{ url: string; body: string }> = [];
+  const fetcher: typeof fetch = async (url, init) => {
+    calls.push({ url: String(url), body: String(init?.body ?? "") });
+    return new Response(JSON.stringify({ sid: "SM123", status: "queued" }), { status: 201 });
+  };
+  try {
+    delete process.env.TWILIO_FROM_NUMBER;
+    process.env.TWILIO_ACCOUNT_SID = "ACabc";
+    process.env.TWILIO_AUTH_TOKEN = "secret";
+    const skipped = await sendRegistrationConfirmedSms("+14155550148", "en", fetcher);
+    assert.equal(skipped.ok, false);
+    assert.equal("skipped" in skipped && skipped.skipped, true);
+    assert.equal(calls.length, 0);
+
+    process.env.TWILIO_FROM_NUMBER = "+15555550100";
+    const sent = await sendRegistrationConfirmedSms("+14155550148", "en", fetcher);
+    assert.equal(sent.ok, true);
+    assert.equal(calls.length, 1);
+    assert.equal(calls[0].url, twilioMessagesUrl("ACabc"));
+    assert.match(calls[0].body, /From=%2B15555550100/);
+    assert.match(decodeURIComponent(calls[0].body.replace(/\+/g, " ")), /InvoiceFlow Studio account is confirmed/);
+    assert.doesNotMatch(calls[0].url, /verify\.twilio\.com/);
+  } finally {
+    restoreEnv("TWILIO_ACCOUNT_SID", previous.sid);
+    restoreEnv("TWILIO_AUTH_TOKEN", previous.token);
+    restoreEnv("TWILIO_FROM_NUMBER", previous.from);
+  }
+});
+
 test("login phone copy is translated and does not leak whether a number exists", () => {
   for (const locale of LOCALES) {
     const dict = getDictionary(locale);
@@ -83,6 +118,10 @@ test("login phone copy is translated and does not leak whether a number exists",
     assert.ok(dict.login.errors.phoneRateLimited.length > 0, locale);
     assert.ok(dict.onboarding.errors.phoneTaken.length > 0, locale);
     assert.equal(phoneExistenceLeak(dict.login.codeSent), false, locale);
+    assert.equal(phoneExistenceLeak(dict.login.codeGate), false, locale);
+    assert.ok(dict.login.codeGate.length > 0, locale);
+    assert.match(dict.login.phoneConfirmedSms, /InvoiceFlow Studio/, locale);
+    assert.equal(/\d{4,}/.test(dict.login.phoneConfirmedSms), false, locale);
     assert.equal(phoneExistenceLeak(dict.login.errors.phoneSendFailed), false, locale);
     assert.equal(phoneExistenceLeak(dict.login.errors.phoneCodeInvalid), false, locale);
   }
@@ -109,10 +148,20 @@ test("phone SMS is wired through Auth.js credentials and the login card", () => 
   assert.match(forms, /data-phone-auth/);
   assert.match(forms, /requestPhoneOtp/);
   assert.match(forms, /one-time-code/);
+  assert.match(forms, /copy\.codeGate/);
   assert.match(login, /smsEnabled=\{smsAuthEnabled\(\)\}/);
   assert.match(phoneAuth, /typeof fetch = fetch/);
   assert.match(phoneAuth, /twilioVerifySendUrl/);
   assert.match(phoneAuth, /twilioMessagesUrl/);
+  assert.match(phoneAuth, /sendRegistrationConfirmedSms/);
+  assert.match(phoneAuth, /result\.created/);
+  assert.match(phoneAuth, /Never creates a User/);
+  assert.match(phoneAuth, /Does not create a User/);
+  const createAt = phoneAuth.indexOf("prisma.user.create");
+  const sendOtpAt = phoneAuth.indexOf("export async function sendPhoneOtp");
+  const confirmAt = phoneAuth.indexOf("export async function confirmPhoneOtp");
+  const authorizeAt = phoneAuth.indexOf("export async function authorizePhoneTicket");
+  assert.ok(createAt > authorizeAt && authorizeAt > confirmAt && confirmAt > sendOtpAt);
   assert.match(phoneOtp, /verify\.twilio\.com/);
   assert.match(phoneOtp, /api\.twilio\.com/);
   assert.doesNotMatch(phoneAuth, /from ["']twilio["']/);

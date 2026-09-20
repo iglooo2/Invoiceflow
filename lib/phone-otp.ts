@@ -1,3 +1,5 @@
+import { getDictionary } from "@/lib/dictionary";
+import { isLocale } from "@/lib/i18n";
 import { composePhone, digitsOnly, isValidPhone } from "@/lib/onboarding";
 
 export const PHONE_OTP_COOLDOWN_MS = 45_000;
@@ -140,26 +142,38 @@ export async function hashClientIp(secret: string, ip: string) {
   return sha256Hex(`sms-ip:${secret}:${ip.trim() || "unknown"}`);
 }
 
-export async function createPhoneTicket(secret: string, phone: string, now = Date.now()) {
+export async function createPhoneTicket(
+  secret: string,
+  phone: string,
+  now = Date.now(),
+  locale = "en",
+) {
   const exp = now + PHONE_TICKET_TTL_MS;
-  const sig = await hmacHex(secret, `phone-ticket:${phone}:${exp}`);
-  return `${exp}.${sig}`;
+  const safeLocale = isLocale(locale) ? locale : "en";
+  const sig = await hmacHex(secret, `phone-ticket:${phone}:${exp}:${safeLocale}`);
+  return `${exp}.${safeLocale}.${sig}`;
 }
 
 export async function verifyPhoneTicket(secret: string, phone: string, ticket: string, now = Date.now()) {
-  const [expRaw, sig] = ticket.split(".");
+  const [expRaw, locale, sig] = ticket.split(".");
   const exp = Number(expRaw);
-  if (!expRaw || !sig || !Number.isFinite(exp) || exp < now) return false;
-  const expected = await hmacHex(secret, `phone-ticket:${phone}:${exp}`);
-  return timingSafeEqual(sig, expected);
+  if (!expRaw || !locale || !sig || !Number.isFinite(exp) || exp < now) return null;
+  const expected = await hmacHex(secret, `phone-ticket:${phone}:${exp}:${locale}`);
+  if (!timingSafeEqual(sig, expected)) return null;
+  return { locale: isLocale(locale) ? locale : "en" };
 }
 
 export function programmableSmsBody(code: string) {
-  return `Your InvoiceFlow Studio sign-in code is ${code}. It expires in 10 minutes.`;
+  return `Your InvoiceFlow Studio verification code is ${code}. It expires in 10 minutes.`;
+}
+
+export function accountConfirmedSmsBody(locale: string) {
+  const dict = getDictionary(isLocale(locale) ? locale : "en");
+  return dict.login.phoneConfirmedSms;
 }
 
 export function genericPhoneSendCopy() {
-  return "We sent a text with a sign-in code.";
+  return "We sent a text with a verification code.";
 }
 
 export function phoneExistenceLeak(text: string) {

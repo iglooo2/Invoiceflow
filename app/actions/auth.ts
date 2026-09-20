@@ -185,7 +185,7 @@ export async function requestPhoneOtp(formData: FormData) {
 
 export async function loginWithPhone(formData: FormData) {
   await ensureAuthRuntimeEnv();
-  const { dict } = await appCopy();
+  const { dict, locale } = await appCopy();
   if (!smsAuthEnabled()) {
     return { error: dict.login.errors.phoneNotConfigured };
   }
@@ -200,6 +200,7 @@ export async function loginWithPhone(formData: FormData) {
   const confirmed = await confirmPhoneOtp({
     phone,
     code,
+    locale,
   });
   if (!confirmed.ok) {
     return { error: dict.login.errors[confirmed.errorKey] };

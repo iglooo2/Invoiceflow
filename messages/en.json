@@ -158,7 +158,9 @@
     "resendCode": "Resend code",
     "resendIn": "Resend in {seconds}s",
     "changePhone": "Use a different number",
-    "codeSent": "We sent a text with a sign-in code.",
+    "codeSent": "We sent a text with a verification code.",
+    "codeGate": "Enter it here to continue. A new account is created only after this code checks out — then we send a confirmation text.",
+    "phoneConfirmedSms": "Your InvoiceFlow Studio account is confirmed.",
     "demoPrefix": "Demo:",
     "errors": {
       "invalidEmailPassword": "Enter a valid email and password.",

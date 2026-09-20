@@ -62,8 +62,8 @@ See `.env.example`. Placeholders only — never commit real secrets.
 | `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | optional | optional **runtime** Worker secrets | Auth.js v5 names. Google button enabled at request time; disabled with a hint if missing. `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` are aliases only |
 | `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET` | optional | optional | GitHub button hidden |
 | `TWILIO_ACCOUNT_SID` / `TWILIO_AUTH_TOKEN` | optional | optional **runtime** Worker secrets | Phone SMS button enabled at request time; disabled with a hint if missing |
-| `TWILIO_VERIFY_SERVICE_SID` | optional | optional **runtime** secret | Preferred. Twilio Verify service `VA…` |
-| `TWILIO_FROM_NUMBER` | optional | optional **runtime** secret | Fallback Programmable SMS From number (E.164). Alias: `TWILIO_PHONE_NUMBER` |
+| `TWILIO_VERIFY_SERVICE_SID` | optional | optional **runtime** secret | Twilio Verify service `VA…` for the OTP |
+| `TWILIO_FROM_NUMBER` | optional | optional **runtime** secret | E.164 From number: **confirmation SMS** after new phone signup, and OTP fallback. Alias: `TWILIO_PHONE_NUMBER` |
 | `AUTH_RESEND_KEY` / `EMAIL_FROM` | optional | optional | Magic link hidden; share-link email logs to console |
 | `STRIPE_SECRET_KEY` | optional test key | **runtime secret** `sk_test_…` or `sk_live_…` | Checkout disabled |
 | `STRIPE_PRO_PRICE_ID` | optional | **runtime secret** `price_…` in the **same mode** as the secret | Same |
@@ -87,9 +87,9 @@ Set these under Worker **Settings → Variables and Secrets** (Runtime), not onl
 | `DATABASE_URL` | **yes** | Neon pooled URL (signup is the first path that queries Postgres). |
 | `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | Google button | Auth.js v5 names. Callback `https://invoiceflowstudio.com/api/auth/callback/google`. `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` (Google Cloud Console / NextAuth v4) work as aliases; prefer the `AUTH_GOOGLE_*` names. |
 | `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET` | GitHub button | Hidden until both are set. |
-| `TWILIO_ACCOUNT_SID` / `TWILIO_AUTH_TOKEN` | Phone SMS | Runtime secrets. Pair with `TWILIO_VERIFY_SERVICE_SID` (preferred) or `TWILIO_FROM_NUMBER`. |
-| `TWILIO_VERIFY_SERVICE_SID` | Phone SMS | Twilio Verify `VA…`. Create under Verify → Services. |
-| `TWILIO_FROM_NUMBER` | Phone SMS fallback | E.164 sender if Verify is unset. Alias `TWILIO_PHONE_NUMBER`. |
+| `TWILIO_ACCOUNT_SID` / `TWILIO_AUTH_TOKEN` | Phone SMS | Runtime secrets. Pair with `TWILIO_VERIFY_SERVICE_SID` (OTP) and `TWILIO_FROM_NUMBER` (confirmation SMS). |
+| `TWILIO_VERIFY_SERVICE_SID` | Phone SMS OTP | Twilio Verify `VA…`. Create under Verify → Services. |
+| `TWILIO_FROM_NUMBER` | Phone SMS | E.164 sender for the new-account confirmation SMS (and OTP if Verify is unset). Alias `TWILIO_PHONE_NUMBER`. |
 | `AUTH_RESEND_KEY` / `EMAIL_FROM` | Magic link | Optional. |
 
 Email/password signup does **not** need Google secrets. If account creation fails, the form shows a database or credentials message — not “check the Google Worker secrets.” That copy is reserved for Google (`OAuthSignin`, `OAuthCallback`, …). `OAuthAccountNotLinked` means an email/password user already exists for that Gmail — sign in with email and password (Google with a **verified** email can link to that user). `Configuration` / missing `AUTH_SECRET` means the secret is not on **Runtime** (a Build variable will not do).
@@ -283,8 +283,8 @@ Do this in the Cloudflare dashboard — the agent cannot click it for you:
    | `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET` | Secret | if using GitHub login |
    | `TWILIO_ACCOUNT_SID` | Secret (**runtime**) | Twilio Account SID `AC…` |
    | `TWILIO_AUTH_TOKEN` | Secret (**runtime**) | Twilio Auth Token |
-   | `TWILIO_VERIFY_SERVICE_SID` | Secret (**runtime**) | Verify service `VA…` (preferred over From number) |
-   | `TWILIO_FROM_NUMBER` | Secret (**runtime**) | E.164 From number if you are not using Verify |
+   | `TWILIO_VERIFY_SERVICE_SID` | Secret (**runtime**) | Verify service `VA…` for the OTP |
+   | `TWILIO_FROM_NUMBER` | Secret (**runtime**) | E.164 From number for the new-account confirmation SMS (and OTP if Verify is unset) |
    | `AUTH_RESEND_KEY` | Secret | if using magic links |
    | `EMAIL_FROM` | Variable | `InvoiceFlow Studio <noreply@invoiceflowstudio.com>` |
 
@@ -378,15 +378,22 @@ Without Stripe keys locally, keep `AUTH_DEV_MODE=true` and use **Unlock Pro for 
 
 ## Phone SMS sign-in (Twilio)
 
-`/login` always shows **Continue with phone** (sign-in and create-account). Without Twilio secrets the button is disabled with a hint. With secrets: enter number → SMS code → verify. A new E.164 number creates a User; an existing number signs that user in. The UI does not say whether the phone was already registered.
+`/login` always shows **Continue with phone** (sign-in and create-account). Without Twilio secrets the button is disabled with a hint. With secrets:
 
-Workers call Twilio with `fetch` (Verify `https://verify.twilio.com` or Messages `https://api.twilio.com`). Do not add the Node `twilio` SDK — it is not Workers-safe.
+1. Enter phone number
+2. We send an SMS verification code (Twilio Verify, or Programmable SMS if Verify is unset)
+3. User types that code on the website — **required**. No `User` row is created until this check succeeds
+4. On success: sign in if that E.164 already exists (no confirmation SMS), **or** create the account and send a **second** confirmation SMS (“Your InvoiceFlow Studio account is confirmed”)
+
+The UI does not say whether the phone was already registered.
+
+Workers call Twilio with `fetch` (Verify `https://verify.twilio.com` for the code; Messages `https://api.twilio.com` for Programmable SMS OTP fallback **and** the registration confirmation text). Do not add the Node `twilio` SDK — it is not Workers-safe.
 
 ### Twilio Console
 
 1. Open [Twilio Console](https://console.twilio.com/). Copy **Account SID** (`AC…`) and **Auth Token**.
-2. **Preferred — Verify:** Verify → Services → Create (`InvoiceFlow`). Copy the Service SID (`VA…`). Enable the SMS channel. Optionally geo-permit the countries you serve.
-3. **Fallback — Programmable SMS:** Phone Numbers → buy/verify a number in E.164 (`+15555550100`). Skip this if Verify is set; Verify wins when both exist.
+2. **OTP — Verify (preferred):** Verify → Services → Create (`InvoiceFlow`). Copy the Service SID (`VA…`). Enable the SMS channel.
+3. **Confirmation SMS — Programmable SMS From number:** Phone Numbers → buy/verify a number in E.164 (`+15555550100`). Set this even when Verify handles the OTP — the “account is confirmed” text is a normal SMS, not a Verify check. If Verify is unset, this From number is also used to send the 6-digit code.
 4. For trial accounts, verify destination numbers under Phone Numbers → Verified Caller IDs or they will not receive SMS.
 
 ### Cloudflare Runtime secrets (required for live SMS)
@@ -397,10 +404,10 @@ Set these under Worker **Settings → Variables and Secrets** (Runtime), not Bui
 |---|---|---|
 | `TWILIO_ACCOUNT_SID` | Secret | `ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx` |
 | `TWILIO_AUTH_TOKEN` | Secret | from Twilio console |
-| `TWILIO_VERIFY_SERVICE_SID` | Secret | `VAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx` (preferred) |
-| `TWILIO_FROM_NUMBER` | Secret | `+15555550100` (only if Verify is unset) |
+| `TWILIO_VERIFY_SERVICE_SID` | Secret | `VAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx` (OTP) |
+| `TWILIO_FROM_NUMBER` | Secret | `+15555550100` (**required** for the new-account confirmation SMS; also OTP fallback) |
 
-`TWILIO_PHONE_NUMBER` is accepted as an alias for `TWILIO_FROM_NUMBER`. Changing Runtime secrets does not require a rebuild.
+`TWILIO_PHONE_NUMBER` is accepted as an alias for `TWILIO_FROM_NUMBER`. Changing Runtime secrets does not require a rebuild. If From is missing, OTP via Verify still works, but the confirmation SMS is skipped and logged.
 
 ### Neon schema (required after this release)
 

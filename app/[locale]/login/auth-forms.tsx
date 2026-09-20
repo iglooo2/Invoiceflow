@@ -215,6 +215,7 @@ function PhoneAuthPanel({
         <input type="hidden" name="countryIso" value={country} />
         <input type="hidden" name="nationalNumber" value={national} />
         <p className="text-sm text-muted-foreground">{copy.codeSent}</p>
+        <p className="text-xs text-muted-foreground">{copy.codeGate}</p>
         <div className="grid gap-2">
           <Label htmlFor="sms-code">{copy.codeLabel}</Label>
           <Input
