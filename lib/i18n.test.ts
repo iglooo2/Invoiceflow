@@ -198,7 +198,7 @@ test("localized landing keeps the studio gallery and register CTA", () => {
   assert.doesNotMatch(login, /dict\.login\.errors\.oauthFailed/);
   assert.match(forms, /initialMode = "signin"/);
   assert.match(forms, /copy\.google/);
-  assert.match(forms, /copy\.apple/);
+  assert.doesNotMatch(forms, /copy\.apple/);
   const googleButtonAt = forms.indexOf('provider="google"');
   const emailFieldAt = forms.indexOf('htmlFor="email"');
   assert.ok(googleButtonAt > 0 && googleButtonAt < emailFieldAt, "oauth above email");
@@ -208,9 +208,16 @@ test("localized landing keeps the studio gallery and register CTA", () => {
     assert.ok(dict.home.openStudio.length > 0, locale);
     assert.match(dict.home.headline, /\n/);
     assert.ok(dict.login.google.length > 0, locale);
-    assert.ok(dict.login.apple.length > 0, locale);
-    assert.match(dict.login.appleHint, /AUTH_APPLE_TEAM/);
-    assert.ok(dict.login.errors.appleSecretInvalid.length > 0, locale);
+    assert.equal("apple" in dict.login, false, locale);
+    assert.equal("appleHint" in dict.login, false, locale);
+    assert.equal("appleSecretInvalid" in dict.login.errors, false, locale);
+    assert.equal(dict.login.lede.includes("Apple"), false, locale);
+    assert.equal(dict.login.errors.oauthFailed.includes("Apple"), false, locale);
+    assert.equal(dict.login.errors.oauthFailed.includes("AUTH_APPLE"), false, locale);
+    assert.ok(
+      dict.privacy.paragraphs.every((paragraph) => !paragraph.includes("Apple")),
+      locale,
+    );
     assert.ok(dict.onboarding.profileTitle.length > 0, locale);
     assert.ok(dict.onboarding.businessTitle.length > 0, locale);
     assert.match(dict.onboarding.businessLede, /InvoiceFlow Studio/);

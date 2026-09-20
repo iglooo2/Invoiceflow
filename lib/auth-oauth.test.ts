@@ -8,25 +8,25 @@ import {
   oauthProviderVerifiesEmail,
 } from "./auth-oauth";
 
-test("only Google and Apple are treated as email-verifying OAuth providers", () => {
+test("only Google is treated as an email-verifying OAuth provider", () => {
   assert.equal(oauthProviderVerifiesEmail("google"), true);
-  assert.equal(oauthProviderVerifiesEmail("apple"), true);
+  assert.equal(oauthProviderVerifiesEmail("apple"), false);
   assert.equal(oauthProviderVerifiesEmail("github"), false);
   assert.equal(oauthProviderVerifiesEmail("credentials"), false);
 });
 
-test("Google linking requires a verified email; Apple is trusted", () => {
+test("Google linking requires a verified email", () => {
   assert.equal(googleEmailIsVerified({ email_verified: true }), true);
   assert.equal(googleEmailIsVerified({ email_verified: "true" }), true);
   assert.equal(googleEmailIsVerified({ email_verified: false }), false);
   assert.equal(googleEmailIsVerified({}), false);
   assert.equal(allowVerifiedOauthAccountLinking("google", { email_verified: true }), true);
   assert.equal(allowVerifiedOauthAccountLinking("google", { email_verified: false }), false);
-  assert.equal(allowVerifiedOauthAccountLinking("apple", { email_verified: false }), true);
+  assert.equal(allowVerifiedOauthAccountLinking("apple", { email_verified: false }), false);
   assert.equal(allowVerifiedOauthAccountLinking("github", { email_verified: true }), false);
 });
 
-test("Auth.js Google/Apple providers opt into verified-email account linking", () => {
+test("Auth.js Google provider opts into verified-email account linking", () => {
   const auth = readFileSync(path.join(import.meta.dirname, "auth.ts"), "utf8");
   assert.match(auth, /allowDangerousEmailAccountLinking:\s*true/);
   assert.match(auth, /allowVerifiedOauthAccountLinking/);

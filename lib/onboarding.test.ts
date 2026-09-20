@@ -14,7 +14,7 @@ import {
   parsePhone,
   splitName,
 } from "./onboarding";
-import { appleAuthEnabled, googleAuthEnabled } from "./auth-env";
+import { googleAuthEnabled } from "./auth-env";
 
 test("new users need onboarding; existing users stay ungated", () => {
   assert.equal(needsOnboarding({ onboardingComplete: false }), true);
@@ -74,32 +74,21 @@ test("phone helpers compose, parse, and validate E.164-ish numbers", () => {
   assert.equal(joinName("Maya", ""), "Maya");
 });
 
-test("Google and Apple Sign-In require both id and secret", () => {
+test("Google Sign-In requires both id and secret", () => {
   const previous = {
     googleId: process.env.AUTH_GOOGLE_ID,
     googleSecret: process.env.AUTH_GOOGLE_SECRET,
-    appleId: process.env.AUTH_APPLE_ID,
-    appleSecret: process.env.AUTH_APPLE_SECRET,
   };
   try {
     delete process.env.AUTH_GOOGLE_ID;
     delete process.env.AUTH_GOOGLE_SECRET;
-    delete process.env.AUTH_APPLE_ID;
-    delete process.env.AUTH_APPLE_SECRET;
     assert.equal(googleAuthEnabled(), false);
-    assert.equal(appleAuthEnabled(), false);
     process.env.AUTH_GOOGLE_ID = "id";
     process.env.AUTH_GOOGLE_SECRET = "secret";
-    process.env.AUTH_APPLE_ID = "com.invoiceflowstudio.web";
-    process.env.AUTH_APPLE_SECRET =
-      "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZWFtIn0.dGVzdA";
     assert.equal(googleAuthEnabled(), true);
-    assert.equal(appleAuthEnabled(), true);
   } finally {
     restoreEnv("AUTH_GOOGLE_ID", previous.googleId);
     restoreEnv("AUTH_GOOGLE_SECRET", previous.googleSecret);
-    restoreEnv("AUTH_APPLE_ID", previous.appleId);
-    restoreEnv("AUTH_APPLE_SECRET", previous.appleSecret);
   }
 });
 
@@ -111,27 +100,27 @@ test("schema persists phone, business, and onboarding columns", () => {
   assert.match(schema, /onboardingComplete Boolean @default\(true\)/);
 });
 
-test("login always renders Google and Apple buttons; dashboard gates new users", () => {
+test("login always renders the Google button; dashboard gates new users", () => {
   const forms = readFileSync(path.join(import.meta.dirname, "../app/[locale]/login/auth-forms.tsx"), "utf8");
   const login = readFileSync(path.join(import.meta.dirname, "../app/[locale]/login/page.tsx"), "utf8");
   const auth = readFileSync(path.join(import.meta.dirname, "../lib/auth.ts"), "utf8");
   const layout = readFileSync(path.join(import.meta.dirname, "../app/dashboard/layout.tsx"), "utf8");
   const register = readFileSync(path.join(import.meta.dirname, "../app/actions/auth.ts"), "utf8");
   assert.match(forms, /copy\.google/);
-  assert.match(forms, /copy\.apple/);
+  assert.doesNotMatch(forms, /copy\.apple/);
   assert.match(forms, /disabled/);
   assert.doesNotMatch(forms, /\{googleEnabled \?/);
-  assert.doesNotMatch(forms, /\{appleEnabled \?/);
+  assert.doesNotMatch(forms, /appleEnabled/);
   assert.match(login, /googleEnabled=\{googleAuthEnabled\(\)\}/);
-  assert.match(login, /appleEnabled=\{appleAuthEnabled\(\)\}/);
+  assert.doesNotMatch(login, /appleEnabled/);
   assert.match(login, /force-dynamic/);
   assert.match(login, /await connection\(\)/);
   assert.match(auth, /next-auth\/providers\/google/);
-  assert.match(auth, /next-auth\/providers\/apple/);
+  assert.doesNotMatch(auth, /next-auth\/providers\/apple/);
   assert.match(auth, /NextAuth\(authOptions\)/);
   assert.match(auth, /ensureAuthRuntimeEnv\(\)/);
   assert.match(auth, /allowDangerousEmailAccountLinking/);
-  assert.match(auth, /resolveAppleClientSecret/);
+  assert.doesNotMatch(auth, /resolveAppleClientSecret/);
   assert.match(auth, /createUser/);
   assert.match(auth, /await import\("bcryptjs"\)/);
   assert.match(layout, /needsOnboarding/);
