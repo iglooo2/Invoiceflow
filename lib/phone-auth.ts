@@ -173,7 +173,7 @@ async function sendViaTwilioSms(phone: string, body: string, fetcher: typeof fet
   const credentials = twilioCredentials();
   const from = twilioFromNumber();
   if (!from) {
-    return { ok: false as const, status: 0, json: { error: "missing_from" }, skipped: true as const };
+    return { ok: false as const, status: 0, json: { error: "missing_from" } as TwilioJson, skipped: true as const };
   }
   return twilioFormPost(
     twilioMessagesUrl(credentials.accountSid),
@@ -203,7 +203,7 @@ export async function sendRegistrationConfirmedSms(
     const sent = await sendViaTwilioSms(e164, accountConfirmedSmsBody(locale), fetcher);
     if ("skipped" in sent && sent.skipped) return { ok: false as const, skipped: true as const };
     if (!sent.ok) {
-      console.error("registration confirmation SMS failed", maskPhone(e164), sent.status, sent.json.code);
+      console.error("registration confirmation SMS failed", maskPhone(e164), sent.status, sent.json.code ?? sent.json.error);
       return { ok: false as const, skipped: false as const };
     }
     return { ok: true as const };
@@ -276,7 +276,7 @@ export async function sendPhoneOtp(options: { phone: string; ip: string; locale:
         };
       }
       if (!sent.ok) {
-        console.error("twilio sms send failed", maskPhone(phone), sent.status, sent.json.code);
+        console.error("twilio sms send failed", maskPhone(phone), sent.status, sent.json.code ?? sent.json.error);
         return { ok: false as const, errorKey: "phoneSendFailed" as PhoneAuthErrorKey };
       }
     }

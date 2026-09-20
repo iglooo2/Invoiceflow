@@ -167,6 +167,7 @@ test("phone SMS is wired through Auth.js credentials and the login card", () => 
   assert.match(phoneAuth, /result\.created/);
   assert.match(phoneAuth, /Never creates a User/);
   assert.match(phoneAuth, /Does not create a User/);
+  assert.match(phoneAuth, /json: \{ error: "missing_from" \} as TwilioJson/);
   const createAt = phoneAuth.indexOf("prisma.user.create");
   const sendOtpAt = phoneAuth.indexOf("export async function sendPhoneOtp");
   const confirmAt = phoneAuth.indexOf("export async function confirmPhoneOtp");
