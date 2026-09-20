@@ -2,7 +2,8 @@ import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { appCopy } from "@/lib/i18n-request";
 import { formatJobDateRange, JOB_NEW_PATH, JOB_SCHEMA_WARNING, jobDetailPath, parseJobStatus } from "@/lib/jobs";
-import { listJobsForUser } from "@/lib/job-queries";
+import { countJobsForUser, listJobsForUser } from "@/lib/job-queries";
+import { DASHBOARD_LIST_TAKE } from "@/lib/query-limits";
 import { requireUser } from "@/lib/session";
 import { Button } from "@/components/ui/button";
 import { JobEmptyIllustration } from "@/components/jobs/job-empty-illustration";
@@ -18,12 +19,12 @@ export default async function JobsPage({
   const q = params.q?.trim() ?? "";
   const status = parseJobStatus(params.status);
   const copy = dict.app.jobList;
-  const [loaded, anyJobs] = await Promise.all([
-    listJobsForUser(prisma, { userId: user.id, status, q }),
-    listJobsForUser(prisma, { userId: user.id, take: 1 }),
+  const [loaded, counted] = await Promise.all([
+    listJobsForUser(prisma, { userId: user.id, status, q, take: DASHBOARD_LIST_TAKE }),
+    countJobsForUser(prisma, user.id),
   ]);
   const showIllustratedEmpty =
-    !loaded.error && !loaded.usedLegacySchema && anyJobs.jobs.length === 0 && !q;
+    !loaded.error && !loaded.usedLegacySchema && counted.count === 0 && !q;
 
   return (
     <div className="grid gap-6">

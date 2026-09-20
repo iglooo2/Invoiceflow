@@ -1,5 +1,6 @@
 import { cookies, headers } from "next/headers";
 import { notFound } from "next/navigation";
+import { cache } from "react";
 import { getDictionary } from "./dictionary";
 import { LOCALE_COOKIE, LOCALE_HEADER, negotiateLocale, isLocale, type Locale } from "./i18n";
 
@@ -19,7 +20,7 @@ export async function getRequestLocale(): Promise<Locale> {
   return negotiateLocale(null, headerLocale || cookieLocale);
 }
 
-export async function appCopy() {
+export const appCopy = cache(async () => {
   const locale = await getRequestLocale();
   return { locale, dict: getDictionary(locale) };
-}
+});

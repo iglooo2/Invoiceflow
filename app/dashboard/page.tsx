@@ -21,7 +21,14 @@ export default async function DashboardPage() {
   const [invoices, estimateLoad, invoiceCount, proposalCount] = await Promise.all([
     prisma.invoice.findMany({
       where: { userId: user.id },
-      include: { items: true },
+      select: {
+        id: true,
+        number: true,
+        clientName: true,
+        status: true,
+        taxRate: true,
+        items: { select: { quantity: true, rate: true } },
+      },
       orderBy: { createdAt: "desc" },
       take: 5,
     }),

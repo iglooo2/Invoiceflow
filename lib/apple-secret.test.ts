@@ -3,9 +3,12 @@ import assert from "node:assert/strict";
 import {
   APPLE_CLIENT_SECRET_MAX_AGE_SEC,
   appleClientSecretReady,
+  appleTokenExchangeRequest,
+  cachedAppleClientSecret,
   looksLikeApplePrivateKey,
   looksLikeJwt,
   normalizeApplePrivateKey,
+  resetAppleClientSecretCache,
   resolveAppleClientSecret,
   signAppleClientSecretJwt,
 } from "./apple-secret";
@@ -86,6 +89,50 @@ test("resolveAppleClientSecret returns a JWT as-is and mints one from a P-256 ke
     new TextEncoder().encode(`${parts[0]}.${parts[1]}`),
   );
   assert.equal(ok, true);
+});
+
+test("resolveAppleClientSecret reuses a minted JWT instead of signing every call", async () => {
+  resetAppleClientSecretCache();
+  const { pem } = await generateTestAppleKey();
+  const input = {
+    clientId: "com.invoiceflowstudio.web",
+    secret: pem,
+    teamId: "TEAM12ABCD",
+    keyId: "KEY12ABCDE",
+  };
+  const first = await resolveAppleClientSecret(input);
+  const second = await resolveAppleClientSecret(input);
+  assert.equal(first, second);
+  resetAppleClientSecretCache();
+  const third = await resolveAppleClientSecret(input);
+  assert.notEqual(third, first);
+});
+
+test("appleTokenExchangeRequest is only the Apple Auth.js sign-in/callback paths", () => {
+  assert.equal(appleTokenExchangeRequest(undefined), false);
+  assert.equal(appleTokenExchangeRequest("https://invoiceflowstudio.com/dashboard"), false);
+  assert.equal(appleTokenExchangeRequest("https://invoiceflowstudio.com/api/invoices/abc/pdf"), false);
+  assert.equal(
+    appleTokenExchangeRequest("https://invoiceflowstudio.com/api/auth/callback/apple"),
+    true,
+  );
+  assert.equal(
+    appleTokenExchangeRequest("https://invoiceflowstudio.com/api/auth/signin/apple?callbackUrl=/dashboard"),
+    true,
+  );
+});
+
+test("cachedAppleClientSecret is null until a .p8 is minted", async () => {
+  resetAppleClientSecretCache();
+  assert.equal(cachedAppleClientSecret(), null);
+  const { pem } = await generateTestAppleKey();
+  const jwt = await resolveAppleClientSecret({
+    clientId: "com.invoiceflowstudio.web",
+    secret: pem,
+    teamId: "TEAM12ABCD",
+    keyId: "KEY12ABCDE",
+  });
+  assert.equal(cachedAppleClientSecret(), jwt);
 });
 
 test("resolveAppleClientSecret rejects an expired JWT and a .p8 without team/key id", async () => {

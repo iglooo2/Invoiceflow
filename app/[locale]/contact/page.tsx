@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getCurrentUser } from "@/lib/session";
+import { hasSessionCookie } from "@/lib/session-cookie";
 import { ContactForm } from "@/components/marketing/contact-form";
 import { MarketingFooter, MarketingHeader } from "@/components/marketing/shell";
 import { getDictionary } from "@/lib/dictionary";
@@ -21,12 +21,12 @@ export default async function ContactPage({
   searchParams,
 }: PageProps<"/[locale]/contact">) {
   const { locale, dict } = marketingCopy((await params).locale);
-  const user = await getCurrentUser();
+  const signedIn = await hasSessionCookie();
   const query = await searchParams;
   const topic = typeof query.topic === "string" ? query.topic : undefined;
   return (
     <div>
-      <MarketingHeader signedIn={Boolean(user)} locale={locale} path={CONTACT_PATH} copy={dict.nav} />
+      <MarketingHeader signedIn={signedIn} locale={locale} path={CONTACT_PATH} copy={dict.nav} />
       <main className="mx-auto w-full max-w-6xl px-4 py-10 md:py-16">
         <ContactForm copy={dict.contact} defaultTopic={isContactTopic(topic) ? topic : undefined} />
       </main>

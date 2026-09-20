@@ -4,6 +4,81 @@ import { isEmployeeCountKey, isIndustryKey } from "./onboarding";
 export const SETTINGS_SCHEMA_WARNING =
   "Postgres is missing Studio Settings tables (StudioSettings, TaxRate, Contract). From a laptop, against the Neon direct/unpooled URL (not *-pooler.*): npm run db:push:prod";
 
+/** User columns PDFs and branded documents need — never `include: { user: true }`. */
+export const STUDIO_USER_SELECT = {
+  businessName: true,
+  name: true,
+  businessEmail: true,
+  email: true,
+  businessPhone: true,
+  businessAddress: true,
+  website: true,
+  plan: true,
+  stripeCurrentPeriodEnd: true,
+} as const;
+
+/**
+ * StudioSettings blob columns (base64 data URLs, up to SETTINGS_FILE_MAX_BYTES each).
+ * Loading them on Settings → My Account inflates the Neon + Prisma WASM payload
+ * enough to trip Cloudflare Error 1102.
+ */
+export const STUDIO_SETTINGS_BLOB_COLUMNS = ["logoDataUrl", "licenseDataUrl", "insuranceDataUrl"] as const;
+
+/** Scalar StudioSettings columns used by dashboard pages — never the upload blobs. */
+export const STUDIO_SETTINGS_SCALAR_SELECT = {
+  firstName: true,
+  lastName: true,
+  defaultCurrency: true,
+  documentLocale: true,
+  businessPhone2: true,
+  businessFax: true,
+  addressLine1: true,
+  addressLine2: true,
+  city: true,
+  region: true,
+  country: true,
+  postalCode: true,
+  taxNumber: true,
+  industry: true,
+  licenseFileName: true,
+  insuranceFileName: true,
+  facebookUrl: true,
+  googleBusinessUrl: true,
+  instagramUrl: true,
+  yelpUrl: true,
+  emailEstimateMessage: true,
+  emailInvoiceMessage: true,
+  notifyClientOpensEmail: true,
+  notifyEmailNotDelivered: true,
+  notifyClientSigns: true,
+  notifyClientViews: true,
+  organizeLineItemSections: true,
+  paymentTermsDays: true,
+  footerMessage: true,
+  defaultMarkupPercent: true,
+  referralCode: true,
+} as const;
+
+/** Settings → My Account only needs name, currency, and document locale. */
+export const ACCOUNT_SETTINGS_SELECT = {
+  firstName: true,
+  lastName: true,
+  defaultCurrency: true,
+  documentLocale: true,
+} as const;
+
+export type StudioSettingsUploads = "none" | "logo" | "docs" | "all";
+
+export function studioSettingsSelect(uploads: StudioSettingsUploads = "none") {
+  return {
+    ...STUDIO_SETTINGS_SCALAR_SELECT,
+    ...(uploads === "logo" || uploads === "all" ? { logoDataUrl: true as const } : {}),
+    ...(uploads === "docs" || uploads === "all"
+      ? { licenseDataUrl: true as const, insuranceDataUrl: true as const }
+      : {}),
+  };
+}
+
 export const DEFAULT_EMAIL_ESTIMATE =
   "We are excited about the possibility of working with you.";
 export const DEFAULT_EMAIL_INVOICE = "Thanks for your business!";

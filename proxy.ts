@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { hasAuthjsSessionCookie } from "@/lib/auth-cookies";
 import {
   LOCALE_COOKIE,
   LOCALE_HEADER,
@@ -33,9 +34,7 @@ export function proxy(request: NextRequest) {
       request.headers.get("accept-language"),
       request.cookies.get(LOCALE_COOKIE)?.value,
     );
-    const session =
-      request.cookies.get("authjs.session-token") ??
-      request.cookies.get("__Secure-authjs.session-token");
+    const session = hasAuthjsSessionCookie((name) => request.cookies.get(name));
 
     if (!session) {
       const login = new URL(localizedPath(locale, "/login"), request.url);

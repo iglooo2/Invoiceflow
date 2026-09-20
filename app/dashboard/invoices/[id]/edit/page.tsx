@@ -1,6 +1,8 @@
 import { format } from "date-fns";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
+import { CLIENT_PICKER_SELECT } from "@/lib/job-queries";
+import { DOCUMENT_PICKER_TAKE } from "@/lib/query-limits";
 import { requireUser } from "@/lib/session";
 import { InvoiceForm } from "@/components/invoice-form";
 import { updateInvoice } from "@/app/actions/invoices";
@@ -19,7 +21,12 @@ export default async function EditInvoicePage({
       where: { id, userId: user.id },
       include: { items: { orderBy: { sortOrder: "asc" } } },
     }),
-    prisma.client.findMany({ where: { userId: user.id }, orderBy: { name: "asc" } }),
+    prisma.client.findMany({
+      where: { userId: user.id },
+      select: CLIENT_PICKER_SELECT,
+      orderBy: { name: "asc" },
+      take: DOCUMENT_PICKER_TAKE,
+    }),
   ]);
   if (!invoice) notFound();
 

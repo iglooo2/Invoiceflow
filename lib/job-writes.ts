@@ -29,40 +29,37 @@ function jobScalars(input: JobWriteInput, now: Date) {
 }
 
 async function insertEstimates(db: PrismaClient, jobId: string, estimateIds: string[]) {
-  for (const estimateId of estimateIds) {
-    await db.jobEstimate.create({
-      data: {
-        id: crypto.randomUUID(),
-        jobId,
-        estimateId,
-      },
-    });
-  }
+  if (estimateIds.length === 0) return;
+  await db.jobEstimate.createMany({
+    data: estimateIds.map((estimateId) => ({
+      id: crypto.randomUUID(),
+      jobId,
+      estimateId,
+    })),
+  });
 }
 
 async function insertInvoices(db: PrismaClient, jobId: string, invoiceIds: string[]) {
-  for (const invoiceId of invoiceIds) {
-    await db.jobInvoice.create({
-      data: {
-        id: crypto.randomUUID(),
-        jobId,
-        invoiceId,
-      },
-    });
-  }
+  if (invoiceIds.length === 0) return;
+  await db.jobInvoice.createMany({
+    data: invoiceIds.map((invoiceId) => ({
+      id: crypto.randomUUID(),
+      jobId,
+      invoiceId,
+    })),
+  });
 }
 
 async function insertVisits(db: PrismaClient, jobId: string, visits: JobVisitInput[]) {
-  for (const visit of visits) {
-    await db.jobVisit.create({
-      data: {
-        id: crypto.randomUUID(),
-        jobId,
-        notes: visit.notes,
-        scheduledAt: visit.scheduledAt ? new Date(visit.scheduledAt) : null,
-      },
-    });
-  }
+  if (visits.length === 0) return;
+  await db.jobVisit.createMany({
+    data: visits.map((visit) => ({
+      id: crypto.randomUUID(),
+      jobId,
+      notes: visit.notes,
+      scheduledAt: visit.scheduledAt ? new Date(visit.scheduledAt) : null,
+    })),
+  });
 }
 
 export async function insertJobWithRelations(
