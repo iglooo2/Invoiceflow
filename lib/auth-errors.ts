@@ -44,7 +44,7 @@ export function isCredentialsAuthCode(code: string | null | undefined): boolean 
 /**
  * Auth.js sends failed sign-ins to `pages.error` (`/login`) as `?error=Code`.
  * The login page used to map *every* code — including CredentialsSignin after
- * email/password register — to the Google/Apple secrets message.
+ * email/password register — to the Google OAuth secrets message.
  */
 export function loginQueryErrorMessage(code: string | null | undefined, errors: LoginErrors): string | null {
   if (!code) return null;
@@ -58,7 +58,7 @@ export function loginQueryErrorMessage(code: string | null | undefined, errors: 
   return errors.signInIncomplete;
 }
 
-/** Google/Apple button failures should never look like an email/password problem. */
+/** Google OAuth button failures should never look like an email/password problem. */
 export function oauthActionErrorMessage(code: string | null | undefined, errors: LoginErrors): string {
   if (code && normalizeAuthErrorCode(code) === "OAuthAccountNotLinked") {
     return errors.oauthAccountNotLinked;

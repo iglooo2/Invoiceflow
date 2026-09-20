@@ -134,7 +134,7 @@
   },
   "login": {
     "headline": "Reprenez le travail. On s’occupe du PDF.",
-    "lede": "L’e-mail et le mot de passe fonctionnent sans clé API. Continuez avec Google ou Apple — les boutons restent visibles si ces secrets Worker ne sont pas encore définis.",
+    "lede": "L’e-mail et le mot de passe fonctionnent sans clé API. Continuez avec Google — le bouton reste visible si ces secrets Worker ne sont pas encore définis.",
     "signIn": "Connexion",
     "createAccount": "Créer un compte",
     "name": "Nom",
@@ -144,10 +144,8 @@
     "magicLabel": "Ou envoyer un lien magique",
     "sendMagic": "Envoyer le lien magique",
     "google": "Continuer avec Google",
-    "apple": "Continuer avec Apple",
     "github": "Continuer avec GitHub",
     "googleHint": "Google Sign-In n’est pas configuré. Ajoutez AUTH_GOOGLE_ID et AUTH_GOOGLE_SECRET comme secrets Runtime Worker Cloudflare (noms Auth.js). GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET sont acceptés comme alias.",
-    "appleHint": "Apple Sign-In n’est pas configuré. Ajoutez AUTH_APPLE_ID et AUTH_APPLE_SECRET (clé .p8 ou JWT) comme secrets Worker. Si AUTH_APPLE_SECRET est le fichier .p8, définissez aussi AUTH_APPLE_TEAM et AUTH_APPLE_KEY_ID.",
     "githubHint": "GitHub OAuth apparaît ici lorsque AUTH_GITHUB_ID et AUTH_GITHUB_SECRET sont définis.",
     "demoPrefix": "Démo :",
     "errors": {
@@ -159,10 +157,9 @@
       "signInFailed": "Compte créé, mais la connexion a échoué. Essayez de vous connecter.",
       "magicEmail": "Saisissez l’e-mail pour le lien magique.",
       "magicFailed": "Impossible d’envoyer un lien magique. Vérifiez AUTH_RESEND_KEY.",
-      "oauthFailed": "La connexion Google ou Apple n’a pas abouti. Vérifiez AUTH_GOOGLE_ID / AUTH_GOOGLE_SECRET (ou AUTH_APPLE_ID / AUTH_APPLE_SECRET) comme secrets Runtime du Worker, et l’URL de callback OAuth.",
+      "oauthFailed": "La connexion Google n’a pas abouti. Vérifiez AUTH_GOOGLE_ID / AUTH_GOOGLE_SECRET comme secrets Runtime du Worker, et l’URL de callback OAuth.",
       "oauthAccountNotLinked": "Un compte InvoiceFlow existe déjà avec cet e-mail. Connectez-vous avec e-mail et mot de passe (celui créé pour cette adresse), ou réessayez Google pour lier les comptes.",
       "oauthNotConfigured": "Cette méthode de connexion n’est pas configurée sur ce serveur.",
-      "appleSecretInvalid": "Apple Sign-In est mal configuré. AUTH_APPLE_SECRET doit être un JWT, ou une clé .p8 avec AUTH_APPLE_TEAM et AUTH_APPLE_KEY_ID.",
       "configuration": "AUTH_SECRET est absent au runtime du Worker. Ajoutez AUTH_SECRET comme secret Runtime Cloudflare (pas seulement une variable de Build) et AUTH_URL=https://invoiceflowstudio.com comme variable Runtime.",
       "signInIncomplete": "Cette connexion n’a pas abouti. Essayez e-mail et mot de passe, ou réessayez."
     }
@@ -228,7 +225,7 @@
     "updated": "Dernière mise à jour : 15 septembre 2026. Brouillon MVP — remplacez-le par une politique relue avant le lancement.",
     "paragraphs": [
       "Nous collectons l’e-mail du compte, les informations du profil studio, les factures, les propositions et les métadonnées de facturation nécessaires au fonctionnement du produit.",
-      "L’authentification peut utiliser e-mail/mot de passe, Google, Apple, GitHub OAuth et, en option, des liens magiques Resend. Les paiements passent par Stripe ; nous stockons les identifiants client et d’abonnement, pas les numéros de carte complets.",
+      "L’authentification peut utiliser e-mail/mot de passe, Google, GitHub OAuth et, en option, des liens magiques Resend. Les paiements passent par Stripe ; nous stockons les identifiants client et d’abonnement, pas les numéros de carte complets.",
       "Les liens de partage publics sont des jetons difficiles à deviner. Toute personne disposant du lien peut voir le document. N’envoyez pas de jetons que vous voulez garder privés.",
       "Contactez l’opérateur sur invoiceflowstudio.com pour demander l’export ou la suppression des données de votre compte."
     ]
