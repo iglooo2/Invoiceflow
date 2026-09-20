@@ -120,6 +120,8 @@ test("login phone copy is translated and does not leak whether a number exists",
     assert.equal(phoneExistenceLeak(dict.login.codeSent), false, locale);
     assert.equal(phoneExistenceLeak(dict.login.codeGate), false, locale);
     assert.ok(dict.login.codeGate.length > 0, locale);
+    assert.ok(dict.login.resendCode.length > 0, locale);
+    assert.match(dict.login.resendIn, /\{seconds\}s/, locale);
     assert.match(dict.login.phoneConfirmedSms, /InvoiceFlow Studio/, locale);
     assert.equal(/\d{4,}/.test(dict.login.phoneConfirmedSms), false, locale);
     assert.equal(phoneExistenceLeak(dict.login.errors.phoneSendFailed), false, locale);
@@ -149,6 +151,11 @@ test("phone SMS is wired through Auth.js credentials and the login card", () => 
   assert.match(forms, /requestPhoneOtp/);
   assert.match(forms, /one-time-code/);
   assert.match(forms, /copy\.codeGate/);
+  assert.match(forms, /data-testid="phone-resend"/);
+  assert.match(forms, /PHONE_OTP_COOLDOWN_SECONDS/);
+  assert.match(forms, /text-xs text-muted-foreground/);
+  assert.match(forms, /copy\.resendCode/);
+  assert.match(forms, /copy\.resendIn/);
   assert.match(login, /smsEnabled=\{smsAuthEnabled\(\)\}/);
   assert.match(phoneAuth, /typeof fetch = fetch/);
   assert.match(phoneAuth, /twilioVerifySendUrl/);

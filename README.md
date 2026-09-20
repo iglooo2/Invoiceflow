@@ -385,6 +385,8 @@ Without Stripe keys locally, keep `AUTH_DEV_MODE=true` and use **Unlock Pro for 
 3. User types that code on the website — **required**. No `User` row is created until this check succeeds
 4. On success: sign in if that E.164 already exists (no confirmation SMS), **or** create the account and send a **second** confirmation SMS (“Your InvoiceFlow Studio account is confirmed”)
 
+After each successful send, **Resend code** stays locked for 60 seconds (`Resend in 45s` while counting down), then becomes a small clickable link under the SMS code field.
+
 The UI does not say whether the phone was already registered.
 
 Workers call Twilio with `fetch` (Verify `https://verify.twilio.com` for the code; Messages `https://api.twilio.com` for Programmable SMS OTP fallback **and** the registration confirmation text). Do not add the Node `twilio` SDK — it is not Workers-safe.

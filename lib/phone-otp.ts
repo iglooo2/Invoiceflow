@@ -2,7 +2,8 @@ import { getDictionary } from "@/lib/dictionary";
 import { isLocale } from "@/lib/i18n";
 import { composePhone, digitsOnly, isValidPhone } from "@/lib/onboarding";
 
-export const PHONE_OTP_COOLDOWN_MS = 45_000;
+export const PHONE_OTP_COOLDOWN_SECONDS = 60;
+export const PHONE_OTP_COOLDOWN_MS = PHONE_OTP_COOLDOWN_SECONDS * 1000;
 export const PHONE_OTP_WINDOW_MS = 60 * 60 * 1000;
 export const PHONE_OTP_MAX_SENDS_PER_PHONE = 5;
 export const PHONE_OTP_MAX_SENDS_PER_IP = 10;

@@ -15,6 +15,7 @@ import { Input, Label, Select } from "@/components/ui/input";
 import type { Dictionary } from "@/lib/dictionary";
 import { formatMessage } from "@/lib/i18n";
 import { COUNTRY_OPTIONS, DEFAULT_COUNTRY_ISO } from "@/lib/onboarding";
+import { PHONE_OTP_COOLDOWN_SECONDS } from "@/lib/phone-otp";
 
 export function AuthForms({
   githubEnabled,
@@ -150,6 +151,7 @@ function PhoneAuthPanel({
   const [code, setCode] = useState("");
   const [retryAfter, setRetryAfter] = useState(0);
   const [pending, setPending] = useState(false);
+  const [hasSent, setHasSent] = useState(false);
   const hintId = "phone-sms-hint";
 
   useEffect(() => {
@@ -191,9 +193,10 @@ function PhoneAuthPanel({
         if (result.retryAfterSeconds) setRetryAfter(result.retryAfterSeconds);
         return;
       }
+      setHasSent(true);
       setStep("code");
       setCode("");
-      setRetryAfter(result.retryAfterSeconds ?? 45);
+      setRetryAfter(result.retryAfterSeconds ?? PHONE_OTP_COOLDOWN_SECONDS);
     } finally {
       setPending(false);
     }
@@ -230,33 +233,29 @@ function PhoneAuthPanel({
             required
             placeholder={copy.codePlaceholder}
           />
+          <ResendCodeLink
+            pending={pending}
+            retryAfter={retryAfter}
+            copy={copy}
+            onResend={() => void sendCode()}
+          />
         </div>
         <Button type="submit" className="w-full">
           {copy.verifyCode}
         </Button>
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            disabled={pending || retryAfter > 0}
-            onClick={() => void sendCode()}
-          >
-            {retryAfter > 0 ? formatMessage(copy.resendIn, { seconds: retryAfter }) : copy.resendCode}
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              setStep("phone");
-              setCode("");
-              onError(null);
-            }}
-          >
-            {copy.changePhone}
-          </Button>
-        </div>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="justify-self-start"
+          onClick={() => {
+            setStep("phone");
+            setCode("");
+            onError(null);
+          }}
+        >
+          {copy.changePhone}
+        </Button>
       </form>
     );
   }
@@ -277,7 +276,10 @@ function PhoneAuthPanel({
             id="phone-country"
             name="countryIso"
             value={country}
-            onChange={(event) => setCountry(event.target.value)}
+            onChange={(event) => {
+              setCountry(event.target.value);
+              if (hasSent) setRetryAfter(0);
+            }}
           >
             {COUNTRY_OPTIONS.map((item) => (
               <option key={item.iso} value={item.iso}>
@@ -292,11 +294,22 @@ function PhoneAuthPanel({
             id="phone-national"
             name="nationalNumber"
             value={national}
-            onChange={(event) => setNational(event.target.value)}
+            onChange={(event) => {
+              setNational(event.target.value);
+              if (hasSent) setRetryAfter(0);
+            }}
             inputMode="tel"
             autoComplete="tel-national"
             required
           />
+          {hasSent ? (
+            <ResendCodeLink
+              pending={pending}
+              retryAfter={retryAfter}
+              copy={copy}
+              onResend={() => void sendCode()}
+            />
+          ) : null}
         </div>
       </div>
       <Button type="submit" variant="outline" className="w-full justify-center" disabled={pending}>
@@ -304,6 +317,33 @@ function PhoneAuthPanel({
         {copy.phone}
       </Button>
     </form>
+  );
+}
+
+function ResendCodeLink({
+  pending,
+  retryAfter,
+  copy,
+  onResend,
+}: {
+  pending: boolean;
+  retryAfter: number;
+  copy: Dictionary["login"];
+  onResend: () => void;
+}) {
+  const locked = pending || retryAfter > 0;
+  return (
+    <button
+      type="button"
+      data-testid="phone-resend"
+      className="justify-self-start text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline disabled:pointer-events-none disabled:no-underline disabled:opacity-60"
+      disabled={locked}
+      aria-disabled={locked}
+      aria-live="polite"
+      onClick={onResend}
+    >
+      {retryAfter > 0 ? formatMessage(copy.resendIn, { seconds: retryAfter }) : copy.resendCode}
+    </button>
   );
 }
 

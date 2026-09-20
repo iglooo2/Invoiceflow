@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   PHONE_OTP_COOLDOWN_MS,
+  PHONE_OTP_COOLDOWN_SECONDS,
   PHONE_OTP_MAX_SENDS_PER_PHONE,
   accountConfirmedSmsBody,
   createPhoneTicket,
@@ -53,8 +54,21 @@ test("send gate enforces cooldown and hourly caps without leaking account state"
   assert.equal(cooling.ok, false);
   if (cooling.ok) return;
   assert.equal(cooling.reason, "cooldown");
-  assert.ok(cooling.retryAfterSeconds > 0);
-  assert.ok(cooling.retryAfterSeconds <= Math.ceil(PHONE_OTP_COOLDOWN_MS / 1000));
+  assert.equal(PHONE_OTP_COOLDOWN_SECONDS, 60);
+  assert.equal(PHONE_OTP_COOLDOWN_MS, 60_000);
+  assert.equal(cooling.retryAfterSeconds, 59);
+
+  const justSent = nextSendState({
+    now,
+    windowStart: first.windowStart,
+    sendCount: first.sendCount,
+    lastSentAt: now,
+    maxSends: PHONE_OTP_MAX_SENDS_PER_PHONE,
+  });
+  assert.equal(justSent.ok, false);
+  if (justSent.ok) return;
+  assert.equal(justSent.reason, "cooldown");
+  assert.equal(justSent.retryAfterSeconds, 60);
 
   const capped = nextSendState({
     now: now + PHONE_OTP_COOLDOWN_MS + 1,
