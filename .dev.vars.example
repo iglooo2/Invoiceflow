@@ -34,6 +34,13 @@ STRIPE_PRO_PRICE_ID="price_..."
 # SPONSOR_LOGO_URL=""
 # SPONSOR_BLURB=""
 
+# Contact form + magic-link email. Production Worker Runtime Secret:
+# AUTH_RESEND_KEY (alias RESEND_API_KEY). EMAIL_FROM must be a verified domain.
+# Optional CONTACT_TO overrides the inbox (defaults to lib/site.ts CONTACT_EMAIL).
+# AUTH_RESEND_KEY=""
+# EMAIL_FROM="InvoiceFlow Studio <noreply@invoiceflowstudio.com>"
+# CONTACT_TO="galit.igor@yahoo.com"
+
 # QuickBooks Online (optional). Live OAuth is not enabled yet.
 # INTUIT_CLIENT_ID=""
 # INTUIT_CLIENT_SECRET=""

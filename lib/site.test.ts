@@ -41,6 +41,8 @@ test("Message us links to the contact page and never prints the inbox address", 
   assert.equal(form.includes(CONTACT_EMAIL), false);
   assert.equal(form.includes("#050a1f"), false);
   assert.match(form, /defaultTopic/);
+  assert.match(form, /CONTACT_API_PATH/);
+  assert.doesNotMatch(form, /submitContactRequest/);
 
   const page = readFileSync(path.join(import.meta.dirname, "../app/[locale]/contact/page.tsx"), "utf8");
   assert.match(page, /MarketingHeader/);

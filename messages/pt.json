@@ -255,6 +255,8 @@
     "successBody": "Obrigado — responderemos no e-mail informado.",
     "sendAnother": "Enviar outra solicitação",
     "error": "Não foi possível enviar agora. Tente de novo em instantes.",
+    "notConfigured": "O e-mail não está configurado. Defina AUTH_RESEND_KEY (ou RESEND_API_KEY) e EMAIL_FROM como secrets Runtime do Worker da Cloudflare. EMAIL_FROM deve usar um domínio verificado no Resend.",
+    "deliveryFailed": "O serviço de e-mail recusou a mensagem. Confirme que EMAIL_FROM usa um domínio verificado no Resend e que CONTACT_TO é uma caixa válida.",
     "invalid": "Preencha os campos obrigatórios.",
     "bold": "Negrito",
     "italic": "Itálico",

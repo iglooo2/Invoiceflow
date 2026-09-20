@@ -1,29 +1,45 @@
 import "server-only";
-import { Resend } from "resend";
 import type { ContactTopic } from "@/lib/contact";
+import { classifyResendFailure, resolveContactMailbox, type ContactSendReason } from "@/lib/contact-delivery";
 import { CONTACT_EMAIL } from "@/lib/site";
 import { readAuthSecret, resendEnabled } from "@/lib/auth-env";
-import { getAppUrl, isDevMode } from "@/lib/utils";
+import { postResendEmail, type ResendAttachment } from "@/lib/resend-client";
+import { ensureCloudflareContext } from "@/lib/runtime-env";
+import { getAppUrl } from "@/lib/utils";
 
-function getResend() {
-  const key = readAuthSecret("AUTH_RESEND_KEY") || readAuthSecret("RESEND_API_KEY");
-  if (!key) return null;
-  return new Resend(key);
+const DEFAULT_FROM = "InvoiceFlow Studio <noreply@invoiceflowstudio.com>";
+
+export const CONTACT_RESEND_KEY_MISSING =
+  "Contact email is not configured. Set AUTH_RESEND_KEY (or RESEND_API_KEY) as a Cloudflare Worker Runtime secret, plus EMAIL_FROM as a Runtime variable using a Resend-verified domain (e.g. InvoiceFlow Studio <noreply@invoiceflowstudio.com>). Optional CONTACT_TO overrides the inbox.";
+
+export type ContactSendResult =
+  | { sent: true; via: "resend" }
+  | { sent: false; via: "log" | "resend"; reason: ContactSendReason };
+
+async function resendRuntime() {
+  await ensureCloudflareContext();
+  const apiKey = readAuthSecret("AUTH_RESEND_KEY") || readAuthSecret("RESEND_API_KEY");
+  const from = readAuthSecret("EMAIL_FROM") || DEFAULT_FROM;
+  const to = resolveContactMailbox(readAuthSecret("CONTACT_TO"), readAuthSecret("CONTACT_EMAIL"), CONTACT_EMAIL);
+  return { apiKey, from, to };
 }
 
 export async function sendMagicLinkEmail(identifier: string, url: string) {
-  const from = readAuthSecret("EMAIL_FROM") || "InvoiceFlow Studio <noreply@invoiceflowstudio.com>";
-  const resend = getResend();
-  if (!resend) {
+  const { apiKey, from } = await resendRuntime();
+  if (!apiKey) {
     console.info(`[InvoiceFlow] Magic link for ${identifier}: ${url}`);
     return;
   }
-  await resend.emails.send({
+  const result = await postResendEmail({
+    apiKey,
     from,
     to: identifier,
     subject: "Your InvoiceFlow sign-in link",
     html: `<p>Sign in to InvoiceFlow:</p><p><a href="${url}">${url}</a></p>`,
   });
+  if (!result.sent) {
+    console.error("sendMagicLinkEmail failed", result.error);
+  }
 }
 
 export async function sendDocumentEmail(options: {
@@ -33,20 +49,24 @@ export async function sendDocumentEmail(options: {
   body: string;
   link: string;
 }) {
-  const resend = getResend();
-  const from = readAuthSecret("EMAIL_FROM") || "InvoiceFlow Studio <noreply@invoiceflowstudio.com>";
-  if (!resend) {
+  const { apiKey, from } = await resendRuntime();
+  if (!apiKey) {
     console.info(
       `[InvoiceFlow] Email skipped (no Resend key). Would send to ${options.to}: ${options.subject} ${options.link}`,
     );
     return { sent: false as const };
   }
-  await resend.emails.send({
+  const result = await postResendEmail({
+    apiKey,
     from,
     to: options.to,
     subject: options.subject,
     html: `<p>${options.heading}</p><p>${options.body}</p><p><a href="${options.link}">Open document</a></p>`,
   });
+  if (!result.sent) {
+    console.error("sendDocumentEmail failed", result.error);
+    return { sent: false as const };
+  }
   return { sent: true as const };
 }
 
@@ -56,10 +76,9 @@ export async function sendContactRequest(options: {
   subject: string;
   descriptionHtml: string;
   description: string;
-  attachments?: { filename: string; content: Buffer }[];
-}) {
-  const from = readAuthSecret("EMAIL_FROM") || "InvoiceFlow Studio <noreply@invoiceflowstudio.com>";
-  const resend = getResend();
+  attachments?: ResendAttachment[];
+}): Promise<ContactSendResult> {
+  const { apiKey, from, to } = await resendRuntime();
   const html = `
     <p><strong>Topic:</strong> ${options.topic}</p>
     <p><strong>From:</strong> ${options.email}</p>
@@ -67,28 +86,34 @@ export async function sendContactRequest(options: {
     ${options.descriptionHtml || `<p>${options.description}</p>`}
   `;
 
-  if (!resend) {
-    console.info("[InvoiceFlow] Contact request stored locally (no Resend key)", {
+  if (!apiKey) {
+    console.error(CONTACT_RESEND_KEY_MISSING);
+    console.info("[InvoiceFlow] Contact request not emailed (no Resend key)", {
       topic: options.topic,
       subject: options.subject,
       email: options.email,
+      to,
       files: options.attachments?.length ?? 0,
     });
-    return { sent: isDevMode(), via: "log" as const };
+    return { sent: false, via: "log", reason: "not_configured" };
   }
 
-  await resend.emails.send({
+  const result = await postResendEmail({
+    apiKey,
     from,
-    to: CONTACT_EMAIL,
+    to,
     replyTo: options.email,
     subject: `[InvoiceFlow] ${options.topic}: ${options.subject}`,
     html,
-    attachments: options.attachments?.map((file) => ({
-      filename: file.filename,
-      content: file.content,
-    })),
+    text: options.description,
+    attachments: options.attachments,
   });
-  return { sent: true, via: "resend" as const };
+  if (!result.sent) {
+    const reason = classifyResendFailure(result.error);
+    console.error("sendContactRequest failed", result.error, { reason, from, to });
+    return { sent: false, via: "resend", reason };
+  }
+  return { sent: true, via: "resend" };
 }
 
 export function publicInvoiceUrl(token: string) {

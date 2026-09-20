@@ -44,6 +44,7 @@ test("shouldSkipLocale leaves app, API, and share routes alone", () => {
   assert.equal(shouldSkipLocale("/dashboard"), true);
   assert.equal(shouldSkipLocale("/dashboard/invoices"), true);
   assert.equal(shouldSkipLocale("/api/auth/session"), true);
+  assert.equal(shouldSkipLocale("/api/contact"), true);
   assert.equal(shouldSkipLocale("/share/i/abc"), true);
   assert.equal(shouldSkipLocale("/r/AbC123_xyz"), true);
   assert.equal(shouldSkipLocale("/icon"), true);
@@ -163,6 +164,8 @@ test("login and dashboard common errors exist in every locale", () => {
     assert.ok(dict.meta.contactTitle.length > 0, locale);
     assert.ok(dict.meta.advertiseTitle.length > 0, locale);
     assert.ok(dict.contact.submit.length > 0, locale);
+    assert.match(dict.contact.notConfigured, /AUTH_RESEND_KEY/);
+    assert.match(dict.contact.deliveryFailed, /EMAIL_FROM/);
     assert.ok(dict.nav.advertise.length > 0, locale);
     assert.ok(dict.partner.label.length > 0, locale);
     assert.ok(dict.partner.sponsored.length > 0, locale);

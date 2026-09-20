@@ -5,6 +5,43 @@ export type ContactTopic = (typeof CONTACT_TOPICS)[number];
 export const MAX_CONTACT_FILES = 4;
 export const MAX_CONTACT_FILE_BYTES = 2 * 1024 * 1024;
 
+/** Same-origin Route Handler — Server Actions + multipart hang on OpenNext Workers. */
+export const CONTACT_API_PATH = "/api/contact";
+
+/** Client abort before Cloudflare hung-worker cancellation (~30s). */
+export const CONTACT_FETCH_TIMEOUT_MS = 25_000;
+
+export type ContactSubmitResult = { ok: true } | { ok: false; error: string };
+
+export type ContactAttachment = { filename: string; content: Uint8Array };
+
+export function isContactUpload(item: FormDataEntryValue): item is Blob {
+  return typeof Blob !== "undefined" && item instanceof Blob && item.size > 0;
+}
+
+export function contactUploadFilename(file: Blob) {
+  const name = "name" in file && typeof file.name === "string" ? file.name : "";
+  return name.replace(/[^\w.\- ()]/g, "_").slice(0, 80) || "attachment";
+}
+
+export async function collectContactAttachments(formData: FormData) {
+  const files = formData.getAll("attachments").filter(isContactUpload);
+  if (files.length > MAX_CONTACT_FILES) {
+    return { success: false as const };
+  }
+  const attachments: ContactAttachment[] = [];
+  for (const file of files) {
+    if (file.size > MAX_CONTACT_FILE_BYTES) {
+      return { success: false as const };
+    }
+    attachments.push({
+      filename: contactUploadFilename(file),
+      content: new Uint8Array(await file.arrayBuffer()),
+    });
+  }
+  return { success: true as const, attachments };
+}
+
 const ALLOWED_TAGS = new Set(["P", "BR", "STRONG", "B", "EM", "I", "UL", "OL", "LI", "A", "BLOCKQUOTE", "DIV", "SPAN"]);
 
 export function isContactTopic(value: string | undefined | null): value is ContactTopic {

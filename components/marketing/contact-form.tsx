@@ -13,9 +13,15 @@ import {
   Paperclip,
   Quote,
 } from "lucide-react";
-import { submitContactRequest } from "@/app/actions/contact";
 import { Button } from "@/components/ui/button";
-import { CONTACT_TOPICS, isContactTopic, type ContactTopic } from "@/lib/contact";
+import {
+  CONTACT_API_PATH,
+  CONTACT_FETCH_TIMEOUT_MS,
+  CONTACT_TOPICS,
+  isContactTopic,
+  type ContactSubmitResult,
+  type ContactTopic,
+} from "@/lib/contact";
 import type { Dictionary } from "@/lib/dictionary";
 
 const fieldClass =
@@ -83,15 +89,28 @@ export function ContactForm({
         data.set("descriptionHtml", editorRef.current?.innerHTML ?? "");
         data.delete("attachments");
         for (const file of files) data.append("attachments", file);
-        const result = await submitContactRequest(data);
-        setPending(false);
-        if (result.ok) {
-          setSent(true);
-          form.reset();
-          if (editorRef.current) editorRef.current.innerHTML = "";
-          return;
+        const controller = new AbortController();
+        const timer = window.setTimeout(() => controller.abort(), CONTACT_FETCH_TIMEOUT_MS);
+        try {
+          const response = await fetch(CONTACT_API_PATH, {
+            method: "POST",
+            body: data,
+            signal: controller.signal,
+          });
+          const result = (await response.json()) as ContactSubmitResult;
+          if (result.ok) {
+            setSent(true);
+            form.reset();
+            if (editorRef.current) editorRef.current.innerHTML = "";
+            return;
+          }
+          setError(result.error || copy.error);
+        } catch {
+          setError(copy.error);
+        } finally {
+          window.clearTimeout(timer);
+          setPending(false);
         }
-        setError(result.error);
       }}
     >
       <div className="text-center">
