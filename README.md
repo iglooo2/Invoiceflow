@@ -64,7 +64,7 @@ See `.env.example`. Placeholders only — never commit real secrets.
 | `TWILIO_ACCOUNT_SID` / `TWILIO_AUTH_TOKEN` | optional | optional **runtime** Worker secrets | Phone SMS button enabled at request time; disabled with a hint if missing |
 | `TWILIO_VERIFY_SERVICE_SID` | optional | optional **runtime** secret | Twilio Verify service `VA…` for the OTP |
 | `TWILIO_FROM_NUMBER` | optional | optional **runtime** secret | E.164 From number: **confirmation SMS** after new phone signup, and OTP fallback. Alias: `TWILIO_PHONE_NUMBER` |
-| `AUTH_RESEND_KEY` / `EMAIL_FROM` | optional | optional | Magic link hidden; share-link email logs to console |
+| `AUTH_RESEND_KEY` / `EMAIL_FROM` | optional | **Runtime secret** (contact form + magic link) | Contact form shows “Email isn’t configured”; magic link hidden |
 | `STRIPE_SECRET_KEY` | optional test key | **runtime secret** `sk_test_…` or `sk_live_…` | Checkout disabled |
 | `STRIPE_PRO_PRICE_ID` | optional | **runtime secret** `price_…` in the **same mode** as the secret | Same |
 | `STRIPE_WEBHOOK_SECRET` | from Stripe CLI | **runtime secret** `whsec_…` from the matching-mode endpoint | Webhook route returns 501 |
@@ -90,7 +90,7 @@ Set these under Worker **Settings → Variables and Secrets** (Runtime), not onl
 | `TWILIO_ACCOUNT_SID` / `TWILIO_AUTH_TOKEN` | Phone SMS | Runtime secrets. Pair with `TWILIO_VERIFY_SERVICE_SID` (OTP) and `TWILIO_FROM_NUMBER` (confirmation SMS). |
 | `TWILIO_VERIFY_SERVICE_SID` | Phone SMS OTP | Twilio Verify `VA…`. Create under Verify → Services. |
 | `TWILIO_FROM_NUMBER` | Phone SMS | E.164 sender for the new-account confirmation SMS (and OTP if Verify is unset). Alias `TWILIO_PHONE_NUMBER`. |
-| `AUTH_RESEND_KEY` / `EMAIL_FROM` | Magic link | Optional. |
+| `AUTH_RESEND_KEY` / `EMAIL_FROM` | Contact form + magic link | **Required Runtime Secret** for `/contact` (Message us). `RESEND_API_KEY` is an alias. `EMAIL_FROM` must be a Resend-verified domain (`InvoiceFlow Studio <noreply@invoiceflowstudio.com>`). Optional Runtime `CONTACT_TO` overrides the inbox (`lib/site.ts` `CONTACT_EMAIL`). Without the key, submit shows **Email isn’t configured** instead of hanging or a vague failure. |
 
 Email/password signup does **not** need Google secrets. If account creation fails, the form shows a database or credentials message — not “check the Google Worker secrets.” That copy is reserved for Google (`OAuthSignin`, `OAuthCallback`, …). `OAuthAccountNotLinked` means an email/password user already exists for that Gmail — sign in with email and password (Google with a **verified** email can link to that user). `Configuration` / missing `AUTH_SECRET` means the secret is not on **Runtime** (a Build variable will not do).
 
@@ -285,8 +285,9 @@ Do this in the Cloudflare dashboard — the agent cannot click it for you:
    | `TWILIO_AUTH_TOKEN` | Secret (**runtime**) | Twilio Auth Token |
    | `TWILIO_VERIFY_SERVICE_SID` | Secret (**runtime**) | Verify service `VA…` for the OTP |
    | `TWILIO_FROM_NUMBER` | Secret (**runtime**) | E.164 From number for the new-account confirmation SMS (and OTP if Verify is unset) |
-   | `AUTH_RESEND_KEY` | Secret | if using magic links |
-   | `EMAIL_FROM` | Variable | `InvoiceFlow Studio <noreply@invoiceflowstudio.com>` |
+   | `AUTH_RESEND_KEY` | Secret (**runtime**) | **Required for Message us / `/contact`.** Resend API key (`re_…`). Alias: `RESEND_API_KEY`. A Build-only variable is not enough — the Worker reads it at request time via `getCloudflareContext()`. |
+   | `EMAIL_FROM` | Variable (**runtime**) | `InvoiceFlow Studio <noreply@invoiceflowstudio.com>` — **domain must be verified in Resend** or delivery is rejected |
+   | `CONTACT_TO` | Variable (**runtime**, optional) | Inbox for Message us. Defaults to `galit.igor@yahoo.com` (`CONTACT_EMAIL` in `lib/site.ts`). Also accepts `CONTACT_EMAIL` as an alias. |
 
    Also add **`PRISMA_PROVIDER=postgresql` as a Build variable** (required). `npm run cf:build` now runs `prisma generate` in Postgres mode even if Build `DATABASE_URL` is missing or still `file:./dev.db`. The real Neon URL must still be a **runtime** secret. Optionally set Build `DATABASE_URL` to any `postgresql://…` placeholder; do not rely on SQLite at build time.
 
@@ -447,11 +448,11 @@ ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "onboardingComplete" BOOLEAN NOT NUL
 - **Save invoice check after deploy:** `/dashboard/invoices/new` → client name + line description → **Save invoice**. You should land on `/dashboard/invoices/[id]`, not Cloudflare’s generic “This page couldn’t load”. Validation and Prisma errors (including missing `Invoice` / `InvoiceItem` tables) render on the form. If the form says tables are missing or out of date, from a laptop run `npm run db:push:prod` against the Neon **direct/unpooled** URL (`DATABASE_URL_UNPOOLED` or `DATABASE_URL`), then retry save. `npm test` also covers invoice form parsing and sequential (non-transaction) writes.
 - **`pg-cloudflare`:** OpenNext’s package copy does not include `pg-cloudflare`’s `workerd` build. `open-next.config.ts` sets `useWorkerdCondition: false` so `pg` uses `nodejs_compat` sockets. Prefer **Neon HTTP** in production to avoid that path.
 - **Node.js middleware:** Next.js 16 `proxy.ts` (dashboard cookie gate) is **experimental** on Cloudflare OpenNext. Do not set `export const runtime = "edge"` — OpenNext expects the Node.js runtime. If a future OpenNext release rejects Node middleware, the app still authenticates in layouts; only the early `/dashboard` redirect would need a rewrite.
-- **bcryptjs / Stripe / Resend / Twilio:** JS + `fetch`; they rely on Workers `nodejs_compat`. Twilio uses `fetch` to Verify/Messages, not the Node `twilio` SDK.
+- **bcryptjs / Stripe / Resend / Twilio:** JS + `fetch`; they rely on Workers `nodejs_compat`. Twilio uses `fetch` to Verify/Messages, not the Node `twilio` SDK. Contact + transactional email call Resend’s HTTP API with `fetch` and a 15s timeout (same Workers-safe pattern as Stripe). Do not send mail through the Node `resend` SDK on workerd.
 - **PDF download:** invoices and estimates are written as PDF 1.4 in `lib/pdf.ts` using the 14 standard Type1 fonts (no embedding, no `pdf-lib`, no `Buffer` copies). That keeps Download PDF inside Workers CPU/memory limits (Error 1102). Public share pages also print cleanly if a client uses the browser “Save as PDF” dialog. Very large documents still have the 128 MB isolate cap; typical freelance invoices stay tiny.
 - **Incremental cache:** default OpenNext in-memory cache. Optional R2 binding documented above.
 - **`next/image` optimization:** not used on the marketing pages. Cloudflare Images binding is not required.
-- **Server Actions:** `next.config.ts` allows CSRF origins for `invoiceflowstudio.com` and `*.workers.dev` (Cloudflare preview URLs).
+- **Server Actions:** `next.config.ts` allows CSRF origins for `invoiceflowstudio.com` and `*.workers.dev` (Cloudflare preview URLs). The public **Message us** form does **not** use a Server Action — OpenNext can hang on `Next-Action` + multipart FormData before the action runs, which left the button on “Sending…”. Submit is `POST /api/contact` (`request.formData()`), then Resend over `fetch` with a 15s timeout. Set **Runtime** secrets `AUTH_RESEND_KEY` (or `RESEND_API_KEY`) and `EMAIL_FROM` (verified domain). Optional `CONTACT_TO` for the inbox. Missing config shows **Email isn’t configured**; a Resend reject (unverified from-domain) shows a delivery error — the button does not stay on Sending.
 - `npm run cf:build` regenerates the Prisma client from your local `.env` afterward so SQLite `npm run dev` keeps working.
 
 ## Notes

@@ -1,13 +1,16 @@
 "use server";
 
-import { MAX_CONTACT_FILE_BYTES, MAX_CONTACT_FILES, parseContactInput } from "@/lib/contact";
+import { collectContactAttachments, parseContactInput, type ContactSubmitResult } from "@/lib/contact";
 import { sendContactRequest } from "@/lib/email";
 import { appCopy } from "@/lib/i18n-request";
 import { safeErrorLog } from "@/lib/db-errors";
+import { copyCloudflareAuthEnvToProcess, ensureCloudflareContext } from "@/lib/runtime-env";
 
-export type ContactActionResult = { ok: true } | { ok: false; error: string };
+export type ContactActionResult = ContactSubmitResult;
 
-export async function submitContactRequest(formData: FormData): Promise<ContactActionResult> {
+export async function submitContactRequest(formData: FormData): Promise<ContactSubmitResult> {
+  await ensureCloudflareContext();
+  copyCloudflareAuthEnvToProcess();
   const { dict } = await appCopy();
   const parsed = parseContactInput({
     email: String(formData.get("email") ?? ""),
@@ -19,29 +22,21 @@ export async function submitContactRequest(formData: FormData): Promise<ContactA
     return { ok: false, error: dict.contact.invalid };
   }
 
-  const files = formData.getAll("attachments").filter((item): item is File => item instanceof File && item.size > 0);
-  if (files.length > MAX_CONTACT_FILES) {
+  const files = await collectContactAttachments(formData);
+  if (!files.success) {
     return { ok: false, error: dict.contact.invalid };
-  }
-
-  const attachments: { filename: string; content: Buffer }[] = [];
-  for (const file of files) {
-    if (file.size > MAX_CONTACT_FILE_BYTES) {
-      return { ok: false, error: dict.contact.invalid };
-    }
-    attachments.push({
-      filename: file.name.replace(/[^\w.\- ()]/g, "_").slice(0, 80) || "attachment",
-      content: Buffer.from(await file.arrayBuffer()),
-    });
   }
 
   try {
     const result = await sendContactRequest({
       ...parsed.data,
-      attachments,
+      attachments: files.attachments,
     });
     if (!result.sent) {
-      return { ok: false, error: dict.contact.error };
+      return {
+        ok: false,
+        error: result.reason === "not_configured" ? dict.contact.notConfigured : dict.contact.deliveryFailed,
+      };
     }
     return { ok: true };
   } catch (error) {

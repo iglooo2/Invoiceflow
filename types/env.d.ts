@@ -27,6 +27,11 @@ declare namespace NodeJS {
     TWILIO_VERIFY_SERVICE_SID?: string;
     TWILIO_FROM_NUMBER?: string;
     TWILIO_PHONE_NUMBER?: string;
+    AUTH_RESEND_KEY?: string;
+    RESEND_API_KEY?: string;
+    EMAIL_FROM?: string;
+    CONTACT_TO?: string;
+    CONTACT_EMAIL?: string;
     SPONSOR_NAME?: string;
     SPONSOR_URL?: string;
     SPONSOR_LOGO_URL?: string;

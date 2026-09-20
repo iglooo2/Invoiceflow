@@ -44,6 +44,7 @@ test("shouldSkipLocale leaves app, API, and share routes alone", () => {
   assert.equal(shouldSkipLocale("/dashboard"), true);
   assert.equal(shouldSkipLocale("/dashboard/invoices"), true);
   assert.equal(shouldSkipLocale("/api/auth/session"), true);
+  assert.equal(shouldSkipLocale("/api/contact"), true);
   assert.equal(shouldSkipLocale("/share/i/abc"), true);
   assert.equal(shouldSkipLocale("/r/AbC123_xyz"), true);
   assert.equal(shouldSkipLocale("/icon"), true);
@@ -167,6 +168,8 @@ test("login and dashboard common errors exist in every locale", () => {
     assert.ok(dict.meta.contactTitle.length > 0, locale);
     assert.ok(dict.meta.advertiseTitle.length > 0, locale);
     assert.ok(dict.contact.submit.length > 0, locale);
+    assert.match(dict.contact.notConfigured, /AUTH_RESEND_KEY/);
+    assert.match(dict.contact.deliveryFailed, /EMAIL_FROM/);
     assert.ok(dict.nav.advertise.length > 0, locale);
     assert.ok(dict.partner.label.length > 0, locale);
     assert.ok(dict.partner.sponsored.length > 0, locale);
@@ -227,6 +230,8 @@ test("localized landing keeps the studio gallery and register CTA", () => {
   assert.match(forms, /copy\.google/);
   assert.match(forms, /copy\.phone/);
   assert.doesNotMatch(forms, /copy\.apple/);
+  assert.doesNotMatch(forms, /githubHint/);
+  assert.match(forms, /githubEnabled \? \([\s\S]*?copy\.github[\s\S]*?\) : null/);
   const googleButtonAt = forms.indexOf('provider="google"');
   const emailFieldAt = forms.indexOf('htmlFor="email"');
   assert.ok(googleButtonAt > 0 && googleButtonAt < emailFieldAt, "oauth above email");
@@ -246,6 +251,7 @@ test("localized landing keeps the studio gallery and register CTA", () => {
       dict.privacy.paragraphs.every((paragraph) => !paragraph.includes("Apple")),
       locale,
     );
+    assert.equal("githubHint" in dict.login, false, locale);
     assert.ok(dict.onboarding.profileTitle.length > 0, locale);
     assert.ok(dict.onboarding.businessTitle.length > 0, locale);
     assert.match(dict.onboarding.businessLede, /InvoiceFlow Studio/);

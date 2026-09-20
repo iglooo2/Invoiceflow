@@ -167,6 +167,9 @@ test("OAuth enablement reads Cloudflare runtime secrets, not a NEXT_PUBLIC flag"
   assert.match(runtime, /getCloudflareContext\(\{ async: true \}\)/);
   assert.match(runtime, /copyCloudflareAuthEnvToProcess/);
   assert.match(runtime, /TWILIO_/);
+  assert.match(runtime, /EMAIL_FROM/);
+  assert.match(runtime, /RESEND_API_KEY/);
+  assert.match(runtime, /CONTACT_TO/);
   assert.match(runtime, /process\.env\[name\]/);
   assert.match(authEnv, /readRuntimeSecret/);
   assert.match(authEnv, /copyCloudflareAuthEnvToProcess/);
