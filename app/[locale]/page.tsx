@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, FileText, Link2, Sparkles } from "lucide-react";
-import { getCurrentUser } from "@/lib/session";
+import { hasSessionCookie } from "@/lib/session-cookie";
 import { PLANS } from "@/lib/plans";
 import { startFreeHref } from "@/lib/site";
 import { Button } from "@/components/ui/button";
@@ -33,8 +33,7 @@ export async function generateMetadata({
 
 export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const { locale, dict } = marketingCopy((await params).locale);
-  const user = await getCurrentUser();
-  const signedIn = Boolean(user);
+  const signedIn = await hasSessionCookie();
   const ctaHref = startFreeHref(signedIn, locale);
 
   return (

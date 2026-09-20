@@ -58,7 +58,11 @@ export type FindJobResult = {
   warning?: string;
 };
 
-const JOB_INCLUDE = {
+const JOB_LIST_INCLUDE = {
+  client: { select: { name: true, address: true } },
+};
+
+const JOB_DETAIL_INCLUDE = {
   client: { select: { name: true, address: true } },
   estimates: {
     include: {
@@ -72,6 +76,20 @@ const JOB_INCLUDE = {
   },
   visits: { orderBy: { createdAt: "asc" as const } },
 };
+
+export const JOB_CLIENT_PICKER_SELECT = {
+  id: true,
+  name: true,
+  email: true,
+  company: true,
+  address: true,
+} as const;
+
+export const JOB_INVOICE_PICKER_SELECT = {
+  id: true,
+  number: true,
+  clientName: true,
+} as const;
 
 type JobRow = {
   id: string;
@@ -156,7 +174,7 @@ function searchClause(q: string) {
 
 export async function listJobsForUser(
   db: PrismaClient,
-  options: { userId: string; status?: string; q?: string; take?: number },
+  options: { userId: string; status?: string; q?: string; take?: number; includeRelations?: boolean },
 ): Promise<ListJobsResult> {
   const status = options.status ? parseJobStatus(options.status) : undefined;
   try {
@@ -166,7 +184,7 @@ export async function listJobsForUser(
         ...(status ? { status } : {}),
         ...searchClause(options.q ?? ""),
       },
-      include: JOB_INCLUDE,
+      include: options.includeRelations ? JOB_DETAIL_INCLUDE : JOB_LIST_INCLUDE,
       orderBy: { createdAt: "desc" },
       ...(options.take ? { take: options.take } : {}),
     });
@@ -191,7 +209,7 @@ export async function findJobForUser(
   try {
     const row = await db.job.findFirst({
       where: { id: options.jobId, userId: options.userId },
-      include: JOB_INCLUDE,
+      include: JOB_DETAIL_INCLUDE,
     });
     return { job: row ? normalizeJob(row as JobRow) : null, usedLegacySchema: false };
   } catch (error) {
@@ -213,5 +231,21 @@ export async function listJobNumbersForUser(db: PrismaClient, userId: string): P
   } catch (error) {
     if (isMissingDatabaseSchemaError(error)) return [];
     throw error;
+  }
+}
+
+export async function countJobsForUser(
+  db: PrismaClient,
+  userId: string,
+): Promise<{ count: number; usedLegacySchema: boolean; error?: string }> {
+  try {
+    const count = await db.job.count({ where: { userId } });
+    return { count, usedLegacySchema: false };
+  } catch (error) {
+    console.error("countJobsForUser", safeErrorLog(error));
+    if (isMissingDatabaseSchemaError(error)) {
+      return { count: 0, usedLegacySchema: true };
+    }
+    return { count: 0, usedLegacySchema: false, error: prismaReadFailureMessage(error) };
   }
 }

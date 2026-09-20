@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import type { PrismaClient } from "@prisma/client";
-import { findJobForUser, listJobsForUser, normalizeJob } from "./job-queries";
+import { countJobsForUser, findJobForUser, listJobsForUser, normalizeJob } from "./job-queries";
 import { JOB_SCHEMA_WARNING } from "./jobs";
 
 const row = {
@@ -49,6 +49,36 @@ test("listJobsForUser returns a schema warning instead of throwing", async () =>
   assert.equal(result.usedLegacySchema, true);
   assert.deepEqual(result.jobs, []);
   assert.equal(result.warning, JOB_SCHEMA_WARNING);
+});
+
+test("listJobsForUser skips nested estimates/invoices/visits unless asked", async () => {
+  let include: Record<string, unknown> | undefined;
+  const db = {
+    job: {
+      findMany: async (args: { include?: Record<string, unknown> }) => {
+        include = args.include;
+        return [row];
+      },
+    },
+  };
+  const result = await listJobsForUser(db as unknown as PrismaClient, { userId: "user-1" });
+  assert.equal(result.jobs[0]?.title, "Kitchen remodel");
+  assert.equal("estimates" in (include ?? {}), false);
+  assert.equal("visits" in (include ?? {}), false);
+  assert.equal("client" in (include ?? {}), true);
+});
+
+test("countJobsForUser returns a schema warning instead of throwing", async () => {
+  const db = {
+    job: {
+      count: async () => {
+        throw { name: "PrismaClientKnownRequestError", code: "P2021", message: "The table `Job` does not exist" };
+      },
+    },
+  };
+  const result = await countJobsForUser(db as unknown as PrismaClient, "user-1");
+  assert.equal(result.count, 0);
+  assert.equal(result.usedLegacySchema, true);
 });
 
 test("findJobForUser returns the normalized row", async () => {

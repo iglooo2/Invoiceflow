@@ -58,6 +58,31 @@ export function normalizeApplePrivateKey(raw: string) {
   return `-----BEGIN PRIVATE KEY-----\n${wrap64(body)}\n-----END PRIVATE KEY-----`;
 }
 
+/**
+ * Auth.js calls `authOptions()` (and therefore `resolveAppleClientSecret`) on
+ * every `auth()` — homepage, dashboard layout, PDF, etc. ECDSA minting on each
+ * request is a Cloudflare Error 1102 CPU trap. Reuse a minted JWT for most of
+ * its Apple-allowed lifetime; isolates recycle long before that.
+ */
+const APPLE_JWT_CACHE_REFRESH_SEC = 60 * 60 * 24;
+
+type CachedAppleJwt = { key: string; token: string; exp: number };
+let cachedAppleJwt: CachedAppleJwt | null = null;
+
+function appleJwtCacheKey(input: {
+  clientId: string;
+  teamId: string;
+  keyId: string;
+  privateKey: string;
+}) {
+  const key = input.privateKey;
+  return `${input.clientId}|${input.teamId}|${input.keyId}|${key.length}|${key.slice(0, 24)}|${key.slice(-24)}`;
+}
+
+export function resetAppleClientSecretCache() {
+  cachedAppleJwt = null;
+}
+
 export async function resolveAppleClientSecret(input: AppleClientSecretInput) {
   const clientId = input.clientId.trim();
   const secret = input.secret.trim();
@@ -78,12 +103,25 @@ export async function resolveAppleClientSecret(input: AppleClientSecretInput) {
       "When AUTH_APPLE_SECRET is a .p8 key, set AUTH_APPLE_TEAM and AUTH_APPLE_KEY_ID so the Worker can mint the client-secret JWT.",
     );
   }
-  return signAppleClientSecretJwt({
+  const cacheKey = appleJwtCacheKey({ clientId, teamId, keyId, privateKey: secret });
+  const now = Math.floor(Date.now() / 1000);
+  if (
+    cachedAppleJwt &&
+    cachedAppleJwt.key === cacheKey &&
+    cachedAppleJwt.exp - APPLE_JWT_CACHE_REFRESH_SEC > now
+  ) {
+    return cachedAppleJwt.token;
+  }
+  const token = await signAppleClientSecretJwt({
     clientId,
     teamId,
     keyId,
     privateKey: secret,
   });
+  const payload = decodeJsonObject(token.split(".")[1] ?? "");
+  const exp = typeof payload.exp === "number" ? payload.exp : now + APPLE_CLIENT_SECRET_MAX_AGE_SEC;
+  cachedAppleJwt = { key: cacheKey, token, exp };
+  return token;
 }
 
 export async function signAppleClientSecretJwt({

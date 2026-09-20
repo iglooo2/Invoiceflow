@@ -97,13 +97,28 @@ export type EstimateQueryOptions = {
   includeSections?: boolean;
   includeUser?: boolean;
   take?: number;
+  /** List pages only need amounts for totals; skip heading/body blobs. */
+  sectionFields?: "full" | "amount";
 };
+
+function sectionsInclude(options: EstimateQueryOptions) {
+  if (!options.includeSections) return {};
+  if (options.sectionFields === "amount") {
+    return {
+      sections: {
+        select: { amount: true },
+        orderBy: { sortOrder: "asc" as const },
+      },
+    };
+  }
+  return { sections: SECTIONS_SELECT };
+}
 
 function proposalSelect(kind: "full" | "legacy", options: EstimateQueryOptions) {
   return {
     ...PROPOSAL_CORE_SELECT,
     ...(kind === "full" ? PROPOSAL_ESTIMATE_SELECT : {}),
-    ...(options.includeSections ? { sections: SECTIONS_SELECT } : {}),
+    ...sectionsInclude(options),
     ...(options.includeUser ? { user: true } : {}),
   };
 }
@@ -186,21 +201,22 @@ export async function listEstimatesForUser(
   db: PrismaClient,
   options: { userId: string; status?: string; q?: string } & EstimateQueryOptions,
 ): Promise<ListEstimatesResult> {
-  const { userId, status, q, take, includeSections = true } = options;
+  const { userId, status, q, take, includeSections = true, sectionFields, includeUser } = options;
   const where = listWhere(userId, status, q);
+  const selectOptions = { includeSections, sectionFields, includeUser };
   try {
     const queried = await withSchemaFallback(
       () =>
         db.proposal.findMany({
           where,
-          select: proposalSelect("full", { includeSections }),
+          select: proposalSelect("full", selectOptions),
           orderBy: { createdAt: "desc" },
           take,
         } as never) as Promise<unknown[]>,
       () =>
         db.proposal.findMany({
           where,
-          select: proposalSelect("legacy", { includeSections }),
+          select: proposalSelect("legacy", selectOptions),
           orderBy: { createdAt: "desc" },
           take,
         } as never) as Promise<unknown[]>,

@@ -6,6 +6,7 @@ import {
   looksLikeApplePrivateKey,
   looksLikeJwt,
   normalizeApplePrivateKey,
+  resetAppleClientSecretCache,
   resolveAppleClientSecret,
   signAppleClientSecretJwt,
 } from "./apple-secret";
@@ -86,6 +87,23 @@ test("resolveAppleClientSecret returns a JWT as-is and mints one from a P-256 ke
     new TextEncoder().encode(`${parts[0]}.${parts[1]}`),
   );
   assert.equal(ok, true);
+});
+
+test("resolveAppleClientSecret reuses a minted JWT instead of signing every call", async () => {
+  resetAppleClientSecretCache();
+  const { pem } = await generateTestAppleKey();
+  const input = {
+    clientId: "com.invoiceflowstudio.web",
+    secret: pem,
+    teamId: "TEAM12ABCD",
+    keyId: "KEY12ABCDE",
+  };
+  const first = await resolveAppleClientSecret(input);
+  const second = await resolveAppleClientSecret(input);
+  assert.equal(first, second);
+  resetAppleClientSecretCache();
+  const third = await resolveAppleClientSecret(input);
+  assert.notEqual(third, first);
 });
 
 test("resolveAppleClientSecret rejects an expired JWT and a .p8 without team/key id", async () => {

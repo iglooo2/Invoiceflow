@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getCurrentUser } from "@/lib/session";
+import { hasSessionCookie } from "@/lib/session-cookie";
 import { PLANS } from "@/lib/plans";
 import { Button } from "@/components/ui/button";
 import { MarketingFooter, MarketingHeader } from "@/components/marketing/shell";
@@ -29,10 +29,10 @@ export async function generateMetadata({
 
 export default async function PricingPage({ params }: PageProps<"/[locale]/pricing">) {
   const { locale, dict } = marketingCopy((await params).locale);
-  const user = await getCurrentUser();
+  const signedIn = await hasSessionCookie();
   return (
     <div>
-      <MarketingHeader signedIn={Boolean(user)} locale={locale} path="/pricing" copy={dict.nav} />
+      <MarketingHeader signedIn={signedIn} locale={locale} path="/pricing" copy={dict.nav} />
       <main className="mx-auto w-full max-w-5xl px-4 py-16">
         <h1 className="font-display text-5xl">{dict.pricing.headline}</h1>
         <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
@@ -55,7 +55,7 @@ export default async function PricingPage({ params }: PageProps<"/[locale]/prici
                   ))}
                 </ul>
                 <Button asChild className="mt-6">
-                  <Link href={user ? "/dashboard/billing" : localizedPath(locale, "/login")}>
+                  <Link href={signedIn ? "/dashboard/billing" : localizedPath(locale, "/login")}>
                     {plan.id === "pro" ? dict.pricing.upgradePro : dict.pricing.useStarter}
                   </Link>
                 </Button>

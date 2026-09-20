@@ -52,6 +52,12 @@ test("dashboard nav lists Jobs next to Estimates", () => {
   const jobsPage = readFileSync(path.join(root, "app/dashboard/jobs/page.tsx"), "utf8");
   assert.match(jobsPage, /JOB_NEW_PATH/);
   assert.match(jobsPage, /emptyTitle/);
+  assert.match(jobsPage, /countJobsForUser/);
+  assert.match(jobsPage, /DASHBOARD_LIST_TAKE/);
+  assert.doesNotMatch(jobsPage, /includeRelations:\s*true/);
+  const newJob = readFileSync(path.join(root, "app/dashboard/jobs/new/page.tsx"), "utf8");
+  assert.match(newJob, /DOCUMENT_PICKER_TAKE/);
+  assert.match(newJob, /JOB_CLIENT_PICKER_SELECT/);
   const form = readFileSync(path.join(root, "components/jobs/job-form.tsx"), "utf8");
   assert.match(form, /addClient/);
   assert.match(form, /linkEstimates/);
