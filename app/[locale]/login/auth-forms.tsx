@@ -67,9 +67,7 @@ export function AuthForms({
               {copy.github}
             </Button>
           </form>
-        ) : (
-          <p className="text-xs text-muted-foreground">{copy.githubHint}</p>
-        )}
+        ) : null}
       </div>
 
       <div className="my-6 flex items-center gap-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">

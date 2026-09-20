@@ -222,6 +222,8 @@ test("localized landing keeps the studio gallery and register CTA", () => {
   assert.match(forms, /initialMode = "signin"/);
   assert.match(forms, /copy\.google/);
   assert.doesNotMatch(forms, /copy\.apple/);
+  assert.doesNotMatch(forms, /githubHint/);
+  assert.match(forms, /githubEnabled \? \([\s\S]*?copy\.github[\s\S]*?\) : null/);
   const googleButtonAt = forms.indexOf('provider="google"');
   const emailFieldAt = forms.indexOf('htmlFor="email"');
   assert.ok(googleButtonAt > 0 && googleButtonAt < emailFieldAt, "oauth above email");
@@ -241,6 +243,7 @@ test("localized landing keeps the studio gallery and register CTA", () => {
       dict.privacy.paragraphs.every((paragraph) => !paragraph.includes("Apple")),
       locale,
     );
+    assert.equal("githubHint" in dict.login, false, locale);
     assert.ok(dict.onboarding.profileTitle.length > 0, locale);
     assert.ok(dict.onboarding.businessTitle.length > 0, locale);
     assert.match(dict.onboarding.businessLede, /InvoiceFlow Studio/);

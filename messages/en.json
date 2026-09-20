@@ -146,7 +146,6 @@
     "google": "Continue with Google",
     "github": "Continue with GitHub",
     "googleHint": "Google Sign-In is not configured. Add AUTH_GOOGLE_ID and AUTH_GOOGLE_SECRET as Cloudflare Worker Runtime secrets (Auth.js names). GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET are accepted as aliases.",
-    "githubHint": "GitHub OAuth appears here when AUTH_GITHUB_ID and AUTH_GITHUB_SECRET are set.",
     "demoPrefix": "Demo:",
     "errors": {
       "invalidEmailPassword": "Enter a valid email and password.",
