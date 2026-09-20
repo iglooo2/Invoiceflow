@@ -4,7 +4,7 @@ import { currentPlanId } from "@/lib/plans";
 import { Button } from "@/components/ui/button";
 import { InvoicePreview } from "@/components/document-preview";
 import { Wordmark } from "@/components/brand";
-import { withDocumentFooter } from "@/lib/studio-settings-store";
+import { STUDIO_USER_SELECT, withDocumentFooter } from "@/lib/studio-settings-store";
 
 export default async function PublicInvoicePage({
   params,
@@ -14,7 +14,26 @@ export default async function PublicInvoicePage({
   const { token } = await params;
   const invoice = await prisma.invoice.findUnique({
     where: { publicToken: token },
-    include: { items: { orderBy: { sortOrder: "asc" } }, user: true },
+    select: {
+      userId: true,
+      number: true,
+      status: true,
+      issueDate: true,
+      dueDate: true,
+      taxRate: true,
+      notes: true,
+      currency: true,
+      clientName: true,
+      clientEmail: true,
+      clientCompany: true,
+      clientAddress: true,
+      items: {
+        orderBy: { sortOrder: "asc" },
+        take: 80,
+        select: { description: true, quantity: true, rate: true },
+      },
+      user: { select: STUDIO_USER_SELECT },
+    },
   });
   if (!invoice) notFound();
   const branded = currentPlanId(invoice.user) !== "pro";

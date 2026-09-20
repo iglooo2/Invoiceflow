@@ -225,6 +225,9 @@ test("OAuth enablement reads Cloudflare runtime secrets, not a NEXT_PUBLIC flag"
   assert.doesNotMatch(auth, /secret: process\.env\.AUTH_SECRET/);
   assert.match(auth, /appleCredentials/);
   assert.match(auth, /resolveAppleClientSecret/);
+  assert.match(auth, /appleTokenExchangeRequest/);
+  assert.match(auth, /appleClientSecretForRequest/);
+  assert.match(auth, /SESSION_ONLY_APPLE_JWT/);
   assert.match(auth, /await import\("bcryptjs"\)/);
   assert.doesNotMatch(auth, /import bcrypt from "bcryptjs"/);
   assert.match(auth, /response_mode: "form_post"/);

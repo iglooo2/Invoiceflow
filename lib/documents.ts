@@ -14,6 +14,8 @@ export async function nextInvoiceNumber(userId: string) {
   const rows = await prisma.invoice.findMany({
     where: { userId },
     select: { number: true },
+    orderBy: { createdAt: "desc" },
+    take: 500,
   });
   return nextInvoiceNumberFromExisting(rows.map((row) => row.number));
 }

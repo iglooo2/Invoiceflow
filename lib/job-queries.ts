@@ -85,6 +85,9 @@ export const JOB_CLIENT_PICKER_SELECT = {
   address: true,
 } as const;
 
+/** Same shape the invoice/estimate client pickers need. */
+export const CLIENT_PICKER_SELECT = JOB_CLIENT_PICKER_SELECT;
+
 export const JOB_INVOICE_PICKER_SELECT = {
   id: true,
   number: true,
@@ -226,6 +229,8 @@ export async function listJobNumbersForUser(db: PrismaClient, userId: string): P
     const rows = await db.job.findMany({
       where: { userId },
       select: { jobNumber: true },
+      orderBy: { createdAt: "desc" },
+      take: 500,
     });
     return rows.map((row) => row.jobNumber);
   } catch (error) {

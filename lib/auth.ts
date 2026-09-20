@@ -8,7 +8,12 @@ import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
 import Resend from "next-auth/providers/resend";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { resolveAppleClientSecret } from "@/lib/apple-secret";
+import {
+  appleTokenExchangeRequest,
+  cachedAppleClientSecret,
+  looksLikeJwt,
+  resolveAppleClientSecret,
+} from "@/lib/apple-secret";
 import { appleFormPostCookies, shouldUseSecureAuthCookies } from "@/lib/auth-cookies";
 import {
   appleAuthEnabled,
@@ -29,7 +34,23 @@ import { safeErrorLog } from "@/lib/db-errors";
 import { sendMagicLinkEmail } from "@/lib/email";
 import { markNewUserOnboarding } from "@/lib/onboarding";
 
-async function buildAuthProviders(): Promise<Provider[]> {
+/** Used only when `auth()` is reading a session — never posted to Apple. */
+const SESSION_ONLY_APPLE_JWT =
+  "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQxMDI0NDQ4MDAsImF1ZCI6Imh0dHBzOi8vYXBwbGVpZC5hcHBsZS5jb20ifQ.c2Vzc2lvbg";
+
+async function appleClientSecretForRequest(
+  apple: ReturnType<typeof appleCredentials>,
+  requestUrl?: string,
+) {
+  if (appleTokenExchangeRequest(requestUrl)) {
+    return resolveAppleClientSecret(apple);
+  }
+  const secret = apple.secret.trim();
+  if (looksLikeJwt(secret)) return secret;
+  return cachedAppleClientSecret() ?? SESSION_ONLY_APPLE_JWT;
+}
+
+async function buildAuthProviders(requestUrl?: string): Promise<Provider[]> {
   const providers: Provider[] = [
     Credentials({
       name: "Email and password",
@@ -78,7 +99,7 @@ async function buildAuthProviders(): Promise<Provider[]> {
   if (appleAuthEnabled()) {
     const apple = appleCredentials();
     try {
-      const clientSecret = await resolveAppleClientSecret(apple);
+      const clientSecret = await appleClientSecretForRequest(apple, requestUrl);
       providers.push(
         Apple({
           clientId: apple.clientId,
@@ -128,7 +149,7 @@ async function buildAuthProviders(): Promise<Provider[]> {
 async function authOptions(request?: NextRequest): Promise<NextAuthConfig> {
   await ensureAuthRuntimeEnv();
   const secret = resolvedAuthSecret();
-  const providers = await buildAuthProviders();
+  const providers = await buildAuthProviders(request?.url);
   const secureCookies = shouldUseSecureAuthCookies(request?.url, resolvedAuthUrl());
   return {
     adapter: PrismaAdapter(prisma),

@@ -187,8 +187,13 @@ test("estimate dashboard pages query through the schema-safe helper", () => {
   assert.match(estimatesList, /DASHBOARD_LIST_TAKE/);
   const invoicesList = readFileSync(path.join(root, "app/dashboard/invoices/page.tsx"), "utf8");
   assert.match(invoicesList, /DASHBOARD_LIST_TAKE/);
+  const newInvoice = readFileSync(path.join(root, "app/dashboard/invoices/new/page.tsx"), "utf8");
+  assert.match(newInvoice, /DOCUMENT_PICKER_TAKE/);
   const session = readFileSync(path.join(root, "lib/session.ts"), "utf8");
   assert.match(session, /cache\(async/);
+  const jobWrites = readFileSync(path.join(root, "lib/job-writes.ts"), "utf8");
+  assert.match(jobWrites, /createMany/);
+  assert.doesNotMatch(jobWrites, /for \(const estimateId/);
   assert.deepEqual([...ESTIMATE_OPTIONAL_COLUMNS], [
     "taxRate",
     "markupRate",

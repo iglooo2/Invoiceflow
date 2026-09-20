@@ -1,5 +1,6 @@
 import type { PrismaClient } from "@prisma/client";
 import { prismaReadFailureMessage, isMissingDatabaseSchemaError, safeErrorLog } from "./db-errors";
+import { STUDIO_USER_SELECT } from "./studio-settings";
 
 /**
  * Proposal columns added for Estimates (PR #23). Prisma's default findMany
@@ -119,7 +120,7 @@ function proposalSelect(kind: "full" | "legacy", options: EstimateQueryOptions) 
     ...PROPOSAL_CORE_SELECT,
     ...(kind === "full" ? PROPOSAL_ESTIMATE_SELECT : {}),
     ...sectionsInclude(options),
-    ...(options.includeUser ? { user: true } : {}),
+    ...(options.includeUser ? { user: { select: STUDIO_USER_SELECT } } : {}),
   };
 }
 

@@ -83,6 +83,28 @@ export function resetAppleClientSecretCache() {
   cachedAppleJwt = null;
 }
 
+/** Fresh minted JWT if this isolate already signed one; otherwise null. */
+export function cachedAppleClientSecret(): string | null {
+  const now = Math.floor(Date.now() / 1000);
+  if (
+    cachedAppleJwt &&
+    cachedAppleJwt.exp - APPLE_JWT_CACHE_REFRESH_SEC > now
+  ) {
+    return cachedAppleJwt.token;
+  }
+  return null;
+}
+
+/**
+ * Apple's token endpoint is the only Auth.js step that needs the ES256 client
+ * secret. Session reads (`auth()` on dashboard, PDF, etc.) must not mint.
+ */
+export function appleTokenExchangeRequest(requestUrl?: string | null) {
+  if (!requestUrl) return false;
+  const path = requestUrl.split("?")[0] ?? "";
+  return path.includes("/api/auth/callback/apple") || path.includes("/api/auth/signin/apple");
+}
+
 export async function resolveAppleClientSecret(input: AppleClientSecretInput) {
   const clientId = input.clientId.trim();
   const secret = input.secret.trim();

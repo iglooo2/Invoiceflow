@@ -4,6 +4,19 @@ import { isEmployeeCountKey, isIndustryKey } from "./onboarding";
 export const SETTINGS_SCHEMA_WARNING =
   "Postgres is missing Studio Settings tables (StudioSettings, TaxRate, Contract). From a laptop, against the Neon direct/unpooled URL (not *-pooler.*): npm run db:push:prod";
 
+/** User columns PDFs and branded documents need — never `include: { user: true }`. */
+export const STUDIO_USER_SELECT = {
+  businessName: true,
+  name: true,
+  businessEmail: true,
+  email: true,
+  businessPhone: true,
+  businessAddress: true,
+  website: true,
+  plan: true,
+  stripeCurrentPeriodEnd: true,
+} as const;
+
 export const DEFAULT_EMAIL_ESTIMATE =
   "We are excited about the possibility of working with you.";
 export const DEFAULT_EMAIL_INVOICE = "Thanks for your business!";

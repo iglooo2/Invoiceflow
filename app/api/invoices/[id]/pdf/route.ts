@@ -3,7 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { buildInvoicePdf, pdfDownloadHeaders } from "@/lib/pdf";
 import { currentPlanId } from "@/lib/plans";
-import { withDocumentFooter } from "@/lib/studio-settings-store";
+import { STUDIO_USER_SELECT, withDocumentFooter } from "@/lib/studio-settings-store";
 
 export async function GET(
   _request: Request,
@@ -13,7 +13,26 @@ export async function GET(
   const { id } = await context.params;
   const invoice = await prisma.invoice.findUnique({
     where: { id },
-    include: { items: { orderBy: { sortOrder: "asc" } }, user: true },
+    select: {
+      userId: true,
+      number: true,
+      status: true,
+      issueDate: true,
+      dueDate: true,
+      taxRate: true,
+      notes: true,
+      currency: true,
+      clientName: true,
+      clientEmail: true,
+      clientCompany: true,
+      clientAddress: true,
+      items: {
+        orderBy: { sortOrder: "asc" },
+        take: 80,
+        select: { description: true, quantity: true, rate: true },
+      },
+      user: { select: STUDIO_USER_SELECT },
+    },
   });
   if (!invoice) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });

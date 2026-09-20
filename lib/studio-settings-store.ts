@@ -4,9 +4,12 @@ import { isMissingDatabaseSchemaError, prismaWriteFailureMessage, safeErrorLog }
 import {
   EMPTY_STUDIO_SETTINGS,
   SETTINGS_SCHEMA_WARNING,
+  STUDIO_USER_SELECT,
   normalizeStudioSettings,
   type StudioSettingsRecord,
 } from "@/lib/studio-settings";
+
+export { STUDIO_USER_SELECT };
 
 export type LoadedStudioSettings = {
   settings: StudioSettingsRecord;
@@ -90,8 +93,17 @@ export async function loadTaxRates(userId: string): Promise<{
 }
 
 export async function defaultTaxPercent(userId: string) {
-  const { taxes } = await loadTaxRates(userId);
-  return taxes[0]?.rate ?? 0;
+  try {
+    const row = await prisma.taxRate.findFirst({
+      where: { userId },
+      orderBy: { createdAt: "asc" },
+      select: { rate: true },
+    });
+    return row?.rate ?? 0;
+  } catch (error) {
+    if (isMissingDatabaseSchemaError(error)) return 0;
+    throw error;
+  }
 }
 
 export type LoadedContract = {
@@ -134,12 +146,20 @@ export async function loadContracts(userId: string): Promise<{
 }
 
 export async function defaultContractDetails(userId: string, kind: "invoice" | "estimate") {
-  const { contracts } = await loadContracts(userId);
-  const match =
-    kind === "invoice"
-      ? contracts.find((row) => row.defaultForInvoices)
-      : contracts.find((row) => row.defaultForEstimates);
-  return match?.details?.trim() || "";
+  try {
+    if (!prisma.contract) return "";
+    const row = await prisma.contract.findFirst({
+      where: {
+        userId,
+        ...(kind === "invoice" ? { defaultForInvoices: true } : { defaultForEstimates: true }),
+      },
+      select: { details: true },
+    });
+    return row?.details?.trim() || "";
+  } catch (error) {
+    if (isMissingDatabaseSchemaError(error)) return "";
+    throw error;
+  }
 }
 
 export async function withDocumentFooter<T extends object>(userId: string, studio: T) {

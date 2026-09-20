@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { prismaReadFailureMessage, safeErrorLog } from "@/lib/db-errors";
 import { formatEstimateDate, parseAttachmentsJson } from "@/lib/estimates";
+import { CLIENT_PICKER_SELECT } from "@/lib/job-queries";
+import { DOCUMENT_PICKER_TAKE } from "@/lib/query-limits";
 import { ESTIMATE_SCHEMA_WARNING, findEstimateForUser } from "@/lib/proposal-queries";
 import { appCopy } from "@/lib/i18n-request";
 import { requireUser } from "@/lib/session";
@@ -27,7 +29,12 @@ export default async function EditEstimatePage({
       error: prismaReadFailureMessage(error),
     };
   }
-  const clients = await prisma.client.findMany({ where: { userId: user.id }, orderBy: { name: "asc" } });
+  const clients = await prisma.client.findMany({
+    where: { userId: user.id },
+    select: CLIENT_PICKER_SELECT,
+    orderBy: { name: "asc" },
+    take: DOCUMENT_PICKER_TAKE,
+  });
   if (loaded.error) {
     return (
       <div className="grid gap-6">
