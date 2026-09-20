@@ -33,7 +33,10 @@ export async function submitContactRequest(formData: FormData): Promise<ContactS
       attachments: files.attachments,
     });
     if (!result.sent) {
-      return { ok: false, error: dict.contact.error };
+      return {
+        ok: false,
+        error: result.reason === "not_configured" ? dict.contact.notConfigured : dict.contact.deliveryFailed,
+      };
     }
     return { ok: true };
   } catch (error) {

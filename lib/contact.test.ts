@@ -92,7 +92,13 @@ test("contact form posts to a Route Handler and always clears Sending", () => {
   assert.match(email, /ensureCloudflareContext/);
   assert.match(email, /postResendEmail/);
   assert.match(email, /AUTH_RESEND_KEY/);
+  assert.match(email, /CONTACT_TO/);
+  assert.match(email, /not_configured/);
   assert.doesNotMatch(email, /from ["']resend["']/);
   assert.doesNotMatch(email, /new Resend/);
   assert.doesNotMatch(email, /Buffer/);
+  assert.doesNotMatch(email, /isDevMode/);
+
+  assert.match(action, /notConfigured/);
+  assert.match(action, /deliveryFailed/);
 });

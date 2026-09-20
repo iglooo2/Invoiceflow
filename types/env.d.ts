@@ -25,6 +25,8 @@ declare namespace NodeJS {
     AUTH_RESEND_KEY?: string;
     RESEND_API_KEY?: string;
     EMAIL_FROM?: string;
+    CONTACT_TO?: string;
+    CONTACT_EMAIL?: string;
     SPONSOR_NAME?: string;
     SPONSOR_URL?: string;
     SPONSOR_LOGO_URL?: string;
