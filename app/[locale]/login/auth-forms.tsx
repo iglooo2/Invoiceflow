@@ -2,7 +2,6 @@
 
 import { useState, type ReactNode } from "react";
 import {
-  loginWithApple,
   loginWithGithub,
   loginWithGoogle,
   loginWithMagicLink,
@@ -16,7 +15,6 @@ import type { Dictionary } from "@/lib/dictionary";
 export function AuthForms({
   githubEnabled,
   googleEnabled = false,
-  appleEnabled = false,
   magicEnabled,
   callbackUrl,
   showDemoCredentials,
@@ -26,7 +24,6 @@ export function AuthForms({
 }: {
   githubEnabled: boolean;
   googleEnabled?: boolean;
-  appleEnabled?: boolean;
   magicEnabled: boolean;
   callbackUrl: string;
   showDemoCredentials: boolean;
@@ -53,7 +50,7 @@ export function AuthForms({
         </p>
       ) : null}
 
-      {/* Google/Apple always mount on sign-in and register. `enabled` only toggles click vs hint. */}
+      {/* Google always mounts on sign-in and register. `enabled` only toggles click vs hint. */}
       <div className="grid gap-3">
         <OauthButton
           enabled={googleEnabled}
@@ -63,15 +60,6 @@ export function AuthForms({
           action={loginWithGoogle}
           onError={setError}
           icon={<GoogleMark />}
-        />
-        <OauthButton
-          enabled={appleEnabled}
-          provider="apple"
-          label={copy.apple}
-          hint={copy.appleHint}
-          action={loginWithApple}
-          onError={setError}
-          icon={<AppleMark />}
         />
         {githubEnabled ? (
           <form action={loginWithGithub}>
@@ -146,7 +134,7 @@ function OauthButton({
   icon,
 }: {
   enabled: boolean;
-  provider: "google" | "apple";
+  provider: "google";
   label: string;
   hint: string;
   action: () => Promise<{ error?: string } | void>;
@@ -211,14 +199,6 @@ function GoogleMark() {
         fill="#EA4335"
         d="M12 4.75c1.76 0 3.34.61 4.59 1.8l3.44-3.44C17.95 1.16 15.24 0 12 0 7.31 0 3.26 2.69 1.27 6.57l4 3.11C6.22 6.86 8.87 4.75 12 4.75Z"
       />
-    </svg>
-  );
-}
-
-function AppleMark() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4 fill-current">
-      <path d="M16.37 12.63c.02 2.17 1.9 2.89 1.92 2.9-.02.06-.3 1.03-1 2.03-.6.87-1.23 1.73-2.21 1.75-.96.02-1.27-.57-2.37-.57s-1.45.55-2.36.59c-.95.04-1.67-.94-2.28-1.8-1.25-1.78-2.21-5.03-.92-7.22.64-1.09 1.79-1.78 3.03-1.8.95-.02 1.84.64 2.37.64s1.64-.79 2.77-.67c.47.02 1.8.19 2.65 1.44-.07.04-1.58.92-1.6 2.71ZM14.6 6.9c.51-.62.86-1.48.76-2.34-.74.03-1.63.49-2.16 1.11-.48.55-.9 1.43-.79 2.27.83.06 1.68-.42 2.19-1.04Z" />
     </svg>
   );
 }

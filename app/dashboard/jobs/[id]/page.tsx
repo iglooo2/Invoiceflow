@@ -2,7 +2,8 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { appCopy } from "@/lib/i18n-request";
 import { dateInputValue } from "@/lib/jobs";
-import { findJobForUser } from "@/lib/job-queries";
+import { findJobForUser, JOB_CLIENT_PICKER_SELECT, JOB_INVOICE_PICKER_SELECT } from "@/lib/job-queries";
+import { DOCUMENT_PICKER_TAKE } from "@/lib/query-limits";
 import { requireUser } from "@/lib/session";
 import { deleteJob, updateJob } from "@/app/actions/jobs";
 import { JobForm } from "@/components/jobs/job-form";
@@ -24,14 +25,21 @@ export default async function EditJobPage({
     findJobForUser(prisma, { userId: user.id, jobId: id }),
     prisma.client.findMany({
       where: { userId: user.id },
+      select: JOB_CLIENT_PICKER_SELECT,
       orderBy: { name: "asc" },
+      take: DOCUMENT_PICKER_TAKE,
     }),
     prisma.invoice.findMany({
       where: { userId: user.id },
-      select: { id: true, number: true, clientName: true },
+      select: JOB_INVOICE_PICKER_SELECT,
       orderBy: { createdAt: "desc" },
+      take: DOCUMENT_PICKER_TAKE,
     }),
-    listEstimatesForUser(prisma, { userId: user.id, includeSections: false }),
+    listEstimatesForUser(prisma, {
+      userId: user.id,
+      includeSections: false,
+      take: DOCUMENT_PICKER_TAKE,
+    }),
   ]);
 
   if (loaded.warning && !loaded.job) {

@@ -25,10 +25,12 @@ test("login query error does not treat email/password failures as OAuth", () => 
   assert.equal(errors.invalidCredentials.includes("Google"), false);
   assert.equal(errors.signInIncomplete.includes("Google"), false);
   assert.equal(errors.signInIncomplete.includes("Apple"), false);
+  assert.equal(errors.oauthFailed.includes("Apple"), false);
+  assert.equal(errors.oauthFailed.includes("AUTH_APPLE"), false);
   assert.equal(errors.configuration.includes("AUTH_SECRET"), true);
 });
 
-test("OAuth Auth.js codes use Google/Apple messaging", () => {
+test("OAuth Auth.js codes use Google messaging", () => {
   assert.equal(loginQueryErrorMessage("OAuthSignin", errors), errors.oauthFailed);
   assert.equal(loginQueryErrorMessage("OAuthCallback", errors), errors.oauthFailed);
   assert.equal(loginQueryErrorMessage("OAuthCreateAccount", errors), errors.oauthFailed);

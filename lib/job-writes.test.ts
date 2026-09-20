@@ -30,9 +30,9 @@ function memoryDb() {
         },
       },
       jobEstimate: {
-        create: async ({ data }: { data: Record<string, unknown> }) => {
-          estimates.push(data);
-          return data;
+        createMany: async ({ data }: { data: Array<Record<string, unknown>> }) => {
+          estimates.push(...data);
+          return { count: data.length };
         },
         deleteMany: async ({ where }: { where: { jobId: string } }) => {
           for (let i = estimates.length - 1; i >= 0; i -= 1) {
@@ -41,9 +41,9 @@ function memoryDb() {
         },
       },
       jobInvoice: {
-        create: async ({ data }: { data: Record<string, unknown> }) => {
-          invoices.push(data);
-          return data;
+        createMany: async ({ data }: { data: Array<Record<string, unknown>> }) => {
+          invoices.push(...data);
+          return { count: data.length };
         },
         deleteMany: async ({ where }: { where: { jobId: string } }) => {
           for (let i = invoices.length - 1; i >= 0; i -= 1) {
@@ -52,9 +52,9 @@ function memoryDb() {
         },
       },
       jobVisit: {
-        create: async ({ data }: { data: Record<string, unknown> }) => {
-          visits.push(data);
-          return data;
+        createMany: async ({ data }: { data: Array<Record<string, unknown>> }) => {
+          visits.push(...data);
+          return { count: data.length };
         },
         deleteMany: async ({ where }: { where: { jobId: string } }) => {
           for (let i = visits.length - 1; i >= 0; i -= 1) {
@@ -77,7 +77,7 @@ const baseInput = {
   notes: "Bring samples",
 };
 
-test("insertJobWithRelations writes job then links one statement at a time", async () => {
+test("insertJobWithRelations writes job then batches relation rows", async () => {
   const store = memoryDb();
   const job = await insertJobWithRelations(store.db, baseInput, {
     estimateIds: ["est-1"],

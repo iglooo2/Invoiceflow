@@ -111,6 +111,29 @@ test("unauthenticated dashboard redirects to the cookie locale login, not /en", 
   assert.match(response.headers.get("set-cookie") ?? "", /invoiceflow-locale=es/);
 });
 
+test("dashboard billing nav and page title display Subscription, not Billing", () => {
+  const labels = {
+    en: "Subscription",
+    es: "Suscripción",
+    fr: "Abonnement",
+    de: "Abonnement",
+    pt: "Assinatura",
+  } as const;
+  for (const locale of LOCALES) {
+    const dict = getDictionary(locale);
+    assert.equal(dict.app.billing, labels[locale], locale);
+    assert.notEqual(dict.app.billing, "Billing", locale);
+  }
+  assert.equal(getDictionary("en").contact.topics.billing, "Billing");
+
+  const layout = readFileSync(path.join(import.meta.dirname, "../app/dashboard/layout.tsx"), "utf8");
+  const page = readFileSync(path.join(import.meta.dirname, "../app/dashboard/billing/page.tsx"), "utf8");
+  assert.match(layout, /dict\.app\.billing/);
+  assert.match(layout, /"\/dashboard\/billing"/);
+  assert.match(page, /dict\.app\.billing/);
+  assert.match(page, /<h1 className="font-display text-4xl">\{dict\.app\.billing\}<\/h1>/);
+});
+
 test("login and dashboard common errors exist in every locale", () => {
   for (const locale of LOCALES) {
     const dict = getDictionary(locale);
@@ -171,12 +194,34 @@ test("localized landing keeps the studio gallery and register CTA", () => {
   assert.match(page, /startFreeHref/);
   assert.match(page, /PartnerSlot/);
   assert.match(page, /id="partner"/);
+  assert.match(page, /hasSessionCookie/);
+  assert.doesNotMatch(page, /getCurrentUser/);
+  assert.doesNotMatch(page, /from "@\/lib\/session"/);
+
+  const marketingPages = [
+    "app/[locale]/page.tsx",
+    "app/[locale]/advertise/page.tsx",
+    "app/[locale]/pricing/page.tsx",
+    "app/[locale]/contact/page.tsx",
+    "app/[locale]/estimates/page.tsx",
+    "app/[locale]/privacy/page.tsx",
+    "app/[locale]/terms/page.tsx",
+    "app/[locale]/referral-terms/page.tsx",
+  ];
+  for (const file of marketingPages) {
+    const source = readFileSync(path.join(import.meta.dirname, "..", file), "utf8");
+    assert.match(source, /hasSessionCookie/, file);
+    assert.doesNotMatch(source, /from "@\/lib\/session"/, file);
+    assert.doesNotMatch(source, /from "@\/lib\/auth"/, file);
+  }
+  assert.match(login, /hasSessionCookie/);
+  assert.match(login, /getCurrentUser/);
   assert.match(login, /query\.mode === "register"/);
   assert.match(login, /loginQueryErrorMessage/);
   assert.doesNotMatch(login, /dict\.login\.errors\.oauthFailed/);
   assert.match(forms, /initialMode = "signin"/);
   assert.match(forms, /copy\.google/);
-  assert.match(forms, /copy\.apple/);
+  assert.doesNotMatch(forms, /copy\.apple/);
   assert.doesNotMatch(forms, /githubHint/);
   assert.match(forms, /githubEnabled \? \([\s\S]*?copy\.github[\s\S]*?\) : null/);
   const googleButtonAt = forms.indexOf('provider="google"');
@@ -188,10 +233,17 @@ test("localized landing keeps the studio gallery and register CTA", () => {
     assert.ok(dict.home.openStudio.length > 0, locale);
     assert.match(dict.home.headline, /\n/);
     assert.ok(dict.login.google.length > 0, locale);
-    assert.ok(dict.login.apple.length > 0, locale);
+    assert.equal("apple" in dict.login, false, locale);
+    assert.equal("appleHint" in dict.login, false, locale);
+    assert.equal("appleSecretInvalid" in dict.login.errors, false, locale);
+    assert.equal(dict.login.lede.includes("Apple"), false, locale);
+    assert.equal(dict.login.errors.oauthFailed.includes("Apple"), false, locale);
+    assert.equal(dict.login.errors.oauthFailed.includes("AUTH_APPLE"), false, locale);
+    assert.ok(
+      dict.privacy.paragraphs.every((paragraph) => !paragraph.includes("Apple")),
+      locale,
+    );
     assert.equal("githubHint" in dict.login, false, locale);
-    assert.match(dict.login.appleHint, /AUTH_APPLE_TEAM/);
-    assert.ok(dict.login.errors.appleSecretInvalid.length > 0, locale);
     assert.ok(dict.onboarding.profileTitle.length > 0, locale);
     assert.ok(dict.onboarding.businessTitle.length > 0, locale);
     assert.match(dict.onboarding.businessLede, /InvoiceFlow Studio/);

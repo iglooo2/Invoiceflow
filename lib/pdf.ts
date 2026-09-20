@@ -263,7 +263,8 @@ function assemblePdf(pages: PageCanvas[]) {
 }
 
 function wrap(text: string, width: number) {
-  const words = text.split(/\s+/).filter(Boolean);
+  const clipped = text.length > 2_000 ? text.slice(0, 2_000) : text;
+  const words = clipped.split(/\s+/).filter(Boolean);
   const lines: string[] = [];
   let current = "";
   for (const word of words) {
@@ -317,7 +318,8 @@ export async function buildInvoicePdf(options: {
   branded: boolean;
 }) {
   const { invoice, studio, branded } = options;
-  const totals = invoiceTotals(invoice.items, invoice.taxRate);
+  const items = invoice.items.slice(0, 80);
+  const totals = invoiceTotals(items, invoice.taxRate);
   const pages: PageCanvas[] = [];
 
   const paintChrome = (page: PageCanvas) => {
@@ -393,7 +395,7 @@ export async function buildInvoicePdf(options: {
   page.textRight("Amount", 564, y, { font: "F2", size: 9, color: muted });
   y -= 28;
 
-  for (const item of invoice.items) {
+  for (const item of items) {
     ensureRoom(22);
     const amount = formatCents(Math.round(item.quantity * item.rate * 100), invoice.currency);
     page.text(item.description.slice(0, 48), 56, y, { size: 10 });
@@ -465,7 +467,8 @@ export async function buildProposalPdf(options: {
   branded: boolean;
 }) {
   const { proposal, studio, branded } = options;
-  const totals = estimateTotals(proposal.sections, proposal.taxRate ?? 0, proposal.markupRate ?? 0);
+  const sections = proposal.sections.slice(0, 40);
+  const totals = estimateTotals(sections, proposal.taxRate ?? 0, proposal.markupRate ?? 0);
   const attachments = Array.isArray(proposal.attachments)
     ? proposal.attachments
     : parseAttachmentsJson(proposal.attachments);
@@ -514,7 +517,7 @@ export async function buildProposalPdf(options: {
   }
 
   y -= 36;
-  for (const section of proposal.sections) {
+  for (const section of sections) {
     ensureRoom(40);
     page.text(section.heading, MARGIN_X, y, { font: "F2", size: 12, color: rust });
     y -= 16;

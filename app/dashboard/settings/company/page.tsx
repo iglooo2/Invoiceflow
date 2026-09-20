@@ -18,7 +18,7 @@ export default async function CompanySettingsPage({
   const { dict } = await appCopy();
   const copy = dict.app.settingsPage;
   const { error, saved } = await searchParams;
-  const loaded = await loadStudioSettings(user.id);
+  const loaded = await loadStudioSettings(user.id, { uploads: "logo" });
   const s = loaded.settings;
   const showPro = isProPlan(user);
 

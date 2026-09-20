@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { connection } from "next/server";
 import { redirect } from "next/navigation";
-import { appleAuthEnabled, ensureAuthRuntimeEnv, githubAuthEnabled, googleAuthEnabled, resendEnabled } from "@/lib/auth-env";
+import { ensureAuthRuntimeEnv, githubAuthEnabled, googleAuthEnabled, resendEnabled } from "@/lib/auth-env";
 import { isOauthAccountNotLinkedCode, loginQueryErrorMessage } from "@/lib/auth-errors";
 import { getCurrentUser } from "@/lib/session";
+import { hasSessionCookie } from "@/lib/session-cookie";
 import { isDevMode } from "@/lib/utils";
 import { MarketingFooter, MarketingHeader } from "@/components/marketing/shell";
 import { getDictionary } from "@/lib/dictionary";
@@ -12,7 +13,7 @@ import { isLocale } from "@/lib/i18n";
 import { nextOnboardingPath } from "@/lib/onboarding";
 import { AuthForms } from "./auth-forms";
 
-// Request-time so AUTH_GOOGLE_* / AUTH_APPLE_* Worker secrets are visible.
+// Request-time so AUTH_GOOGLE_* Worker secrets are visible.
 // Do not SSG this page — Next may otherwise bake disabled OAuth buttons at cf:build.
 export const dynamic = "force-dynamic";
 
@@ -31,7 +32,7 @@ export default async function LoginPage({
   await connection();
   await ensureAuthRuntimeEnv();
   const { locale, dict } = marketingCopy((await params).locale);
-  const user = await getCurrentUser();
+  const user = (await hasSessionCookie()) ? await getCurrentUser() : null;
   if (user) redirect(nextOnboardingPath(user, locale));
   const query = await searchParams;
   const errorCode = typeof query.error === "string" ? query.error : null;
@@ -51,7 +52,6 @@ export default async function LoginPage({
         <AuthForms
           githubEnabled={githubAuthEnabled()}
           googleEnabled={googleAuthEnabled()}
-          appleEnabled={appleAuthEnabled()}
           magicEnabled={resendEnabled()}
           showDemoCredentials={isDevMode()}
           callbackUrl={typeof query.callbackUrl === "string" ? query.callbackUrl : "/dashboard"}

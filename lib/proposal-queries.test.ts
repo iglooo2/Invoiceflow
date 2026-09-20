@@ -92,6 +92,28 @@ test("listEstimatesForUser retries without optional columns after P2022", async 
   assert.deepEqual(calls, ["findMany", "findMany"]);
 });
 
+test("listEstimatesForUser can select only section amounts for list totals", async () => {
+  const db = {
+    proposal: {
+      findMany: async ({ select, take }: { select: Record<string, unknown>; take?: number }) => {
+        const sections = select.sections as { select?: { amount?: boolean } };
+        assert.equal(sections?.select?.amount, true);
+        assert.equal(take, 100);
+        return [coreRow];
+      },
+      findFirst: async () => null,
+      findUnique: async () => null,
+    },
+  };
+  const result = await listEstimatesForUser(db as unknown as PrismaClient, {
+    userId: "user-1",
+    includeSections: true,
+    sectionFields: "amount",
+    take: 100,
+  });
+  assert.equal(result.estimates[0]?.sections[0]?.amount, 2400);
+});
+
 test("listEstimatesForUser returns an in-page error instead of throwing", async () => {
   const previous = process.env.DATABASE_URL;
   process.env.DATABASE_URL = "postgresql://u:p@ep-foo.neon.tech/db";
@@ -160,6 +182,18 @@ test("estimate dashboard pages query through the schema-safe helper", () => {
     assert.match(source, /listEstimatesForUser|findEstimateForUser|findEstimateByPublicToken|findEstimateById/);
     assert.doesNotMatch(source, /prisma\.proposal\.find(Many|First|Unique)/);
   }
+  const estimatesList = readFileSync(path.join(root, "app/dashboard/estimates/page.tsx"), "utf8");
+  assert.match(estimatesList, /sectionFields: "amount"/);
+  assert.match(estimatesList, /DASHBOARD_LIST_TAKE/);
+  const invoicesList = readFileSync(path.join(root, "app/dashboard/invoices/page.tsx"), "utf8");
+  assert.match(invoicesList, /DASHBOARD_LIST_TAKE/);
+  const newInvoice = readFileSync(path.join(root, "app/dashboard/invoices/new/page.tsx"), "utf8");
+  assert.match(newInvoice, /DOCUMENT_PICKER_TAKE/);
+  const session = readFileSync(path.join(root, "lib/session.ts"), "utf8");
+  assert.match(session, /cache\(async/);
+  const jobWrites = readFileSync(path.join(root, "lib/job-writes.ts"), "utf8");
+  assert.match(jobWrites, /createMany/);
+  assert.doesNotMatch(jobWrites, /for \(const estimateId/);
   assert.deepEqual([...ESTIMATE_OPTIONAL_COLUMNS], [
     "taxRate",
     "markupRate",

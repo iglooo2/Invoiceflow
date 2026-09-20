@@ -10,6 +10,7 @@ import {
 } from "@/lib/estimates";
 import { csvExportHref, parseListFilters } from "@/lib/csv";
 import { ESTIMATE_SCHEMA_WARNING, listEstimatesForUser } from "@/lib/proposal-queries";
+import { DASHBOARD_LIST_TAKE } from "@/lib/query-limits";
 import { appCopy } from "@/lib/i18n-request";
 import { formatMessage } from "@/lib/i18n";
 import { estimateTotals, formatCents } from "@/lib/money";
@@ -37,6 +38,8 @@ export default async function EstimatesPage({
       status,
       q,
       includeSections: true,
+      sectionFields: "amount",
+      take: DASHBOARD_LIST_TAKE,
     });
     estimates = loaded.estimates;
     usedLegacySchema = loaded.usedLegacySchema;

@@ -2,11 +2,17 @@ import "server-only";
 import { prisma } from "@/lib/db";
 import { isMissingDatabaseSchemaError, prismaWriteFailureMessage, safeErrorLog } from "@/lib/db-errors";
 import {
+  ACCOUNT_SETTINGS_SELECT,
   EMPTY_STUDIO_SETTINGS,
   SETTINGS_SCHEMA_WARNING,
+  STUDIO_USER_SELECT,
   normalizeStudioSettings,
+  studioSettingsSelect,
   type StudioSettingsRecord,
+  type StudioSettingsUploads,
 } from "@/lib/studio-settings";
+
+export { STUDIO_USER_SELECT };
 
 export type LoadedStudioSettings = {
   settings: StudioSettingsRecord;
@@ -14,9 +20,15 @@ export type LoadedStudioSettings = {
   warning?: string;
 };
 
-export async function loadStudioSettings(userId: string): Promise<LoadedStudioSettings> {
+async function readStudioSettings(
+  userId: string,
+  select: Record<string, boolean>,
+): Promise<LoadedStudioSettings> {
   try {
-    const row = await prisma.studioSettings.findUnique({ where: { userId } });
+    const row = await prisma.studioSettings.findUnique({
+      where: { userId },
+      select,
+    });
     return {
       settings: row ? normalizeStudioSettings(row) : EMPTY_STUDIO_SETTINGS,
       missingSchema: false,
@@ -27,6 +39,19 @@ export async function loadStudioSettings(userId: string): Promise<LoadedStudioSe
     }
     throw error;
   }
+}
+
+/** Default omits logo/license/insurance data URLs so settings SSR stays under Worker limits. */
+export async function loadStudioSettings(
+  userId: string,
+  options: { uploads?: StudioSettingsUploads } = {},
+): Promise<LoadedStudioSettings> {
+  return readStudioSettings(userId, studioSettingsSelect(options.uploads ?? "none"));
+}
+
+/** Settings → My Account: four scalar columns, no upload blobs, no document templates. */
+export async function loadAccountSettings(userId: string): Promise<LoadedStudioSettings> {
+  return readStudioSettings(userId, { ...ACCOUNT_SETTINGS_SELECT });
 }
 
 export async function upsertStudioSettings(
@@ -90,8 +115,17 @@ export async function loadTaxRates(userId: string): Promise<{
 }
 
 export async function defaultTaxPercent(userId: string) {
-  const { taxes } = await loadTaxRates(userId);
-  return taxes[0]?.rate ?? 0;
+  try {
+    const row = await prisma.taxRate.findFirst({
+      where: { userId },
+      orderBy: { createdAt: "asc" },
+      select: { rate: true },
+    });
+    return row?.rate ?? 0;
+  } catch (error) {
+    if (isMissingDatabaseSchemaError(error)) return 0;
+    throw error;
+  }
 }
 
 export type LoadedContract = {
@@ -134,12 +168,20 @@ export async function loadContracts(userId: string): Promise<{
 }
 
 export async function defaultContractDetails(userId: string, kind: "invoice" | "estimate") {
-  const { contracts } = await loadContracts(userId);
-  const match =
-    kind === "invoice"
-      ? contracts.find((row) => row.defaultForInvoices)
-      : contracts.find((row) => row.defaultForEstimates);
-  return match?.details?.trim() || "";
+  try {
+    if (!prisma.contract) return "";
+    const row = await prisma.contract.findFirst({
+      where: {
+        userId,
+        ...(kind === "invoice" ? { defaultForInvoices: true } : { defaultForEstimates: true }),
+      },
+      select: { details: true },
+    });
+    return row?.details?.trim() || "";
+  } catch (error) {
+    if (isMissingDatabaseSchemaError(error)) return "";
+    throw error;
+  }
 }
 
 export async function withDocumentFooter<T extends object>(userId: string, studio: T) {

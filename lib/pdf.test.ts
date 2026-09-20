@@ -142,14 +142,16 @@ test("PDF stack does not load pdf-lib or copy through Buffer in routes", () => {
     "app/api/share/i/[token]/pdf/route.ts",
     "app/api/proposals/[id]/pdf/route.ts",
     "app/api/share/p/[token]/pdf/route.ts",
+    "app/share/i/[token]/page.tsx",
     "next.config.ts",
     "package.json",
   ];
   for (const relative of files) {
     const source = readFileSync(path.join(root, relative), "utf8");
     assert.doesNotMatch(source, /from ["']pdf-lib["']|require\(["']pdf-lib["']\)/, relative);
-    if (relative.startsWith("app/api/")) {
+    if (relative.startsWith("app/api/") || relative.startsWith("app/share/")) {
       assert.doesNotMatch(source, /Buffer\.from/, relative);
+      assert.doesNotMatch(source, /include: \{ items:.*user: true/, relative);
     }
   }
   const pkg = JSON.parse(readFileSync(path.join(root, "package.json"), "utf8")) as {

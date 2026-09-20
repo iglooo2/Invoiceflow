@@ -19,8 +19,7 @@ import {
 } from "@/lib/db-errors";
 import { localizedPath } from "@/lib/i18n";
 import { appCopy } from "@/lib/i18n-request";
-import { resolveAppleClientSecret } from "@/lib/apple-secret";
-import { appleAuthEnabled, appleCredentials, ensureAuthRuntimeEnv, googleAuthEnabled } from "@/lib/auth-env";
+import { ensureAuthRuntimeEnv, googleAuthEnabled } from "@/lib/auth-env";
 
 const credentialsSchema = z.object({
   email: z.string().email(),
@@ -147,34 +146,6 @@ export async function loginWithGoogle() {
     }
     unstable_rethrow(error);
     console.error("loginWithGoogle", safeErrorLog(error));
-    if (error instanceof AuthError) {
-      return { error: oauthActionErrorMessage(authErrorType(error), dict.login.errors) };
-    }
-    return { error: dict.login.errors.oauthFailed };
-  }
-}
-
-export async function loginWithApple() {
-  await ensureAuthRuntimeEnv();
-  const { dict } = await appCopy();
-  if (!appleAuthEnabled()) {
-    return { error: dict.login.errors.oauthNotConfigured };
-  }
-  try {
-    await resolveAppleClientSecret(appleCredentials());
-  } catch (error) {
-    console.error("loginWithApple secret", safeErrorLog(error));
-    return { error: dict.login.errors.appleSecretInvalid };
-  }
-  try {
-    await signIn("apple", { redirectTo: "/dashboard" });
-  } catch (error) {
-    const redirectCode = redirectDigestErrorCode(error);
-    if (redirectCode) {
-      return { error: oauthActionErrorMessage(redirectCode, dict.login.errors) };
-    }
-    unstable_rethrow(error);
-    console.error("loginWithApple", safeErrorLog(error));
     if (error instanceof AuthError) {
       return { error: oauthActionErrorMessage(authErrorType(error), dict.login.errors) };
     }

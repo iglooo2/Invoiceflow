@@ -1,19 +1,17 @@
 "use server";
 
-import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { isMissingDatabaseSchemaError, prismaWriteFailureMessage, safeErrorLog } from "@/lib/db-errors";
+import { revalidateSettings, settingsRedirect } from "@/lib/settings-save";
 import { requireUser } from "@/lib/session";
 import { newReferralCode } from "@/lib/referrals";
-import { SETTINGS_SCHEMA_WARNING } from "@/lib/studio-settings";
+import { EMPTY_STUDIO_SETTINGS, SETTINGS_SCHEMA_WARNING } from "@/lib/studio-settings";
 import { loadStudioSettings, upsertStudioSettings } from "@/lib/studio-settings-store";
 import {
-  accountNameFromParts,
   fileFromForm,
   fileToStoredUpload,
-  parseAccountForm,
   parseCompanyForm,
   parseContractForm,
   parseDocumentsForm,
@@ -32,66 +30,6 @@ function keepUpload(clear: boolean, next?: { name?: string; dataUrl: string } | 
   };
 }
 
-function settingsRedirect(path: string, error?: string, saved?: boolean) {
-  const params = new URLSearchParams();
-  if (error) params.set("error", error);
-  if (saved) params.set("saved", "1");
-  const query = params.toString();
-  return query ? `${path}?${query}` : path;
-}
-
-async function revalidateSettings() {
-  try {
-    revalidatePath("/dashboard");
-    revalidatePath("/dashboard/settings");
-    revalidatePath("/dashboard/settings", "layout");
-  } catch (error) {
-    console.error("settings revalidatePath", safeErrorLog(error));
-  }
-}
-
-export async function updateAccount(formData: FormData) {
-  const user = await requireUser();
-  const parsed = parseAccountForm(formData);
-  if (!parsed.success) redirect(settingsRedirect("/dashboard/settings/account", parsed.error));
-  const data = parsed.data;
-  if (data.email && data.email !== (user.email ?? "").toLowerCase()) {
-    const taken = await prisma.user.findFirst({
-      where: { email: data.email, NOT: { id: user.id } },
-      select: { id: true },
-    });
-    if (taken) {
-      redirect(settingsRedirect("/dashboard/settings/account", "That email is already in use."));
-    }
-  }
-  const userPatch: {
-    name: string | null;
-    email?: string | null;
-    passwordHash?: string;
-  } = {
-    name: accountNameFromParts(data.firstName, data.lastName, user.name),
-  };
-  if (data.email) userPatch.email = data.email;
-  if (data.password) {
-    userPatch.passwordHash = await bcrypt.hash(data.password, 10);
-  }
-  try {
-    await prisma.user.update({ where: { id: user.id }, data: userPatch });
-  } catch (error) {
-    console.error("updateAccount user", safeErrorLog(error));
-    redirect(settingsRedirect("/dashboard/settings/account", prismaWriteFailureMessage(error)));
-  }
-  const saved = await upsertStudioSettings(user.id, {
-    firstName: data.firstName || null,
-    lastName: data.lastName || null,
-    defaultCurrency: data.defaultCurrency,
-    documentLocale: data.documentLocale,
-  });
-  if (!saved.ok) redirect(settingsRedirect("/dashboard/settings/account", saved.error));
-  await revalidateSettings();
-  redirect(settingsRedirect("/dashboard/settings/account", undefined, true));
-}
-
 export async function updateCompany(formData: FormData) {
   const user = await requireUser();
   const parsed = parseCompanyForm(formData);
@@ -99,7 +37,10 @@ export async function updateCompany(formData: FormData) {
   const data = parsed.data;
   const logo = await fileToStoredUpload(fileFromForm(formData, "logoFile"), "image");
   if (!logo.success) redirect(settingsRedirect("/dashboard/settings/company", logo.error));
-  const existing = await loadStudioSettings(user.id);
+  const keepPreviousLogo = !data.clearLogo && !logo.data;
+  const existing = keepPreviousLogo
+    ? await loadStudioSettings(user.id, { uploads: "logo" })
+    : { settings: EMPTY_STUDIO_SETTINGS };
   try {
     await prisma.user.update({
       where: { id: user.id },
@@ -145,7 +86,10 @@ export async function updateLinks(formData: FormData) {
   const insurance = await fileToStoredUpload(fileFromForm(formData, "insuranceFile"), "document");
   if (!license.success) redirect(settingsRedirect("/dashboard/settings/links", license.error));
   if (!insurance.success) redirect(settingsRedirect("/dashboard/settings/links", insurance.error));
-  const existing = await loadStudioSettings(user.id);
+  const needDocs = (!data.clearLicense && !license.data) || (!data.clearInsurance && !insurance.data);
+  const existing = needDocs
+    ? await loadStudioSettings(user.id, { uploads: "docs" })
+    : { settings: EMPTY_STUDIO_SETTINGS };
   try {
     if (data.website !== undefined) {
       await prisma.user.update({

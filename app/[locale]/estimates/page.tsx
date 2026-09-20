@@ -10,7 +10,7 @@ import {
   Smartphone,
   Sparkles,
 } from "lucide-react";
-import { getCurrentUser } from "@/lib/session";
+import { hasSessionCookie } from "@/lib/session-cookie";
 import { ESTIMATE_NEW_PATH } from "@/lib/estimates";
 import { Button } from "@/components/ui/button";
 import { MarketingFooter, MarketingHeader } from "@/components/marketing/shell";
@@ -41,13 +41,13 @@ export async function generateMetadata({
 
 export default async function EstimatesMarketingPage({ params }: PageProps<"/[locale]/estimates">) {
   const { locale, dict } = marketingCopy((await params).locale);
-  const user = await getCurrentUser();
-  const createHref = user ? ESTIMATE_NEW_PATH : localizedPath(locale, "/login");
+  const signedIn = await hasSessionCookie();
+  const createHref = signedIn ? ESTIMATE_NEW_PATH : localizedPath(locale, "/login");
   const copy = dict.estimatesPage;
 
   return (
     <div>
-      <MarketingHeader signedIn={Boolean(user)} locale={locale} path="/estimates" copy={dict.nav} />
+      <MarketingHeader signedIn={signedIn} locale={locale} path="/estimates" copy={dict.nav} />
       <main className="mx-auto w-full max-w-6xl px-4">
         <section className="grid items-center gap-12 py-12 lg:grid-cols-[1.1fr_0.9fr] lg:py-20">
           <div>
@@ -58,7 +58,7 @@ export default async function EstimatesMarketingPage({ params }: PageProps<"/[lo
             <p className="mt-5 max-w-xl text-lg leading-8 text-muted-foreground">{copy.lede}</p>
             <div className="btn-row mt-8">
               <Button asChild size="lg">
-                <Link href={createHref}>{user ? copy.create : copy.startFreeCreate}</Link>
+                <Link href={createHref}>{signedIn ? copy.create : copy.startFreeCreate}</Link>
               </Button>
               <Button asChild size="lg" variant="outline">
                 <Link href={localizedPath(locale, "/pricing")}>{dict.home.seePricing}</Link>
@@ -111,7 +111,7 @@ export default async function EstimatesMarketingPage({ params }: PageProps<"/[lo
               <code className="text-xs">INTUIT_CLIENT_ID</code> / <code className="text-xs">INTUIT_CLIENT_SECRET</code>{" "}
               {copy.qbNoteMid}{" "}
               <Link
-                href={user ? "/dashboard/settings/quickbooks" : localizedPath(locale, "/login")}
+                href={signedIn ? "/dashboard/settings/quickbooks" : localizedPath(locale, "/login")}
                 className="underline"
               >
                 {dict.app.settings}
@@ -119,7 +119,7 @@ export default async function EstimatesMarketingPage({ params }: PageProps<"/[lo
               {copy.qbNoteAfter}
             </p>
             <Button asChild variant="outline" className="mt-6">
-              <Link href={user ? "/dashboard/settings/quickbooks" : localizedPath(locale, "/login")}>
+              <Link href={signedIn ? "/dashboard/settings/quickbooks" : localizedPath(locale, "/login")}>
                 {copy.qbCta}
               </Link>
             </Button>
@@ -136,7 +136,7 @@ export default async function EstimatesMarketingPage({ params }: PageProps<"/[lo
           </div>
           <div className="btn-row mt-8">
             <Button asChild size="lg">
-              <Link href={createHref}>{user ? copy.create : dict.nav.startFree}</Link>
+              <Link href={createHref}>{signedIn ? copy.create : dict.nav.startFree}</Link>
             </Button>
             <Button asChild size="lg" variant="outline">
               <Link href={localizedPath(locale, "/login")}>{dict.nav.signIn}</Link>
