@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { demoDowngrade, demoUnlockPro, openBillingPortal, startProCheckout } from "@/app/actions/billing";
 import { Button } from "@/components/ui/button";
 import { PLANS } from "@/lib/plans";
@@ -6,6 +7,11 @@ import { stripeEnabled, stripeKeyMode, stripeUpgradeButtonLabel } from "@/lib/st
 import { isDevMode } from "@/lib/utils";
 import { appCopy } from "@/lib/i18n-request";
 import { formatMessage } from "@/lib/i18n";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { dict } = await appCopy();
+  return { title: dict.app.billing };
+}
 
 export default async function BillingPage({
   searchParams,

@@ -239,7 +239,7 @@
     "topicPlaceholder": "Option wählen",
     "topics": {
       "general": "Allgemein",
-      "billing": "Abrechnung",
+      "billing": "Abonnement",
       "support": "Support",
       "partnership": "Partnerschaft",
       "other": "Sonstiges"
@@ -277,7 +277,7 @@
     "invoices": "Rechnungen",
     "proposals": "Angebote",
     "clients": "Kunden",
-    "billing": "Abrechnung",
+    "billing": "Abonnement",
     "settings": "Einstellungen",
     "newInvoice": "Neue Rechnung",
     "newProposal": "Neues Angebot",

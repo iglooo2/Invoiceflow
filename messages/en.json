@@ -239,7 +239,7 @@
     "topicPlaceholder": "Select option",
     "topics": {
       "general": "General",
-      "billing": "Billing",
+      "billing": "Subscription",
       "support": "Support",
       "partnership": "Partnership",
       "other": "Other"
@@ -277,7 +277,7 @@
     "invoices": "Invoices",
     "proposals": "Proposals",
     "clients": "Clients",
-    "billing": "Billing",
+    "billing": "Subscription",
     "settings": "Settings",
     "newInvoice": "New invoice",
     "newProposal": "New proposal",
