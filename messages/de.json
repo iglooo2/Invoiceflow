@@ -10,7 +10,9 @@
     "contactTitle": "Anfrage senden",
     "estimatesTitle": "Kostenvoranschläge",
     "estimatesDescription": "Kalkuliere Aufträge mit gebrandeten InvoiceFlow-Studio-Voranschlägen — Positionen, Aufschlag, Steuer, Online-Genehmigung und QuickBooks Online, wenn du soweit bist.",
-    "referralTermsTitle": "Bedingungen des Empfehlungsprogramms"
+    "referralTermsTitle": "Bedingungen des Empfehlungsprogramms",
+    "advertiseTitle": "Werbung",
+    "advertiseDescription": "Werde Partner von InvoiceFlow Studio. Erreiche Freelancer und Auftragnehmer, die Rechnungen schreiben — ein gekennzeichneter Partner-Platz auf der Startseite."
   },
   "nav": {
     "how": "So funktioniert’s",
@@ -23,7 +25,8 @@
     "terms": "Bedingungen",
     "privacy": "Datenschutz",
     "language": "Sprache",
-    "estimates": "Voranschläge"
+    "estimates": "Voranschläge",
+    "advertise": "Werbung"
   },
   "home": {
     "eyebrow": "InvoiceFlow Studio",
@@ -69,12 +72,40 @@
     "freePrice": "Gratis",
     "perMonthShort": "/Mo."
   },
+  "partner": {
+    "label": "Partner",
+    "sponsored": "Gesponsert",
+    "placeholderTitle": "Deine Marke hier — werde Partner von InvoiceFlow Studio",
+    "placeholderBlurb": "Ein ruhiger, gekennzeichneter Startseiten-Platz für Tools, die Freelancern und Auftragnehmern helfen, bezahlt zu werden.",
+    "cta": "Hier werben",
+    "visit": "Partner besuchen"
+  },
   "pricing": {
     "headline": "Einfacher Preis für eine einfache Aufgabe.",
     "lede": "InvoiceFlow Studio ist keine Buchhaltungssuite. Es ist der schnellste Weg, eine schöne Rechnung oder einen Voranschlag zu senden und zu wissen, ob sie genehmigt oder bezahlt wurde — auf invoiceflowstudio.com.",
     "perMonth": "/ Monat",
     "useStarter": "Starter nutzen",
     "upgradePro": "Auf Pro upgraden"
+  },
+  "advertise": {
+    "eyebrow": "Werde Partner von InvoiceFlow Studio",
+    "headline": "Ein gekennzeichneter Startseiten-Platz für Marken, die Auftragnehmern helfen, bezahlt zu werden.",
+    "lede": "InvoiceFlow Studio ist ein fokussiertes Rechnungs-Tool für Freelancer, Designer, Texter und Auftragnehmer. Wir verkaufen wenige direkte Sponsoring-Plätze — kein lautes Werbenetzwerk.",
+    "audienceTitle": "Wen du erreichst",
+    "audienceBody": "Selbstständige Auftragnehmer und Freelancer, die Rechnungen und Voranschläge schicken: Designer, Editoren, Texter und Handwerk. Sie denken bereits an Tools, Material und daran, bezahlt zu werden.",
+    "offerTitle": "Was du bekommst",
+    "offerItems": [
+      "Eine kompakte Karte auf der Startseite, immer als Partner oder Gesponsert gekennzeichnet.",
+      "Denselben leichten Platz im Footer öffentlicher Seiten.",
+      "Name, Logo, kurzer Text und ein Link — der Rest der Seite bleibt ruhig.",
+      "Ehrliche Kennzeichnung. Wir tarnen Werbung nicht als Redaktion."
+    ],
+    "ratesTitle": "Vorgeschlagene Startpreise",
+    "ratesBody": "Direkte Sponsorings beginnen bei 50–150 $ im Monat, je nach Saison und Buchungsdauer. Das ist ein Startgespräch, kein Vertrag.",
+    "ratesNote": "Wir halten das Inventar klein, damit ein Partner-Platz sichtbar bleibt.",
+    "contactTitle": "Gespräch starten",
+    "contactBody": "Erzähl uns von deiner Marke, der gewünschten Zielgruppe und einem bevorzugten Startmonat. Nutze Schreib uns und wähle Partnership — wir antworten von dort.",
+    "contactCta": "Schreib uns wegen einer Partnerschaft"
   },
   "plans": {
     "free": {

@@ -10,7 +10,9 @@
     "contactTitle": "Submit a request",
     "estimatesTitle": "Estimates",
     "estimatesDescription": "Price jobs with branded InvoiceFlow Studio estimates — line items, markup, tax, online approval, and QuickBooks Online when you are ready.",
-    "referralTermsTitle": "Referral Program Terms"
+    "referralTermsTitle": "Referral Program Terms",
+    "advertiseTitle": "Advertise",
+    "advertiseDescription": "Sponsor InvoiceFlow Studio. Reach freelancers and contractors who invoice — a labeled Partner slot on the homepage."
   },
   "nav": {
     "how": "How it works",
@@ -23,7 +25,8 @@
     "terms": "Terms",
     "privacy": "Privacy",
     "language": "Language",
-    "estimates": "Estimates"
+    "estimates": "Estimates",
+    "advertise": "Advertise"
   },
   "home": {
     "eyebrow": "InvoiceFlow Studio",
@@ -69,12 +72,40 @@
     "freePrice": "Free",
     "perMonthShort": "/mo"
   },
+  "partner": {
+    "label": "Partner",
+    "sponsored": "Sponsored",
+    "placeholderTitle": "Your brand here — partner with InvoiceFlow Studio",
+    "placeholderBlurb": "A quiet, labeled homepage slot for tools that help freelancers and contractors get paid.",
+    "cta": "Advertise here",
+    "visit": "Visit partner"
+  },
   "pricing": {
     "headline": "Simple pricing for a simple job.",
     "lede": "InvoiceFlow Studio is not an accounting suite. It’s the fastest way to send a beautiful invoice or estimate and know whether it got approved or paid — at invoiceflowstudio.com.",
     "perMonth": "/ month",
     "useStarter": "Use Starter",
     "upgradePro": "Upgrade to Pro"
+  },
+  "advertise": {
+    "eyebrow": "Partner with InvoiceFlow Studio",
+    "headline": "A labeled homepage slot for brands that help contractors get paid.",
+    "lede": "InvoiceFlow Studio is a focused invoicing tool for freelancers, designers, writers, and contractors. We sell a small number of direct sponsorships — not a noisy ad network.",
+    "audienceTitle": "Who you reach",
+    "audienceBody": "Independent contractors and freelancers who send invoices and estimates: designers, editors, writers, and trades. They are already thinking about tools, materials, and getting paid.",
+    "offerTitle": "What you get",
+    "offerItems": [
+      "A compact homepage card, always labeled Partner or Sponsored.",
+      "The same light placement in the footer of public pages.",
+      "Your name, logo, short blurb, and a link — we keep the rest of the site clean.",
+      "Honest disclosure. We do not disguise ads as editorial."
+    ],
+    "ratesTitle": "Suggested starting rates",
+    "ratesBody": "Direct sponsorships start at $50–150 per month, depending on season and how long you book. This is a starting conversation, not a contract.",
+    "ratesNote": "We keep inventory small so a Partner slot stays noticeable.",
+    "contactTitle": "Start a conversation",
+    "contactBody": "Tell us about your brand, the audience you want, and a preferred month to start. Use Message us and pick Partnership — we will reply from there.",
+    "contactCta": "Message us about a partnership"
   },
   "plans": {
     "free": {

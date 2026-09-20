@@ -10,7 +10,9 @@
     "contactTitle": "Envoyer une demande",
     "estimatesTitle": "Devis",
     "estimatesDescription": "Chiffrez vos chantiers avec des devis InvoiceFlow Studio — lignes, marge, taxe, approbation en ligne et QuickBooks Online quand vous serez prêts.",
-    "referralTermsTitle": "Conditions du programme de parrainage"
+    "referralTermsTitle": "Conditions du programme de parrainage",
+    "advertiseTitle": "Annoncez",
+    "advertiseDescription": "Devenez partenaire d’InvoiceFlow Studio. Touchez des freelances et des entrepreneurs qui facturent — un emplacement Partner étiqueté sur la page d’accueil."
   },
   "nav": {
     "how": "Comment ça marche",
@@ -23,7 +25,8 @@
     "terms": "Conditions",
     "privacy": "Confidentialité",
     "language": "Langue",
-    "estimates": "Devis"
+    "estimates": "Devis",
+    "advertise": "Annoncez"
   },
   "home": {
     "eyebrow": "InvoiceFlow Studio",
@@ -69,12 +72,40 @@
     "freePrice": "Gratuit",
     "perMonthShort": "/mois"
   },
+  "partner": {
+    "label": "Partenaire",
+    "sponsored": "Sponsorisé",
+    "placeholderTitle": "Votre marque ici — devenez partenaire d’InvoiceFlow Studio",
+    "placeholderBlurb": "Un emplacement discret et étiqueté sur la page d’accueil pour les outils qui aident freelances et entrepreneurs à se faire payer.",
+    "cta": "Annoncez-vous ici",
+    "visit": "Voir le partenaire"
+  },
   "pricing": {
     "headline": "Un tarif simple pour un travail simple.",
     "lede": "InvoiceFlow Studio n’est pas une suite comptable. C’est le plus rapide pour envoyer une belle facture ou un devis et savoir s’il a été approuvé ou payé — sur invoiceflowstudio.com.",
     "perMonth": "/ mois",
     "useStarter": "Utiliser Starter",
     "upgradePro": "Passer à Pro"
+  },
+  "advertise": {
+    "eyebrow": "Devenez partenaire d’InvoiceFlow Studio",
+    "headline": "Un emplacement étiqueté sur la page d’accueil pour les marques qui aident les entrepreneurs à se faire payer.",
+    "lede": "InvoiceFlow Studio est un outil de facturation ciblé pour freelances, designers, rédacteurs et entrepreneurs. Nous vendons un petit nombre de sponsoring directs — pas un réseau publicitaire bruyant.",
+    "audienceTitle": "Qui vous touchez",
+    "audienceBody": "Des entrepreneurs indépendants et des freelances qui envoient factures et devis : designers, monteurs, rédacteurs et métiers. Ils pensent déjà aux outils, aux matériaux et à se faire payer.",
+    "offerTitle": "Ce que vous obtenez",
+    "offerItems": [
+      "Une carte compacte sur la page d’accueil, toujours étiquetée Partenaire ou Sponsorisé.",
+      "Le même emplacement léger dans le pied des pages publiques.",
+      "Votre nom, logo, un court texte et un lien — le reste du site reste sobre.",
+      "Une mention honnête. Nous ne déguisons pas les pubs en éditorial."
+    ],
+    "ratesTitle": "Tarifs de départ suggérés",
+    "ratesBody": "Les sponsoring directs commencent à 50–150 $ par mois, selon la saison et la durée. C’est une discussion de départ, pas un contrat.",
+    "ratesNote": "Nous gardons peu d’emplacements pour que le slot Partenaire reste visible.",
+    "contactTitle": "Engagez la conversation",
+    "contactBody": "Parlez-nous de votre marque, du public visé et d’un mois de début. Utilisez Écrivez-nous et choisissez Partnership — nous répondrons de là.",
+    "contactCta": "Écrivez-nous au sujet d’un partenariat"
   },
   "plans": {
     "free": {

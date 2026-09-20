@@ -8,7 +8,13 @@ export const SITE_DESCRIPTION =
   "Ditch the Word docs. Pick a template that matches your work — fast invoices and proposals for designers, editors, and writers.";
 export const CONTACT_EMAIL = "galit.igor@yahoo.com";
 export const CONTACT_PATH = "/contact";
+export const ADVERTISE_PATH = "/advertise";
 export const CONTACT_MAILTO = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("InvoiceFlow Studio inquiry")}`;
+
+export function advertiseContactHref(locale?: Locale) {
+  const contact = locale ? localizedPath(locale, CONTACT_PATH) : CONTACT_PATH;
+  return `${contact}?topic=partnership`;
+}
 
 export function startFreeHref(signedIn: boolean, locale?: Locale) {
   if (signedIn) return "/dashboard";

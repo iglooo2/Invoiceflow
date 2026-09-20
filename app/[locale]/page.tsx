@@ -5,7 +5,9 @@ import { PLANS } from "@/lib/plans";
 import { startFreeHref } from "@/lib/site";
 import { Button } from "@/components/ui/button";
 import { MarketingFooter, MarketingHeader } from "@/components/marketing/shell";
+import { PartnerSlot } from "@/components/marketing/partner-slot";
 import { StudioProduct } from "@/components/marketing/studio-product";
+import { getSponsorPlacement } from "@/lib/sponsor";
 import { marketingCopy } from "@/lib/i18n-request";
 import { getDictionary } from "@/lib/dictionary";
 import { SITE_URL } from "@/lib/site";
@@ -59,6 +61,16 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         </section>
 
         <div className="mx-auto w-full max-w-6xl px-4">
+          <section id="partner" className="scroll-mt-24 py-6">
+            <PartnerSlot
+              locale={locale}
+              copy={dict.partner}
+              messageUs={dict.nav.messageUs}
+              sponsor={getSponsorPlacement()}
+              variant="card"
+            />
+          </section>
+
           <section id="how" className="grid scroll-mt-24 gap-6 py-12 md:grid-cols-3">
             {dict.home.how.map((item, index) => {
               const Icon = howIcons[index] ?? Sparkles;
