@@ -10,7 +10,9 @@
     "contactTitle": "Enviar una solicitud",
     "estimatesTitle": "Presupuestos",
     "estimatesDescription": "Precia trabajos con presupuestos de InvoiceFlow Studio — partidas, margen, impuestos, aprobación en línea y QuickBooks Online cuando estés listo.",
-    "referralTermsTitle": "Términos del programa de referidos"
+    "referralTermsTitle": "Términos del programa de referidos",
+    "advertiseTitle": "Publicidad",
+    "advertiseDescription": "Patrocina InvoiceFlow Studio. Llega a freelancers y contratistas que facturan — un espacio Partner etiquetado en la portada."
   },
   "nav": {
     "how": "Cómo funciona",
@@ -23,7 +25,8 @@
     "terms": "Términos",
     "privacy": "Privacidad",
     "language": "Idioma",
-    "estimates": "Presupuestos"
+    "estimates": "Presupuestos",
+    "advertise": "Publicidad"
   },
   "home": {
     "eyebrow": "InvoiceFlow Studio",
@@ -69,12 +72,40 @@
     "freePrice": "Gratis",
     "perMonthShort": "/mes"
   },
+  "partner": {
+    "label": "Partner",
+    "sponsored": "Patrocinado",
+    "placeholderTitle": "Tu marca aquí — sé partner de InvoiceFlow Studio",
+    "placeholderBlurb": "Un espacio discreto y etiquetado en la portada para herramientas que ayudan a freelancers y contratistas a cobrar.",
+    "cta": "Anúnciate aquí",
+    "visit": "Visitar al partner"
+  },
   "pricing": {
     "headline": "Precio simple para un trabajo simple.",
     "lede": "InvoiceFlow Studio no es una suite contable. Es la forma más rápida de enviar una factura o un presupuesto bonito y saber si se aprobó o se pagó — en invoiceflowstudio.com.",
     "perMonth": "/ mes",
     "useStarter": "Usar Starter",
     "upgradePro": "Mejorar a Pro"
+  },
+  "advertise": {
+    "eyebrow": "Sé partner de InvoiceFlow Studio",
+    "headline": "Un espacio etiquetado en la portada para marcas que ayudan a los contratistas a cobrar.",
+    "lede": "InvoiceFlow Studio es una herramienta de facturación para freelancers, diseñadores, redactores y contratistas. Vendemos unos pocos patrocinios directos — no una red de anuncios ruidosa.",
+    "audienceTitle": "A quién llegas",
+    "audienceBody": "Contratistas independientes y freelancers que envían facturas y presupuestos: diseñadores, editores, redactores y oficios. Ya están pensando en herramientas, materiales y en cobrar.",
+    "offerTitle": "Qué obtienes",
+    "offerItems": [
+      "Una tarjeta compacta en la portada, siempre etiquetada como Partner o Patrocinado.",
+      "El mismo espacio ligero en el pie de las páginas públicas.",
+      "Tu nombre, logo, un texto corto y un enlace — el resto del sitio se queda limpio.",
+      "Divulgación honesta. No disfrazamos anuncios de editorial."
+    ],
+    "ratesTitle": "Tarifas de partida sugeridas",
+    "ratesBody": "Los patrocinios directos empiezan en 50–150 USD al mes, según la temporada y cuánto tiempo reserves. Es una conversación de partida, no un contrato.",
+    "ratesNote": "Mantenemos poco inventario para que el espacio Partner se note.",
+    "contactTitle": "Empieza la conversación",
+    "contactBody": "Cuéntanos tu marca, el público que buscas y un mes preferido para empezar. Usa Escríbenos y elige Partnership — te responderemos desde ahí.",
+    "contactCta": "Escríbenos sobre un partnership"
   },
   "plans": {
     "free": {

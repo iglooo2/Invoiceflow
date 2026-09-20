@@ -2,8 +2,10 @@ import Link from "next/link";
 import { Wordmark } from "@/components/brand";
 import { LanguageSwitcher } from "@/components/marketing/language-switcher";
 import { btnRowClass, Button } from "@/components/ui/button";
-import type { Dictionary } from "@/lib/dictionary";
-import { CONTACT_PATH, SITE_DOMAIN, SITE_STUDIO, startFreeHref } from "@/lib/site";
+import { PartnerSlot } from "@/components/marketing/partner-slot";
+import { getDictionary, type Dictionary } from "@/lib/dictionary";
+import { ADVERTISE_PATH, CONTACT_PATH, SITE_DOMAIN, SITE_STUDIO, startFreeHref } from "@/lib/site";
+import { getSponsorPlacement } from "@/lib/sponsor";
 import { localizedPath, type Locale } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
@@ -68,8 +70,19 @@ export function MarketingFooter({
   path: string;
   copy: Dictionary["nav"];
 }) {
+  const partner = getDictionary(locale).partner;
+  const sponsor = getSponsorPlacement();
   return (
     <footer className="mt-20 border-t border-border/80">
+      <div className="mx-auto w-full max-w-6xl px-4 pt-8">
+        <PartnerSlot
+          locale={locale}
+          copy={partner}
+          messageUs={copy.messageUs}
+          sponsor={sponsor}
+          variant="footer"
+        />
+      </div>
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-8 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
         <Wordmark href={localizedPath(locale, "/")} />
         <p className="text-xs">{SITE_STUDIO} · {SITE_DOMAIN}</p>
@@ -77,6 +90,7 @@ export function MarketingFooter({
           <div className="flex flex-wrap gap-4">
             <Link href={localizedPath(locale, "/estimates")}>{copy.estimates}</Link>
             <Link href={localizedPath(locale, "/pricing")}>{copy.pricing}</Link>
+            <Link href={localizedPath(locale, ADVERTISE_PATH)}>{copy.advertise}</Link>
             <Link href={localizedPath(locale, "/terms")}>{copy.terms}</Link>
             <Link href={localizedPath(locale, "/privacy")}>{copy.privacy}</Link>
             <Link href={localizedPath(locale, CONTACT_PATH)}>{copy.messageUs}</Link>

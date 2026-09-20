@@ -8,7 +8,7 @@ This is a focused Micro-SaaS MVP, not an accounting suite. Create from studio te
 
 ## What you get
 
-- Marketing landing + pricing + `/estimates` + Terms/Privacy stubs
+- Marketing landing + pricing + `/estimates` + `/advertise` (Partner slot + rate card) + Terms/Privacy stubs
 - Auth: email/password (works with zero API keys), Google and Apple Sign-In (buttons always visible; disabled until secrets are set), optional GitHub OAuth, optional Resend magic link. New accounts finish a two-step InvoiceFlow Studio onboarding (name + phone, then business details) before the dashboard.
 - Dashboard: invoices, estimates, jobs, clients, studio settings, billing
 - Invoice editor (client, line items, tax, notes, due date, status)
@@ -71,6 +71,7 @@ See `.env.example`. Placeholders only — never commit real secrets.
 | `AUTH_DEV_MODE` | `true` | **`false`** | Production hides login demo credentials and “Unlock Pro for local demo” |
 | `INTUIT_CLIENT_ID` / `INTUIT_CLIENT_SECRET` | optional | optional Worker secrets | Settings shows Connect QuickBooks; live OAuth is not in this release |
 | `INTUIT_REDIRECT_URI` | optional | optional | Defaults to `{APP_URL}/dashboard/settings` |
+| `SPONSOR_NAME` / `SPONSOR_URL` / `SPONSOR_LOGO_URL` / `SPONSOR_BLURB` | optional | optional Runtime vars | Homepage + footer stay a labeled “Advertise here” placeholder. Set name + URL to flip a live Partner. Or edit `SPONSOR_DEFAULTS` in `lib/sponsor.ts`. |
 
 Auth.js is configured with `trustHost: true` so it trusts the `Host` header Cloudflare sends. The Worker also writes `AUTH_TRUST_HOST=true` onto `process.env` at request time.
 

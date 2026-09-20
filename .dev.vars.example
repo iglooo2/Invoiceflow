@@ -32,6 +32,12 @@ STRIPE_SECRET_KEY="sk_test_..."
 STRIPE_WEBHOOK_SECRET="whsec_..."
 STRIPE_PRO_PRICE_ID="price_..."
 
+# Optional homepage partner slot. Empty = labeled “Advertise here” placeholder.
+# SPONSOR_NAME=""
+# SPONSOR_URL=""
+# SPONSOR_LOGO_URL=""
+# SPONSOR_BLURB=""
+
 # QuickBooks Online (optional). Live OAuth is not enabled yet.
 # INTUIT_CLIENT_ID=""
 # INTUIT_CLIENT_SECRET=""

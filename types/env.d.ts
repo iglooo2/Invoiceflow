@@ -30,5 +30,9 @@ declare namespace NodeJS {
     AUTH_APPLE_KEY_ID?: string;
     APPLE_TEAM_ID?: string;
     APPLE_KEY_ID?: string;
+    SPONSOR_NAME?: string;
+    SPONSOR_URL?: string;
+    SPONSOR_LOGO_URL?: string;
+    SPONSOR_BLURB?: string;
   }
 }

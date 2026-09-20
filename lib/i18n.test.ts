@@ -30,6 +30,7 @@ test("localizedPath prefixes marketing routes", () => {
   assert.equal(localizedPath("es", "/pricing"), "/es/pricing");
   assert.equal(localizedPath("es", "/estimates"), "/es/estimates");
   assert.equal(localizedPath("de", "/contact"), "/de/contact");
+  assert.equal(localizedPath("fr", "/advertise"), "/fr/advertise");
   assert.equal(localizedPath("pt", "login"), "/pt/login");
 });
 
@@ -49,6 +50,7 @@ test("shouldSkipLocale leaves app, API, and share routes alone", () => {
   assert.equal(shouldSkipLocale("/pricing"), false);
   assert.equal(shouldSkipLocale("/estimates"), false);
   assert.equal(shouldSkipLocale("/contact"), false);
+  assert.equal(shouldSkipLocale("/advertise"), false);
   assert.equal(shouldSkipLocale("/"), false);
   assert.equal(shouldSkipLocale("/es/login"), false);
 });
@@ -136,7 +138,15 @@ test("login and dashboard common errors exist in every locale", () => {
     assert.ok(dict.app.markPending.length > 0, locale);
     assert.ok(dict.app.exportCsv.length > 0, locale);
     assert.ok(dict.meta.contactTitle.length > 0, locale);
+    assert.ok(dict.meta.advertiseTitle.length > 0, locale);
     assert.ok(dict.contact.submit.length > 0, locale);
+    assert.ok(dict.nav.advertise.length > 0, locale);
+    assert.ok(dict.partner.label.length > 0, locale);
+    assert.ok(dict.partner.sponsored.length > 0, locale);
+    assert.ok(dict.advertise.headline.length > 0, locale);
+    assert.ok(dict.advertise.contactCta.length > 0, locale);
+    assert.match(dict.advertise.ratesBody, /50|150/);
+    assert.equal(dict.advertise.contactBody.includes("@"), false, locale);
   }
 });
 
@@ -159,6 +169,8 @@ test("localized landing keeps the studio gallery and register CTA", () => {
   assert.match(page, /StudioProduct/);
   assert.match(page, /landing-canvas/);
   assert.match(page, /startFreeHref/);
+  assert.match(page, /PartnerSlot/);
+  assert.match(page, /id="partner"/);
   assert.match(login, /query\.mode === "register"/);
   assert.match(login, /loginQueryErrorMessage/);
   assert.doesNotMatch(login, /dict\.login\.errors\.oauthFailed/);

@@ -15,13 +15,19 @@ import {
 } from "lucide-react";
 import { submitContactRequest } from "@/app/actions/contact";
 import { Button } from "@/components/ui/button";
-import { CONTACT_TOPICS } from "@/lib/contact";
+import { CONTACT_TOPICS, isContactTopic, type ContactTopic } from "@/lib/contact";
 import type { Dictionary } from "@/lib/dictionary";
 
 const fieldClass =
   "mt-2 h-11 w-full rounded-full border border-border bg-muted/70 px-4 text-sm text-foreground outline-none ring-ring placeholder:text-muted-foreground focus:bg-card focus:ring-2";
 
-export function ContactForm({ copy }: { copy: Dictionary["contact"] }) {
+export function ContactForm({
+  copy,
+  defaultTopic,
+}: {
+  copy: Dictionary["contact"];
+  defaultTopic?: ContactTopic;
+}) {
   const editorRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const [files, setFiles] = useState<File[]>([]);
@@ -107,7 +113,7 @@ export function ContactForm({ copy }: { copy: Dictionary["contact"] }) {
       <label className="mt-5 block text-sm">{copy.topic}</label>
       <select
         name="topic"
-        defaultValue=""
+        defaultValue={defaultTopic && isContactTopic(defaultTopic) ? defaultTopic : ""}
         className={`${fieldClass} appearance-none bg-[length:16px] bg-[right_16px_center] bg-no-repeat`}
         style={{
           backgroundImage:
