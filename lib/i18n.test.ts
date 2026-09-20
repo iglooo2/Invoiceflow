@@ -146,6 +146,8 @@ test("login and dashboard common errors exist in every locale", () => {
     assert.match(dict.login.errors.oauthAccountNotLinked, /link|vincular|lier|verknüpf/i);
     assert.equal(dict.login.errors.signInIncomplete.includes("Google"), false, locale);
     assert.equal(dict.login.errors.invalidCredentials.includes("Google"), false, locale);
+    assert.ok(dict.login.errors.phoneCodeInvalid.length > 0, locale);
+    assert.ok(dict.login.phone.length > 0, locale);
     assert.ok(dict.onboarding.errors.phone.length > 0, locale);
     assert.ok(dict.app.errors.invoiceNotFound.length > 0, locale);
     assert.ok(dict.app.errors.estimateNotFound.length > 0, locale);
@@ -221,6 +223,7 @@ test("localized landing keeps the studio gallery and register CTA", () => {
   assert.doesNotMatch(login, /dict\.login\.errors\.oauthFailed/);
   assert.match(forms, /initialMode = "signin"/);
   assert.match(forms, /copy\.google/);
+  assert.match(forms, /copy\.phone/);
   assert.doesNotMatch(forms, /copy\.apple/);
   const googleButtonAt = forms.indexOf('provider="google"');
   const emailFieldAt = forms.indexOf('htmlFor="email"');

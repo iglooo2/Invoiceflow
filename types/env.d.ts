@@ -22,6 +22,11 @@ declare namespace NodeJS {
     AUTH_GOOGLE_SECRET?: string;
     GOOGLE_CLIENT_ID?: string;
     GOOGLE_CLIENT_SECRET?: string;
+    TWILIO_ACCOUNT_SID?: string;
+    TWILIO_AUTH_TOKEN?: string;
+    TWILIO_VERIFY_SERVICE_SID?: string;
+    TWILIO_FROM_NUMBER?: string;
+    TWILIO_PHONE_NUMBER?: string;
     SPONSOR_NAME?: string;
     SPONSOR_URL?: string;
     SPONSOR_LOGO_URL?: string;

@@ -166,6 +166,7 @@ test("OAuth enablement reads Cloudflare runtime secrets, not a NEXT_PUBLIC flag"
   assert.match(runtime, /readCloudflareString/);
   assert.match(runtime, /getCloudflareContext\(\{ async: true \}\)/);
   assert.match(runtime, /copyCloudflareAuthEnvToProcess/);
+  assert.match(runtime, /TWILIO_/);
   assert.match(runtime, /process\.env\[name\]/);
   assert.match(authEnv, /readRuntimeSecret/);
   assert.match(authEnv, /copyCloudflareAuthEnvToProcess/);
@@ -198,6 +199,8 @@ test("OAuth enablement reads Cloudflare runtime secrets, not a NEXT_PUBLIC flag"
   assert.doesNotMatch(auth, /process\.env\.AUTH_GOOGLE_ID/);
   assert.match(authEnv, /GOOGLE_CLIENT_ID/);
   assert.match(authEnv, /AUTH_GOOGLE_ID/);
+  assert.match(authEnv, /smsAuthEnabled/);
+  assert.match(authEnv, /TWILIO_VERIFY_SERVICE_SID/);
   assert.match(authEnv, /ensureCloudflareContext/);
   assert.match(runtime, /getCloudflareContext\(\{ async: true \}\)/);
   assert.match(login, /hasSessionCookie/);
@@ -207,6 +210,8 @@ test("OAuth enablement reads Cloudflare runtime secrets, not a NEXT_PUBLIC flag"
   assert.match(login, /await connection\(\)/);
   assert.match(forms, /data-oauth=\{provider\}/);
   assert.match(forms, /copy\.googleHint/);
+  assert.match(forms, /copy\.phoneHint/);
+  assert.match(forms, /data-phone-auth/);
   assert.doesNotMatch(forms, /copy\.appleHint/);
   assert.doesNotMatch(forms, /loginWithApple/);
   assert.doesNotMatch(forms, /\{googleEnabled \?/);
@@ -222,6 +227,9 @@ test("OAuth enablement reads Cloudflare runtime secrets, not a NEXT_PUBLIC flag"
   assert.match(actions, /redirectDigestErrorCode/);
   assert.match(actions, /credentialsActionErrorMessage/);
   assert.match(actions, /oauthActionErrorMessage/);
+  assert.match(actions, /requestPhoneOtp/);
+  assert.match(actions, /loginWithPhone/);
+  assert.match(auth, /id: "phone"/);
   assert.doesNotMatch(actions, /resolveAppleClientSecret/);
   assert.doesNotMatch(actions, /appleSecretInvalid/);
   assert.doesNotMatch(actions, /loginWithApple/);

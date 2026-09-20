@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
-import { registerFailureMessage } from "@/lib/db-errors";
+import { registerFailureMessage, uniqueConstraintIncludes } from "@/lib/db-errors";
 import { localizedPath } from "@/lib/i18n";
 import { appCopy } from "@/lib/i18n-request";
 import {
@@ -62,6 +62,9 @@ export async function saveOnboardingProfile(formData: FormData) {
       },
     });
   } catch (error) {
+    if (uniqueConstraintIncludes(error, "phone")) {
+      return { error: dict.onboarding.errors.phoneTaken };
+    }
     return { error: registerFailureMessage(error) };
   }
   redirect(localizedPath(locale, "/onboarding/business"));

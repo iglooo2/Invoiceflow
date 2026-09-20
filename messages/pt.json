@@ -134,7 +134,7 @@
   },
   "login": {
     "headline": "Volte ao trabalho. A gente cuida do PDF.",
-    "lede": "E-mail e senha funcionam sem chaves de API. Continue com Google — o botão permanece visível se esses segredos do Worker ainda não estiverem definidos.",
+    "lede": "E-mail e senha funcionam sem chaves de API. Continue com Google ou um telefone — esses botões permanecem visíveis se os segredos do Worker ainda não estiverem definidos.",
     "signIn": "Entrar",
     "createAccount": "Criar conta",
     "name": "Nome",
@@ -147,6 +147,18 @@
     "github": "Continuar com GitHub",
     "googleHint": "O Google Sign-In não está configurado. Adicione AUTH_GOOGLE_ID e AUTH_GOOGLE_SECRET como segredos Runtime do Worker da Cloudflare (nomes do Auth.js). GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET também são aceitos como aliases.",
     "githubHint": "O GitHub OAuth aparece aqui quando AUTH_GITHUB_ID e AUTH_GITHUB_SECRET estão definidos.",
+    "phone": "Continuar com o telefone",
+    "phoneHint": "O acesso por SMS não está configurado. Adicione TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN e TWILIO_VERIFY_SERVICE_SID (preferencial) ou TWILIO_FROM_NUMBER como segredos Runtime do Worker da Cloudflare.",
+    "phoneNumber": "Número de telefone",
+    "phoneCountry": "País",
+    "sendCode": "Enviar código",
+    "codeLabel": "Código SMS",
+    "codePlaceholder": "Código de 6 dígitos",
+    "verifyCode": "Verificar e continuar",
+    "resendCode": "Reenviar código",
+    "resendIn": "Reenviar em {seconds}s",
+    "changePhone": "Usar outro número",
+    "codeSent": "Enviamos um SMS com um código de acesso.",
     "demoPrefix": "Demo:",
     "errors": {
       "invalidEmailPassword": "Informe um e-mail e uma senha válidos.",
@@ -161,7 +173,14 @@
       "oauthAccountNotLinked": "Já existe uma conta InvoiceFlow com esse e-mail. Entre com e-mail e senha (a senha criada para esse endereço), ou use o Google de novo para vincular as contas.",
       "oauthNotConfigured": "Esse método de acesso não está configurado neste servidor.",
       "configuration": "AUTH_SECRET está ausente no runtime do Worker. Defina AUTH_SECRET como segredo Runtime da Cloudflare (não só variável de Build) e AUTH_URL=https://invoiceflowstudio.com como variável Runtime.",
-      "signInIncomplete": "Esse acesso não foi concluído. Tente e-mail e senha, ou tente de novo."
+      "signInIncomplete": "Esse acesso não foi concluído. Tente e-mail e senha, ou tente de novo.",
+      "phoneInvalid": "Informe um telefone válido.",
+      "phoneNotConfigured": "O acesso por SMS não está configurado neste servidor.",
+      "phoneSendFailed": "Não foi possível enviar o código. Tente de novo em instantes.",
+      "phoneCodeInvalid": "Esse código não confere. Tente de novo.",
+      "phoneRateLimited": "Muitas tentativas. Espere um pouco e tente novamente.",
+      "phoneSignInFailed": "O acesso por telefone não foi concluído. Tente de novo.",
+      "phoneTaken": "Esse telefone já está vinculado a outra conta."
     }
   },
   "onboarding": {
@@ -203,6 +222,7 @@
     "errors": {
       "firstName": "Informe seu nome.",
       "phone": "Informe um telefone válido.",
+      "phoneTaken": "Esse telefone já está vinculado a outra conta.",
       "consent": "Aceite os Termos para continuar.",
       "businessName": "Informe o nome da empresa.",
       "employeeCount": "Selecione o número de funcionários.",

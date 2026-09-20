@@ -28,10 +28,12 @@ function spawnEnv(
 }
 
 test("User onboarding columns stay in the source schema", () => {
-  assert.match(source, /phone\s+String\?/);
+  assert.match(source, /phone\s+String\?\s+@unique/);
   assert.match(source, /employeeCount\s+String\?/);
   assert.match(source, /industry\s+String\?/);
   assert.match(source, /onboardingComplete Boolean @default\(true\)/);
+  assert.match(source, /model PhoneAuthChallenge/);
+  assert.match(source, /model PhoneAuthIpLimit/);
 });
 
 test("Job tables stay in the source schema", () => {

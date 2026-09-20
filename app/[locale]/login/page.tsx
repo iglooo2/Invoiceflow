@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { connection } from "next/server";
 import { redirect } from "next/navigation";
-import { ensureAuthRuntimeEnv, githubAuthEnabled, googleAuthEnabled, resendEnabled } from "@/lib/auth-env";
+import { ensureAuthRuntimeEnv, githubAuthEnabled, googleAuthEnabled, resendEnabled, smsAuthEnabled } from "@/lib/auth-env";
 import { isOauthAccountNotLinkedCode, loginQueryErrorMessage } from "@/lib/auth-errors";
 import { getCurrentUser } from "@/lib/session";
 import { hasSessionCookie } from "@/lib/session-cookie";
@@ -52,6 +52,7 @@ export default async function LoginPage({
         <AuthForms
           githubEnabled={githubAuthEnabled()}
           googleEnabled={googleAuthEnabled()}
+          smsEnabled={smsAuthEnabled()}
           magicEnabled={resendEnabled()}
           showDemoCredentials={isDevMode()}
           callbackUrl={typeof query.callbackUrl === "string" ? query.callbackUrl : "/dashboard"}

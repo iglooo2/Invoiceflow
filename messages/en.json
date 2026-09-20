@@ -134,7 +134,7 @@
   },
   "login": {
     "headline": "Get back to the work. We’ll handle the PDF.",
-    "lede": "Email and password work with zero API keys. Continue with Google — the button stays visible if those Worker secrets are not set yet.",
+    "lede": "Email and password work with zero API keys. Continue with Google or a phone number — those buttons stay visible if Worker secrets are not set yet.",
     "signIn": "Sign in",
     "createAccount": "Create account",
     "name": "Name",
@@ -147,6 +147,18 @@
     "github": "Continue with GitHub",
     "googleHint": "Google Sign-In is not configured. Add AUTH_GOOGLE_ID and AUTH_GOOGLE_SECRET as Cloudflare Worker Runtime secrets (Auth.js names). GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET are accepted as aliases.",
     "githubHint": "GitHub OAuth appears here when AUTH_GITHUB_ID and AUTH_GITHUB_SECRET are set.",
+    "phone": "Continue with phone",
+    "phoneHint": "SMS sign-in is not configured. Add TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, and TWILIO_VERIFY_SERVICE_SID (preferred) or TWILIO_FROM_NUMBER as Cloudflare Worker Runtime secrets.",
+    "phoneNumber": "Phone number",
+    "phoneCountry": "Country",
+    "sendCode": "Send code",
+    "codeLabel": "SMS code",
+    "codePlaceholder": "6-digit code",
+    "verifyCode": "Verify and continue",
+    "resendCode": "Resend code",
+    "resendIn": "Resend in {seconds}s",
+    "changePhone": "Use a different number",
+    "codeSent": "We sent a text with a sign-in code.",
     "demoPrefix": "Demo:",
     "errors": {
       "invalidEmailPassword": "Enter a valid email and password.",
@@ -161,7 +173,14 @@
       "oauthAccountNotLinked": "An InvoiceFlow account already exists for that email. Sign in with email and password (the password you created for that address), or use Google again so the accounts can be linked.",
       "oauthNotConfigured": "That sign-in method is not configured on this server.",
       "configuration": "AUTH_SECRET is missing at Worker runtime. Add AUTH_SECRET as a Cloudflare Runtime Secret (not only a Build variable) and AUTH_URL=https://invoiceflowstudio.com as a Runtime variable.",
-      "signInIncomplete": "That sign-in didn’t complete. Try email and password, or try again."
+      "signInIncomplete": "That sign-in didn’t complete. Try email and password, or try again.",
+      "phoneInvalid": "Enter a valid phone number.",
+      "phoneNotConfigured": "SMS sign-in is not configured on this server.",
+      "phoneSendFailed": "Couldn’t send a sign-in code. Try again in a moment.",
+      "phoneCodeInvalid": "That code didn’t match. Try again.",
+      "phoneRateLimited": "Too many attempts. Wait a bit, then try again.",
+      "phoneSignInFailed": "Phone sign-in didn’t complete. Try again.",
+      "phoneTaken": "That phone number is already linked to another account."
     }
   },
   "onboarding": {
@@ -203,6 +222,7 @@
     "errors": {
       "firstName": "Enter your first name.",
       "phone": "Enter a valid phone number.",
+      "phoneTaken": "That phone number is already linked to another account.",
       "consent": "Please agree to the Terms to continue.",
       "businessName": "Enter your business name.",
       "employeeCount": "Select the number of employees.",

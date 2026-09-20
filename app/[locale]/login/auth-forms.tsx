@@ -1,20 +1,25 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
   loginWithGithub,
   loginWithGoogle,
   loginWithMagicLink,
   loginWithPassword,
+  loginWithPhone,
   registerWithPassword,
+  requestPhoneOtp,
 } from "@/app/actions/auth";
 import { Button } from "@/components/ui/button";
-import { Input, Label } from "@/components/ui/input";
+import { Input, Label, Select } from "@/components/ui/input";
 import type { Dictionary } from "@/lib/dictionary";
+import { formatMessage } from "@/lib/i18n";
+import { COUNTRY_OPTIONS, DEFAULT_COUNTRY_ISO } from "@/lib/onboarding";
 
 export function AuthForms({
   githubEnabled,
   googleEnabled = false,
+  smsEnabled = false,
   magicEnabled,
   callbackUrl,
   showDemoCredentials,
@@ -24,6 +29,7 @@ export function AuthForms({
 }: {
   githubEnabled: boolean;
   googleEnabled?: boolean;
+  smsEnabled?: boolean;
   magicEnabled: boolean;
   callbackUrl: string;
   showDemoCredentials: boolean;
@@ -61,6 +67,7 @@ export function AuthForms({
           onError={setError}
           icon={<GoogleMark />}
         />
+        <PhoneAuthPanel enabled={smsEnabled} copy={copy} callbackUrl={callbackUrl} onError={setError} />
         {githubEnabled ? (
           <form action={loginWithGithub}>
             <Button type="submit" variant="secondary" className="w-full">
@@ -126,6 +133,179 @@ export function AuthForms({
   );
 }
 
+function PhoneAuthPanel({
+  enabled,
+  copy,
+  callbackUrl,
+  onError,
+}: {
+  enabled: boolean;
+  copy: Dictionary["login"];
+  callbackUrl: string;
+  onError: (message: string | null) => void;
+}) {
+  const [step, setStep] = useState<"phone" | "code">("phone");
+  const [country, setCountry] = useState(DEFAULT_COUNTRY_ISO);
+  const [national, setNational] = useState("");
+  const [code, setCode] = useState("");
+  const [retryAfter, setRetryAfter] = useState(0);
+  const [pending, setPending] = useState(false);
+  const hintId = "phone-sms-hint";
+
+  useEffect(() => {
+    if (retryAfter <= 0) return;
+    const timer = window.setTimeout(() => setRetryAfter((value) => Math.max(0, value - 1)), 1000);
+    return () => window.clearTimeout(timer);
+  }, [retryAfter]);
+
+  if (!enabled) {
+    return (
+      <div data-phone-auth="false">
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full justify-center disabled:opacity-70"
+          disabled
+          aria-describedby={hintId}
+        >
+          <PhoneMark />
+          {copy.phone}
+        </Button>
+        <p id={hintId} className="mt-2 text-xs text-muted-foreground">
+          {copy.phoneHint}
+        </p>
+      </div>
+    );
+  }
+
+  async function sendCode() {
+    onError(null);
+    setPending(true);
+    try {
+      const formData = new FormData();
+      formData.set("countryIso", country);
+      formData.set("nationalNumber", national);
+      const result = await requestPhoneOtp(formData);
+      if (result?.error) {
+        onError(result.error);
+        if (result.retryAfterSeconds) setRetryAfter(result.retryAfterSeconds);
+        return;
+      }
+      setStep("code");
+      setCode("");
+      setRetryAfter(result.retryAfterSeconds ?? 45);
+    } finally {
+      setPending(false);
+    }
+  }
+
+  if (step === "code") {
+    return (
+      <form
+        className="grid gap-3 rounded-2xl border border-border bg-background/40 p-4"
+        data-phone-auth="true"
+        data-phone-step="code"
+        action={async (formData) => {
+          onError(null);
+          const result = await loginWithPhone(formData);
+          if (result?.error) onError(result.error);
+        }}
+      >
+        <input type="hidden" name="callbackUrl" value={callbackUrl} />
+        <input type="hidden" name="countryIso" value={country} />
+        <input type="hidden" name="nationalNumber" value={national} />
+        <p className="text-sm text-muted-foreground">{copy.codeSent}</p>
+        <div className="grid gap-2">
+          <Label htmlFor="sms-code">{copy.codeLabel}</Label>
+          <Input
+            id="sms-code"
+            name="code"
+            value={code}
+            onChange={(event) => setCode(event.target.value.replace(/\D/g, "").slice(0, 6))}
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            pattern="[0-9]{6}"
+            maxLength={6}
+            required
+            placeholder={copy.codePlaceholder}
+          />
+        </div>
+        <Button type="submit" className="w-full">
+          {copy.verifyCode}
+        </Button>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            disabled={pending || retryAfter > 0}
+            onClick={() => void sendCode()}
+          >
+            {retryAfter > 0 ? formatMessage(copy.resendIn, { seconds: retryAfter }) : copy.resendCode}
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setStep("phone");
+              setCode("");
+              onError(null);
+            }}
+          >
+            {copy.changePhone}
+          </Button>
+        </div>
+      </form>
+    );
+  }
+
+  return (
+    <form
+      className="grid gap-3 rounded-2xl border border-border bg-background/40 p-4"
+      data-phone-auth="true"
+      data-phone-step="phone"
+      action={async () => {
+        await sendCode();
+      }}
+    >
+      <div className="grid gap-3 sm:grid-cols-[9.5rem_1fr]">
+        <div className="grid gap-2">
+          <Label htmlFor="phone-country">{copy.phoneCountry}</Label>
+          <Select
+            id="phone-country"
+            name="countryIso"
+            value={country}
+            onChange={(event) => setCountry(event.target.value)}
+          >
+            {COUNTRY_OPTIONS.map((item) => (
+              <option key={item.iso} value={item.iso}>
+                {item.flag} {item.dial}
+              </option>
+            ))}
+          </Select>
+        </div>
+        <div className="grid gap-2">
+          <Label htmlFor="phone-national">{copy.phoneNumber}</Label>
+          <Input
+            id="phone-national"
+            name="nationalNumber"
+            value={national}
+            onChange={(event) => setNational(event.target.value)}
+            inputMode="tel"
+            autoComplete="tel-national"
+            required
+          />
+        </div>
+      </div>
+      <Button type="submit" variant="outline" className="w-full justify-center" disabled={pending}>
+        <PhoneMark />
+        {copy.phone}
+      </Button>
+    </form>
+  );
+}
+
 function OauthButton({
   enabled,
   provider,
@@ -179,6 +359,18 @@ function OauthButton({
         {label}
       </Button>
     </form>
+  );
+}
+
+function PhoneMark() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M6.7 3.8c.4-.4 1-.5 1.5-.3l2.2.9c.6.2 1 .8 1 1.4v2.1c0 .4-.2.8-.5 1.1l-1.2 1.2a12.4 12.4 0 0 0 5.6 5.6l1.2-1.2c.3-.3.7-.5 1.1-.5h2.1c.6 0 1.2.4 1.4 1l.9 2.2c.2.5.1 1.1-.3 1.5l-1.5 1.5c-.4.4-1 .6-1.6.5C11.6 21.2 2.8 12.4 3.2 5.9c0-.6.2-1.2.5-1.6Z"
+      />
+    </svg>
   );
 }
 
