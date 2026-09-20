@@ -28,7 +28,7 @@ export function PartnerSlot({
       className={cn(
         footer
           ? "flex flex-col gap-2 rounded-2xl border border-border/80 bg-card/80 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
-          : "paper-card rounded-3xl px-6 py-5 text-left",
+          : "paper-card mx-auto max-w-2xl rounded-3xl px-6 py-5 text-left",
       )}
     >
       <p
