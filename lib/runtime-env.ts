@@ -72,6 +72,7 @@ export function copyCloudflareAuthEnvToProcess() {
       key.startsWith("AUTH_") ||
       key.startsWith("NEXTAUTH_") ||
       key.startsWith("GOOGLE_") ||
+      key.startsWith("TWILIO_") ||
       key === "EMAIL_FROM" ||
       key === "RESEND_API_KEY" ||
       key === "CONTACT_TO" ||

@@ -39,6 +39,9 @@ export function prismaWriteFailureMessage(error: unknown, kind: WriteFailureKind
   }
   if (log.code === "P2002" || blob.includes("unique constraint")) {
     if (kind === "account") {
+      if (uniqueConstraintIncludes(error, "phone")) {
+        return "That phone number is already linked to another account.";
+      }
       return "An account with that email already exists. Sign in instead.";
     }
     return "That document number or share link is already in use. Reload and try again.";
@@ -81,6 +84,17 @@ export function documentWriteFailureMessage(error: unknown) {
 
 export function missingDatabaseSchemaMessage() {
   return "Database tables are missing or out of date. From a laptop run npm run db:push:prod against your Neon URL.";
+}
+
+export function uniqueConstraintIncludes(error: unknown, field: string) {
+  const meta = (error as { meta?: { target?: unknown } }).meta;
+  const target = meta?.target;
+  if (typeof target === "string") return target.toLowerCase().includes(field.toLowerCase());
+  if (Array.isArray(target)) {
+    return target.some((item) => String(item).toLowerCase().includes(field.toLowerCase()));
+  }
+  const log = safeErrorLog(error);
+  return log.message.toLowerCase().includes(field.toLowerCase());
 }
 
 export function isMissingDatabaseSchemaError(error: unknown) {

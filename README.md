@@ -9,7 +9,7 @@ This is a focused Micro-SaaS MVP, not an accounting suite. Create from studio te
 ## What you get
 
 - Marketing landing + pricing + `/estimates` + `/advertise` (Partner slot + rate card) + Terms/Privacy stubs
-- Auth: email/password (works with zero API keys), Google Sign-In (button always visible; disabled until secrets are set), optional GitHub OAuth, optional Resend magic link. New accounts finish a two-step InvoiceFlow Studio onboarding (name + phone, then business details) before the dashboard.
+- Auth: email/password (works with zero API keys), Google Sign-In (button always visible; disabled until secrets are set), optional phone SMS (Twilio Verify or Programmable SMS; button always visible), optional GitHub OAuth, optional Resend magic link. New accounts finish a two-step InvoiceFlow Studio onboarding (name + phone, then business details) before the dashboard.
 - Dashboard: invoices, estimates, jobs, clients, studio settings, billing
 - Invoice editor (client, line items, tax, notes, due date, status)
 - Estimate editor (line items, markup, tax, attachments list, online approve with a typed name)
@@ -61,6 +61,9 @@ See `.env.example`. Placeholders only — never commit real secrets.
 | `NEXT_PUBLIC_APP_URL` | `http://localhost:3000` | `https://invoiceflowstudio.com` | Share links and Stripe redirects |
 | `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | optional | optional **runtime** Worker secrets | Auth.js v5 names. Google button enabled at request time; disabled with a hint if missing. `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` are aliases only |
 | `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET` | optional | optional | GitHub button hidden |
+| `TWILIO_ACCOUNT_SID` / `TWILIO_AUTH_TOKEN` | optional | optional **runtime** Worker secrets | Phone SMS button enabled at request time; disabled with a hint if missing |
+| `TWILIO_VERIFY_SERVICE_SID` | optional | optional **runtime** secret | Twilio Verify service `VA…` for the OTP |
+| `TWILIO_FROM_NUMBER` | optional | optional **runtime** secret | E.164 From number: **confirmation SMS** after new phone signup, and OTP fallback. Alias: `TWILIO_PHONE_NUMBER` |
 | `AUTH_RESEND_KEY` / `EMAIL_FROM` | optional | **Runtime secret** (contact form + magic link) | Contact form shows “Email isn’t configured”; magic link hidden |
 | `STRIPE_SECRET_KEY` | optional test key | **runtime secret** `sk_test_…` or `sk_live_…` | Checkout disabled |
 | `STRIPE_PRO_PRICE_ID` | optional | **runtime secret** `price_…` in the **same mode** as the secret | Same |
@@ -84,6 +87,9 @@ Set these under Worker **Settings → Variables and Secrets** (Runtime), not onl
 | `DATABASE_URL` | **yes** | Neon pooled URL (signup is the first path that queries Postgres). |
 | `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | Google button | Auth.js v5 names. Callback `https://invoiceflowstudio.com/api/auth/callback/google`. `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` (Google Cloud Console / NextAuth v4) work as aliases; prefer the `AUTH_GOOGLE_*` names. |
 | `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET` | GitHub button | Hidden until both are set. |
+| `TWILIO_ACCOUNT_SID` / `TWILIO_AUTH_TOKEN` | Phone SMS | Runtime secrets. Pair with `TWILIO_VERIFY_SERVICE_SID` (OTP) and `TWILIO_FROM_NUMBER` (confirmation SMS). |
+| `TWILIO_VERIFY_SERVICE_SID` | Phone SMS OTP | Twilio Verify `VA…`. Create under Verify → Services. |
+| `TWILIO_FROM_NUMBER` | Phone SMS | E.164 sender for the new-account confirmation SMS (and OTP if Verify is unset). Alias `TWILIO_PHONE_NUMBER`. |
 | `AUTH_RESEND_KEY` / `EMAIL_FROM` | Contact form + magic link | **Required Runtime Secret** for `/contact` (Message us). `RESEND_API_KEY` is an alias. `EMAIL_FROM` must be a Resend-verified domain (`InvoiceFlow Studio <noreply@invoiceflowstudio.com>`). Optional Runtime `CONTACT_TO` overrides the inbox (`lib/site.ts` `CONTACT_EMAIL`). Without the key, submit shows **Email isn’t configured** instead of hanging or a vague failure. |
 
 Email/password signup does **not** need Google secrets. If account creation fails, the form shows a database or credentials message — not “check the Google Worker secrets.” That copy is reserved for Google (`OAuthSignin`, `OAuthCallback`, …). `OAuthAccountNotLinked` means an email/password user already exists for that Gmail — sign in with email and password (Google with a **verified** email can link to that user). `Configuration` / missing `AUTH_SECRET` means the secret is not on **Runtime** (a Build variable will not do).
@@ -275,6 +281,10 @@ Do this in the Cloudflare dashboard — the agent cannot click it for you:
    | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | unused | Do not rely on this — see Stripe section |
    | `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | Secret (**runtime**) | Auth.js v5 names for Google Sign-In. Read on the Worker at request time (not a Build/`NEXT_PUBLIC_*` flag). Callback `https://invoiceflowstudio.com/api/auth/callback/google`. `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` are aliases only — prefer `AUTH_GOOGLE_*`. |
    | `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET` | Secret | if using GitHub login |
+   | `TWILIO_ACCOUNT_SID` | Secret (**runtime**) | Twilio Account SID `AC…` |
+   | `TWILIO_AUTH_TOKEN` | Secret (**runtime**) | Twilio Auth Token |
+   | `TWILIO_VERIFY_SERVICE_SID` | Secret (**runtime**) | Verify service `VA…` for the OTP |
+   | `TWILIO_FROM_NUMBER` | Secret (**runtime**) | E.164 From number for the new-account confirmation SMS (and OTP if Verify is unset) |
    | `AUTH_RESEND_KEY` | Secret (**runtime**) | **Required for Message us / `/contact`.** Resend API key (`re_…`). Alias: `RESEND_API_KEY`. A Build-only variable is not enough — the Worker reads it at request time via `getCloudflareContext()`. |
    | `EMAIL_FROM` | Variable (**runtime**) | `InvoiceFlow Studio <noreply@invoiceflowstudio.com>` — **domain must be verified in Resend** or delivery is rejected |
    | `CONTACT_TO` | Variable (**runtime**, optional) | Inbox for Message us. Defaults to `galit.igor@yahoo.com` (`CONTACT_EMAIL` in `lib/site.ts`). Also accepts `CONTACT_EMAIL` as an alias. |
@@ -367,6 +377,51 @@ Without Stripe keys locally, keep `AUTH_DEV_MODE=true` and use **Unlock Pro for 
 5. Open `/estimates` on the marketing site, then Settings → Connect QuickBooks (placeholder)
 6. Billing → Unlock Pro for local demo (optional)
 
+## Phone SMS sign-in (Twilio)
+
+`/login` always shows **Continue with phone** (sign-in and create-account). Without Twilio secrets the button is disabled with a hint. With secrets:
+
+1. Enter phone number
+2. We send an SMS verification code (Twilio Verify, or Programmable SMS if Verify is unset)
+3. User types that code on the website — **required**. No `User` row is created until this check succeeds
+4. On success: sign in if that E.164 already exists (no confirmation SMS), **or** create the account and send a **second** confirmation SMS (“Your InvoiceFlow Studio account is confirmed”)
+
+After each successful send, **Resend code** stays locked for 60 seconds (`Resend in 45s` while counting down), then becomes a small clickable link under the SMS code field.
+
+The UI does not say whether the phone was already registered.
+
+Workers call Twilio with `fetch` (Verify `https://verify.twilio.com` for the code; Messages `https://api.twilio.com` for Programmable SMS OTP fallback **and** the registration confirmation text). Do not add the Node `twilio` SDK — it is not Workers-safe.
+
+### Twilio Console
+
+1. Open [Twilio Console](https://console.twilio.com/). Copy **Account SID** (`AC…`) and **Auth Token**.
+2. **OTP — Verify (preferred):** Verify → Services → Create (`InvoiceFlow`). Copy the Service SID (`VA…`). Enable the SMS channel.
+3. **Confirmation SMS — Programmable SMS From number:** Phone Numbers → buy/verify a number in E.164 (`+15555550100`). Set this even when Verify handles the OTP — the “account is confirmed” text is a normal SMS, not a Verify check. If Verify is unset, this From number is also used to send the 6-digit code.
+4. For trial accounts, verify destination numbers under Phone Numbers → Verified Caller IDs or they will not receive SMS.
+
+### Cloudflare Runtime secrets (required for live SMS)
+
+Set these under Worker **Settings → Variables and Secrets** (Runtime), not Build-only:
+
+| Name | Type | Example |
+|---|---|---|
+| `TWILIO_ACCOUNT_SID` | Secret | `ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx` |
+| `TWILIO_AUTH_TOKEN` | Secret | from Twilio console |
+| `TWILIO_VERIFY_SERVICE_SID` | Secret | `VAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx` (OTP) |
+| `TWILIO_FROM_NUMBER` | Secret | `+15555550100` (**required** for the new-account confirmation SMS; also OTP fallback) |
+
+`TWILIO_PHONE_NUMBER` is accepted as an alias for `TWILIO_FROM_NUMBER`. Changing Runtime secrets does not require a rebuild. If From is missing, OTP via Verify still works, but the confirmation SMS is skipped and logged.
+
+### Neon schema (required after this release)
+
+`User.phone` must be unique (E.164). OTP bookkeeping uses `PhoneAuthChallenge` and `PhoneAuthIpLimit`. From a laptop, against the Neon **direct / unpooled** URL:
+
+```bash
+npm run db:push:prod
+```
+
+SQL-only equivalent: `prisma/add-phone-auth.sql` (same direct URL, not `*-pooler.*`).
+
 ## QuickBooks Online (not live yet)
 
 InvoiceFlow Studio can show the Connect QuickBooks story in Settings and on `/estimates`. Live Intuit OAuth is deferred until an Intuit developer app exists.
@@ -389,10 +444,11 @@ ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "employeeCount" TEXT;
 ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "industry" TEXT;
 ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "onboardingComplete" BOOLEAN NOT NULL DEFAULT true;
 ```
+- **Phone SMS columns on Neon:** after this release, run `npm run db:push:prod` (direct/unpooled URL) so `User.phone` is unique and `PhoneAuthChallenge` / `PhoneAuthIpLimit` exist. Equivalent SQL: `prisma/add-phone-auth.sql`. Until Twilio Runtime secrets are set, Continue with phone stays visible but disabled.
 - **Save invoice check after deploy:** `/dashboard/invoices/new` → client name + line description → **Save invoice**. You should land on `/dashboard/invoices/[id]`, not Cloudflare’s generic “This page couldn’t load”. Validation and Prisma errors (including missing `Invoice` / `InvoiceItem` tables) render on the form. If the form says tables are missing or out of date, from a laptop run `npm run db:push:prod` against the Neon **direct/unpooled** URL (`DATABASE_URL_UNPOOLED` or `DATABASE_URL`), then retry save. `npm test` also covers invoice form parsing and sequential (non-transaction) writes.
 - **`pg-cloudflare`:** OpenNext’s package copy does not include `pg-cloudflare`’s `workerd` build. `open-next.config.ts` sets `useWorkerdCondition: false` so `pg` uses `nodejs_compat` sockets. Prefer **Neon HTTP** in production to avoid that path.
 - **Node.js middleware:** Next.js 16 `proxy.ts` (dashboard cookie gate) is **experimental** on Cloudflare OpenNext. Do not set `export const runtime = "edge"` — OpenNext expects the Node.js runtime. If a future OpenNext release rejects Node middleware, the app still authenticates in layouts; only the early `/dashboard` redirect would need a rewrite.
-- **bcryptjs / Stripe / Resend:** JS libraries; they rely on Workers `nodejs_compat`. Contact + transactional email call Resend’s HTTP API with `fetch` and a 15s timeout (same Workers-safe pattern as Stripe). Do not send mail through the Node `resend` SDK on workerd.
+- **bcryptjs / Stripe / Resend / Twilio:** JS + `fetch`; they rely on Workers `nodejs_compat`. Twilio uses `fetch` to Verify/Messages, not the Node `twilio` SDK. Contact + transactional email call Resend’s HTTP API with `fetch` and a 15s timeout (same Workers-safe pattern as Stripe). Do not send mail through the Node `resend` SDK on workerd.
 - **PDF download:** invoices and estimates are written as PDF 1.4 in `lib/pdf.ts` using the 14 standard Type1 fonts (no embedding, no `pdf-lib`, no `Buffer` copies). That keeps Download PDF inside Workers CPU/memory limits (Error 1102). Public share pages also print cleanly if a client uses the browser “Save as PDF” dialog. Very large documents still have the 128 MB isolate cap; typical freelance invoices stay tiny.
 - **Incremental cache:** default OpenNext in-memory cache. Optional R2 binding documented above.
 - **`next/image` optimization:** not used on the marketing pages. Cloudflare Images binding is not required.

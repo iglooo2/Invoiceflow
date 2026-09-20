@@ -15,13 +15,13 @@ export type ContactSubmitResult = { ok: true } | { ok: false; error: string };
 
 export type ContactAttachment = { filename: string; content: Uint8Array };
 
-export function isContactUpload(item: FormDataEntryValue): item is Blob {
-  return typeof Blob !== "undefined" && item instanceof Blob && item.size > 0;
+export function isContactUpload(item: FormDataEntryValue): item is File {
+  return typeof File !== "undefined" && item instanceof File && item.size > 0;
 }
 
-export function contactUploadFilename(file: Blob) {
-  const name = "name" in file && typeof file.name === "string" ? file.name : "";
-  return name.replace(/[^\w.\- ()]/g, "_").slice(0, 80) || "attachment";
+export function contactUploadFilename(file: File) {
+  const name = file.name.replace(/[^\w.\- ()]/g, "_").slice(0, 80);
+  return name || "attachment";
 }
 
 export async function collectContactAttachments(formData: FormData) {

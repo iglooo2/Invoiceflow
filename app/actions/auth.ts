@@ -19,7 +19,13 @@ import {
 } from "@/lib/db-errors";
 import { localizedPath } from "@/lib/i18n";
 import { appCopy } from "@/lib/i18n-request";
-import { ensureAuthRuntimeEnv, googleAuthEnabled } from "@/lib/auth-env";
+import { ensureAuthRuntimeEnv, googleAuthEnabled, smsAuthEnabled } from "@/lib/auth-env";
+import {
+  confirmPhoneOtp,
+  requestClientIp,
+  sendPhoneOtp,
+} from "@/lib/phone-auth";
+import { resolveAuthPhone } from "@/lib/phone-otp";
 
 const credentialsSchema = z.object({
   email: z.string().email(),
@@ -150,6 +156,79 @@ export async function loginWithGoogle() {
       return { error: oauthActionErrorMessage(authErrorType(error), dict.login.errors) };
     }
     return { error: dict.login.errors.oauthFailed };
+  }
+}
+
+export async function requestPhoneOtp(formData: FormData) {
+  await ensureAuthRuntimeEnv();
+  const { dict, locale } = await appCopy();
+  if (!smsAuthEnabled()) {
+    return { error: dict.login.errors.phoneNotConfigured };
+  }
+  const phone = resolveAuthPhone(
+    String(formData.get("countryIso") || ""),
+    String(formData.get("nationalNumber") || ""),
+  );
+  if (!phone) {
+    return { error: dict.login.errors.phoneInvalid };
+  }
+  const result = await sendPhoneOtp({
+    phone,
+    ip: await requestClientIp(),
+    locale,
+  });
+  if (!result.ok) {
+    return { error: dict.login.errors[result.errorKey], retryAfterSeconds: result.retryAfterSeconds };
+  }
+  return { ok: true as const, retryAfterSeconds: result.retryAfterSeconds };
+}
+
+export async function loginWithPhone(formData: FormData) {
+  await ensureAuthRuntimeEnv();
+  const { dict, locale } = await appCopy();
+  if (!smsAuthEnabled()) {
+    return { error: dict.login.errors.phoneNotConfigured };
+  }
+  const phone = resolveAuthPhone(
+    String(formData.get("countryIso") || ""),
+    String(formData.get("nationalNumber") || ""),
+  );
+  const code = String(formData.get("code") || "");
+  if (!phone) {
+    return { error: dict.login.errors.phoneInvalid };
+  }
+  const confirmed = await confirmPhoneOtp({
+    phone,
+    code,
+    locale,
+  });
+  if (!confirmed.ok) {
+    return { error: dict.login.errors[confirmed.errorKey] };
+  }
+  try {
+    await signIn("phone", {
+      phone: confirmed.phone,
+      ticket: confirmed.ticket,
+      redirectTo: String(formData.get("callbackUrl") || "/dashboard"),
+    });
+  } catch (error) {
+    const redirectCode = redirectDigestErrorCode(error);
+    if (redirectCode) {
+      return { error: credentialsActionErrorMessage(redirectCode, dict.login.errors, "login") };
+    }
+    unstable_rethrow(error);
+    if (isMissingRuntimeDatabaseUrl()) {
+      console.error("loginWithPhone", safeErrorLog(error), databaseRuntimeStatus());
+      return { error: missingRuntimeDatabaseUrlMessage() };
+    }
+    if (error instanceof AuthError) {
+      if (authErrorType(error) === "CredentialsSignin") {
+        return { error: dict.login.errors.phoneSignInFailed };
+      }
+      return { error: credentialsActionErrorMessage(authErrorType(error), dict.login.errors, "login") };
+    }
+    console.error("loginWithPhone signIn failed", safeErrorLog(error), databaseRuntimeStatus());
+    return { error: dict.login.errors.phoneSignInFailed };
   }
 }
 

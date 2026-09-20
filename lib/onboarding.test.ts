@@ -94,7 +94,7 @@ test("Google Sign-In requires both id and secret", () => {
 
 test("schema persists phone, business, and onboarding columns", () => {
   const schema = readFileSync(path.join(import.meta.dirname, "../prisma/schema.prisma"), "utf8");
-  assert.match(schema, /phone\s+String\?/);
+  assert.match(schema, /phone\s+String\?\s+@unique/);
   assert.match(schema, /employeeCount\s+String\?/);
   assert.match(schema, /industry\s+String\?/);
   assert.match(schema, /onboardingComplete Boolean @default\(true\)/);
@@ -107,11 +107,13 @@ test("login always renders the Google button; dashboard gates new users", () => 
   const layout = readFileSync(path.join(import.meta.dirname, "../app/dashboard/layout.tsx"), "utf8");
   const register = readFileSync(path.join(import.meta.dirname, "../app/actions/auth.ts"), "utf8");
   assert.match(forms, /copy\.google/);
+  assert.match(forms, /copy\.phone/);
   assert.doesNotMatch(forms, /copy\.apple/);
   assert.match(forms, /disabled/);
   assert.doesNotMatch(forms, /\{googleEnabled \?/);
   assert.doesNotMatch(forms, /appleEnabled/);
   assert.match(login, /googleEnabled=\{googleAuthEnabled\(\)\}/);
+  assert.match(login, /smsEnabled=\{smsAuthEnabled\(\)\}/);
   assert.doesNotMatch(login, /appleEnabled/);
   assert.match(login, /force-dynamic/);
   assert.match(login, /await connection\(\)/);
