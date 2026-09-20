@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getCurrentUser } from "@/lib/session";
+import { hasSessionCookie } from "@/lib/session-cookie";
 import { Button } from "@/components/ui/button";
 import { MarketingFooter, MarketingHeader } from "@/components/marketing/shell";
 import { PartnerSlot } from "@/components/marketing/partner-slot";
@@ -30,14 +30,14 @@ export async function generateMetadata({
 
 export default async function AdvertisePage({ params }: PageProps<"/[locale]/advertise">) {
   const { locale, dict } = marketingCopy((await params).locale);
-  const user = await getCurrentUser();
+  const signedIn = await hasSessionCookie();
   const sponsor = getSponsorPlacement();
   const copy = dict.advertise;
   const contactHref = advertiseContactHref(locale);
 
   return (
     <div>
-      <MarketingHeader signedIn={Boolean(user)} locale={locale} path={ADVERTISE_PATH} copy={dict.nav} />
+      <MarketingHeader signedIn={signedIn} locale={locale} path={ADVERTISE_PATH} copy={dict.nav} />
       <main className="mx-auto w-full max-w-5xl px-4 py-16">
         <p className="text-xs uppercase tracking-[0.28em] text-primary">{copy.eyebrow}</p>
         <h1 className="mt-4 max-w-3xl font-display text-5xl leading-[1.05]">{copy.headline}</h1>

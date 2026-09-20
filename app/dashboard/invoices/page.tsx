@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { csvExportHref, invoiceListWhere, parseListFilters } from "@/lib/csv";
+import { DASHBOARD_LIST_TAKE } from "@/lib/query-limits";
 import { formatCents, invoiceTotals } from "@/lib/money";
 import { requireUser } from "@/lib/session";
 import { Button } from "@/components/ui/button";
@@ -19,8 +20,17 @@ export default async function InvoicesPage({
   const { status, q } = filters;
   const invoices = await prisma.invoice.findMany({
     where: invoiceListWhere(user.id, filters),
-    include: { items: true },
+    select: {
+      id: true,
+      number: true,
+      clientName: true,
+      status: true,
+      currency: true,
+      taxRate: true,
+      items: { select: { quantity: true, rate: true } },
+    },
     orderBy: { createdAt: "desc" },
+    take: DASHBOARD_LIST_TAKE,
   });
 
   return (

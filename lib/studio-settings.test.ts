@@ -1,5 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import {
   accountNameFromParts,
   composeBusinessAddress,
@@ -17,6 +19,9 @@ import {
   splitPersonName,
   EMPTY_STUDIO_SETTINGS,
   normalizeStudioSettings,
+  studioSettingsSelect,
+  ACCOUNT_SETTINGS_SELECT,
+  STUDIO_SETTINGS_BLOB_COLUMNS,
 } from "./studio-settings";
 
 test("splitPersonName keeps a trailing last name", () => {
@@ -180,4 +185,69 @@ test("normalizeStudioSettings fills email copy defaults", () => {
 test("accountNameFromParts prefers first + last", () => {
   assert.equal(accountNameFromParts("Maya", "Chen", "Old"), "Maya Chen");
   assert.equal(accountNameFromParts("", "", "Old"), "Old");
+});
+
+test("studioSettingsSelect omits upload blobs unless asked", () => {
+  const none = studioSettingsSelect();
+  for (const column of STUDIO_SETTINGS_BLOB_COLUMNS) {
+    assert.equal(column in none, false);
+  }
+  assert.equal("firstName" in none, true);
+  assert.equal("licenseFileName" in none, true);
+
+  const logo = studioSettingsSelect("logo");
+  assert.equal("logoDataUrl" in logo, true);
+  assert.equal("licenseDataUrl" in logo, false);
+
+  const docs = studioSettingsSelect("docs");
+  assert.equal("logoDataUrl" in docs, false);
+  assert.equal("licenseDataUrl" in docs, true);
+  assert.equal("insuranceDataUrl" in docs, true);
+
+  const all = studioSettingsSelect("all");
+  for (const column of STUDIO_SETTINGS_BLOB_COLUMNS) {
+    assert.equal(column in all, true);
+  }
+});
+
+test("normalizeStudioSettings treats omitted blobs as empty strings", () => {
+  const row = normalizeStudioSettings({ firstName: "Maya", lastName: "Chen", defaultCurrency: "EUR" });
+  assert.equal(row.firstName, "Maya");
+  assert.equal(row.logoDataUrl, "");
+  assert.equal(row.licenseDataUrl, "");
+  assert.equal(row.insuranceDataUrl, "");
+});
+
+test("My Account SSR skips settings blobs, bcrypt, and the full settings actions module", () => {
+  const root = path.join(import.meta.dirname, "..");
+  const accountPage = readFileSync(path.join(root, "app/dashboard/settings/account/page.tsx"), "utf8");
+  const accountAction = readFileSync(path.join(root, "app/actions/account.ts"), "utf8");
+  const settingsAction = readFileSync(path.join(root, "app/actions/settings.ts"), "utf8");
+  const store = readFileSync(path.join(root, "lib/studio-settings-store.ts"), "utf8");
+  const companyPage = readFileSync(path.join(root, "app/dashboard/settings/company/page.tsx"), "utf8");
+  const i18n = readFileSync(path.join(root, "lib/i18n-request.ts"), "utf8");
+
+  assert.match(accountPage, /loadAccountSettings/);
+  assert.match(accountPage, /from "@\/app\/actions\/account"/);
+  assert.doesNotMatch(accountPage, /from "@\/app\/actions\/settings"/);
+  assert.doesNotMatch(accountPage, /loadStudioSettings/);
+
+  assert.match(accountAction, /await import\("bcryptjs"\)/);
+  assert.doesNotMatch(accountAction, /import bcrypt from "bcryptjs"/);
+  assert.doesNotMatch(accountAction, /fileToStoredUpload/);
+
+  assert.doesNotMatch(settingsAction, /bcrypt/);
+  assert.doesNotMatch(settingsAction, /updateAccount/);
+  assert.match(settingsAction, /uploads: "logo"/);
+  assert.match(settingsAction, /uploads: "docs"/);
+
+  assert.match(store, /studioSettingsSelect\(options\.uploads \?\? "none"\)/);
+  assert.match(store, /ACCOUNT_SETTINGS_SELECT/);
+  assert.doesNotMatch(store, /findUnique\(\{ where: \{ userId \} \}\)/);
+
+  assert.match(companyPage, /uploads: "logo"/);
+  assert.equal("firstName" in ACCOUNT_SETTINGS_SELECT, true);
+  assert.equal("logoDataUrl" in ACCOUNT_SETTINGS_SELECT, false);
+
+  assert.match(i18n, /export const appCopy = cache\(async/);
 });

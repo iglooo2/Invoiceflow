@@ -6,7 +6,6 @@ import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
 import Resend from "next-auth/providers/resend";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import bcrypt from "bcryptjs";
 import {
   ensureAuthRuntimeEnv,
   githubAuthEnabled,
@@ -40,6 +39,7 @@ async function buildAuthProviders(): Promise<Provider[]> {
         try {
           const user = await prisma.user.findUnique({ where: { email } });
           if (!user?.passwordHash) return null;
+          const { default: bcrypt } = await import("bcryptjs");
           const valid = await bcrypt.compare(password, user.passwordHash);
           if (!valid) return null;
           return {

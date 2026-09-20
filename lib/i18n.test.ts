@@ -171,6 +171,28 @@ test("localized landing keeps the studio gallery and register CTA", () => {
   assert.match(page, /startFreeHref/);
   assert.match(page, /PartnerSlot/);
   assert.match(page, /id="partner"/);
+  assert.match(page, /hasSessionCookie/);
+  assert.doesNotMatch(page, /getCurrentUser/);
+  assert.doesNotMatch(page, /from "@\/lib\/session"/);
+
+  const marketingPages = [
+    "app/[locale]/page.tsx",
+    "app/[locale]/advertise/page.tsx",
+    "app/[locale]/pricing/page.tsx",
+    "app/[locale]/contact/page.tsx",
+    "app/[locale]/estimates/page.tsx",
+    "app/[locale]/privacy/page.tsx",
+    "app/[locale]/terms/page.tsx",
+    "app/[locale]/referral-terms/page.tsx",
+  ];
+  for (const file of marketingPages) {
+    const source = readFileSync(path.join(import.meta.dirname, "..", file), "utf8");
+    assert.match(source, /hasSessionCookie/, file);
+    assert.doesNotMatch(source, /from "@\/lib\/session"/, file);
+    assert.doesNotMatch(source, /from "@\/lib\/auth"/, file);
+  }
+  assert.match(login, /hasSessionCookie/);
+  assert.match(login, /getCurrentUser/);
   assert.match(login, /query\.mode === "register"/);
   assert.match(login, /loginQueryErrorMessage/);
   assert.doesNotMatch(login, /dict\.login\.errors\.oauthFailed/);

@@ -122,6 +122,7 @@ test("login always renders the Google button; dashboard gates new users", () => 
   assert.match(auth, /allowDangerousEmailAccountLinking/);
   assert.doesNotMatch(auth, /resolveAppleClientSecret/);
   assert.match(auth, /createUser/);
+  assert.match(auth, /await import\("bcryptjs"\)/);
   assert.match(layout, /needsOnboarding/);
   assert.match(register, /onboardingComplete: false/);
   assert.doesNotMatch(register, /name: z\.string\(\)\.min\(1\)/);

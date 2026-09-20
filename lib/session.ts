@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
@@ -10,7 +11,7 @@ async function loginPath() {
   return localizedPath(await getRequestLocale(), "/login");
 }
 
-export async function requireUser() {
+export const requireUser = cache(async () => {
   const session = await auth();
   if (!session?.user?.id) redirect(await loginPath());
   const user = await prisma.user.findUnique({
@@ -18,13 +19,13 @@ export async function requireUser() {
   });
   if (!user) redirect(await loginPath());
   return user;
-}
+});
 
-export async function getCurrentUser() {
+export const getCurrentUser = cache(async () => {
   const session = await auth();
   if (!session?.user?.id) return null;
   return prisma.user.findUnique({ where: { id: session.user.id } });
-}
+});
 
 export function studioName(user: {
   businessName?: string | null;
