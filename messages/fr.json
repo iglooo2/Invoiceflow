@@ -148,7 +148,6 @@
     "github": "Continuer avec GitHub",
     "googleHint": "Google Sign-In n’est pas configuré. Ajoutez AUTH_GOOGLE_ID et AUTH_GOOGLE_SECRET comme secrets Runtime Worker Cloudflare (noms Auth.js). GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET sont acceptés comme alias.",
     "appleHint": "Apple Sign-In n’est pas configuré. Ajoutez AUTH_APPLE_ID et AUTH_APPLE_SECRET (clé .p8 ou JWT) comme secrets Worker. Si AUTH_APPLE_SECRET est le fichier .p8, définissez aussi AUTH_APPLE_TEAM et AUTH_APPLE_KEY_ID.",
-    "githubHint": "GitHub OAuth apparaît ici lorsque AUTH_GITHUB_ID et AUTH_GITHUB_SECRET sont définis.",
     "demoPrefix": "Démo :",
     "errors": {
       "invalidEmailPassword": "Saisissez un e-mail et un mot de passe valides.",

@@ -177,6 +177,8 @@ test("localized landing keeps the studio gallery and register CTA", () => {
   assert.match(forms, /initialMode = "signin"/);
   assert.match(forms, /copy\.google/);
   assert.match(forms, /copy\.apple/);
+  assert.doesNotMatch(forms, /githubHint/);
+  assert.match(forms, /githubEnabled \? \([\s\S]*?copy\.github[\s\S]*?\) : null/);
   const googleButtonAt = forms.indexOf('provider="google"');
   const emailFieldAt = forms.indexOf('htmlFor="email"');
   assert.ok(googleButtonAt > 0 && googleButtonAt < emailFieldAt, "oauth above email");
@@ -187,6 +189,7 @@ test("localized landing keeps the studio gallery and register CTA", () => {
     assert.match(dict.home.headline, /\n/);
     assert.ok(dict.login.google.length > 0, locale);
     assert.ok(dict.login.apple.length > 0, locale);
+    assert.equal("githubHint" in dict.login, false, locale);
     assert.match(dict.login.appleHint, /AUTH_APPLE_TEAM/);
     assert.ok(dict.login.errors.appleSecretInvalid.length > 0, locale);
     assert.ok(dict.onboarding.profileTitle.length > 0, locale);
