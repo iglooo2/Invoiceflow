@@ -71,7 +71,9 @@ export function copyCloudflareAuthEnvToProcess() {
     if (
       key.startsWith("AUTH_") ||
       key.startsWith("NEXTAUTH_") ||
-      key.startsWith("GOOGLE_")
+      key.startsWith("GOOGLE_") ||
+      key === "EMAIL_FROM" ||
+      key === "RESEND_API_KEY"
     ) {
       process.env[key] = value.trim();
     }

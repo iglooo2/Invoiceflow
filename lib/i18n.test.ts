@@ -44,6 +44,7 @@ test("shouldSkipLocale leaves app, API, and share routes alone", () => {
   assert.equal(shouldSkipLocale("/dashboard"), true);
   assert.equal(shouldSkipLocale("/dashboard/invoices"), true);
   assert.equal(shouldSkipLocale("/api/auth/session"), true);
+  assert.equal(shouldSkipLocale("/api/contact"), true);
   assert.equal(shouldSkipLocale("/share/i/abc"), true);
   assert.equal(shouldSkipLocale("/r/AbC123_xyz"), true);
   assert.equal(shouldSkipLocale("/icon"), true);

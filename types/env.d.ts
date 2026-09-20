@@ -22,6 +22,9 @@ declare namespace NodeJS {
     AUTH_GOOGLE_SECRET?: string;
     GOOGLE_CLIENT_ID?: string;
     GOOGLE_CLIENT_SECRET?: string;
+    AUTH_RESEND_KEY?: string;
+    RESEND_API_KEY?: string;
+    EMAIL_FROM?: string;
     SPONSOR_NAME?: string;
     SPONSOR_URL?: string;
     SPONSOR_LOGO_URL?: string;
