@@ -1,9 +1,9 @@
-import { updateAccount } from "@/app/actions/settings";
+import { updateAccount } from "@/app/actions/account";
 import { SettingsBanner, SettingsToolbar, SchemaWarning } from "@/components/settings/settings-chrome";
 import { OutlinedField, OutlinedSelect } from "@/components/ui/outlined-field";
 import { appCopy } from "@/lib/i18n-request";
 import { requireUser } from "@/lib/session";
-import { loadStudioSettings } from "@/lib/studio-settings-store";
+import { loadAccountSettings } from "@/lib/studio-settings-store";
 import { STUDIO_CURRENCIES, STUDIO_LOCALES, splitPersonName } from "@/lib/studio-settings";
 
 export default async function AccountSettingsPage({
@@ -15,7 +15,7 @@ export default async function AccountSettingsPage({
   const { dict } = await appCopy();
   const copy = dict.app.settingsPage;
   const { error, saved } = await searchParams;
-  const loaded = await loadStudioSettings(user.id);
+  const loaded = await loadAccountSettings(user.id);
   const split = splitPersonName(user.name);
   const firstName = loaded.settings.firstName || split.firstName;
   const lastName = loaded.settings.lastName || split.lastName;

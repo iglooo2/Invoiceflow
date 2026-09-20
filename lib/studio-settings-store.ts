@@ -2,11 +2,14 @@ import "server-only";
 import { prisma } from "@/lib/db";
 import { isMissingDatabaseSchemaError, prismaWriteFailureMessage, safeErrorLog } from "@/lib/db-errors";
 import {
+  ACCOUNT_SETTINGS_SELECT,
   EMPTY_STUDIO_SETTINGS,
   SETTINGS_SCHEMA_WARNING,
   STUDIO_USER_SELECT,
   normalizeStudioSettings,
+  studioSettingsSelect,
   type StudioSettingsRecord,
+  type StudioSettingsUploads,
 } from "@/lib/studio-settings";
 
 export { STUDIO_USER_SELECT };
@@ -17,9 +20,15 @@ export type LoadedStudioSettings = {
   warning?: string;
 };
 
-export async function loadStudioSettings(userId: string): Promise<LoadedStudioSettings> {
+async function readStudioSettings(
+  userId: string,
+  select: Record<string, boolean>,
+): Promise<LoadedStudioSettings> {
   try {
-    const row = await prisma.studioSettings.findUnique({ where: { userId } });
+    const row = await prisma.studioSettings.findUnique({
+      where: { userId },
+      select,
+    });
     return {
       settings: row ? normalizeStudioSettings(row) : EMPTY_STUDIO_SETTINGS,
       missingSchema: false,
@@ -30,6 +39,19 @@ export async function loadStudioSettings(userId: string): Promise<LoadedStudioSe
     }
     throw error;
   }
+}
+
+/** Default omits logo/license/insurance data URLs so settings SSR stays under Worker limits. */
+export async function loadStudioSettings(
+  userId: string,
+  options: { uploads?: StudioSettingsUploads } = {},
+): Promise<LoadedStudioSettings> {
+  return readStudioSettings(userId, studioSettingsSelect(options.uploads ?? "none"));
+}
+
+/** Settings → My Account: four scalar columns, no upload blobs, no document templates. */
+export async function loadAccountSettings(userId: string): Promise<LoadedStudioSettings> {
+  return readStudioSettings(userId, { ...ACCOUNT_SETTINGS_SELECT });
 }
 
 export async function upsertStudioSettings(
