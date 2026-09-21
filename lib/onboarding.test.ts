@@ -107,13 +107,14 @@ test("login always renders the Google button; dashboard gates new users", () => 
   const layout = readFileSync(path.join(import.meta.dirname, "../app/dashboard/layout.tsx"), "utf8");
   const register = readFileSync(path.join(import.meta.dirname, "../app/actions/auth.ts"), "utf8");
   assert.match(forms, /copy\.google/);
-  assert.match(forms, /copy\.phone/);
+  assert.doesNotMatch(forms, /copy\.phone/);
   assert.doesNotMatch(forms, /copy\.apple/);
   assert.match(forms, /disabled/);
   assert.doesNotMatch(forms, /\{googleEnabled \?/);
   assert.doesNotMatch(forms, /appleEnabled/);
   assert.match(login, /googleEnabled=\{googleAuthEnabled\(\)\}/);
-  assert.match(login, /smsEnabled=\{smsAuthEnabled\(\)\}/);
+  assert.doesNotMatch(login, /smsEnabled/);
+  assert.doesNotMatch(login, /smsAuthEnabled/);
   assert.doesNotMatch(login, /appleEnabled/);
   assert.match(login, /force-dynamic/);
   assert.match(login, /await connection\(\)/);

@@ -21,7 +21,6 @@ import { databaseRuntimeStatus, prisma } from "@/lib/db";
 import { safeErrorLog } from "@/lib/db-errors";
 import { sendMagicLinkEmail } from "@/lib/email";
 import { markNewUserOnboarding } from "@/lib/onboarding";
-import { authorizePhoneTicket } from "@/lib/phone-auth";
 
 async function buildAuthProviders(): Promise<Provider[]> {
   const providers: Provider[] = [
@@ -51,32 +50,6 @@ async function buildAuthProviders(): Promise<Provider[]> {
           };
         } catch (error) {
           console.error("credentials authorize failed", safeErrorLog(error), databaseRuntimeStatus());
-          throw error;
-        }
-      },
-    }),
-    Credentials({
-      id: "phone",
-      name: "Phone",
-      credentials: {
-        phone: { label: "Phone", type: "tel" },
-        ticket: { label: "Ticket", type: "text" },
-      },
-      async authorize(credentials) {
-        const phone = String(credentials?.phone ?? "");
-        const ticket = String(credentials?.ticket ?? "");
-        if (!phone || !ticket) return null;
-        try {
-          const user = await authorizePhoneTicket(phone, ticket);
-          if (!user) return null;
-          return {
-            id: user.id,
-            email: user.email ?? undefined,
-            name: user.name,
-            image: user.image,
-          };
-        } catch (error) {
-          console.error("phone authorize failed", safeErrorLog(error), databaseRuntimeStatus());
           throw error;
         }
       },

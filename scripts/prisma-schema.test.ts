@@ -32,8 +32,9 @@ test("User onboarding columns stay in the source schema", () => {
   assert.match(source, /employeeCount\s+String\?/);
   assert.match(source, /industry\s+String\?/);
   assert.match(source, /onboardingComplete Boolean @default\(true\)/);
-  assert.match(source, /model PhoneAuthChallenge/);
-  assert.match(source, /model PhoneAuthIpLimit/);
+  assert.doesNotMatch(source, /model PhoneAuthChallenge/);
+  assert.doesNotMatch(source, /model PhoneAuthIpLimit/);
+  assert.doesNotMatch(source, /phoneAuthChallenges/);
 });
 
 test("Job tables stay in the source schema", () => {

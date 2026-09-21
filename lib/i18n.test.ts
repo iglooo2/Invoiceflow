@@ -147,10 +147,12 @@ test("login and dashboard common errors exist in every locale", () => {
     assert.match(dict.login.errors.oauthAccountNotLinked, /link|vincular|lier|verknüpf/i);
     assert.equal(dict.login.errors.signInIncomplete.includes("Google"), false, locale);
     assert.equal(dict.login.errors.invalidCredentials.includes("Google"), false, locale);
-    assert.ok(dict.login.errors.phoneCodeInvalid.length > 0, locale);
-    assert.ok(dict.login.phone.length > 0, locale);
-    assert.ok(dict.login.codeGate.length > 0, locale);
-    assert.ok(dict.login.phoneConfirmedSms.length > 0, locale);
+    assert.equal("phone" in dict.login, false, locale);
+    assert.equal("phoneHint" in dict.login, false, locale);
+    assert.equal("codeGate" in dict.login, false, locale);
+    assert.equal("phoneConfirmedSms" in dict.login, false, locale);
+    assert.equal("phoneCodeInvalid" in dict.login.errors, false, locale);
+    assert.equal("phoneSignInFailed" in dict.login.errors, false, locale);
     assert.ok(dict.onboarding.errors.phone.length > 0, locale);
     assert.ok(dict.app.errors.invoiceNotFound.length > 0, locale);
     assert.ok(dict.app.errors.estimateNotFound.length > 0, locale);
@@ -228,7 +230,7 @@ test("localized landing keeps the studio gallery and register CTA", () => {
   assert.doesNotMatch(login, /dict\.login\.errors\.oauthFailed/);
   assert.match(forms, /initialMode = "signin"/);
   assert.match(forms, /copy\.google/);
-  assert.match(forms, /copy\.phone/);
+  assert.doesNotMatch(forms, /copy\.phone/);
   assert.doesNotMatch(forms, /copy\.apple/);
   assert.doesNotMatch(forms, /githubHint/);
   assert.match(forms, /githubEnabled \? \([\s\S]*?copy\.github[\s\S]*?\) : null/);
@@ -244,7 +246,10 @@ test("localized landing keeps the studio gallery and register CTA", () => {
     assert.equal("apple" in dict.login, false, locale);
     assert.equal("appleHint" in dict.login, false, locale);
     assert.equal("appleSecretInvalid" in dict.login.errors, false, locale);
+    assert.equal("phone" in dict.login, false, locale);
+    assert.equal("phoneHint" in dict.login, false, locale);
     assert.equal(dict.login.lede.includes("Apple"), false, locale);
+    assert.equal(/phone number|téléphone|Telefonnummer|teléfono/i.test(dict.login.lede), false, locale);
     assert.equal(dict.login.errors.oauthFailed.includes("Apple"), false, locale);
     assert.equal(dict.login.errors.oauthFailed.includes("AUTH_APPLE"), false, locale);
     assert.ok(
