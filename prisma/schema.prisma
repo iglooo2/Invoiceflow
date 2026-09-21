@@ -24,7 +24,7 @@ model User {
   businessPhone   String?
   businessAddress String?
   website         String?
-  /// E.164. Unique so SMS sign-in can find or create one account per number.
+  /// E.164. Unique so onboarding cannot attach the same number to two studios.
   phone           String?   @unique
   employeeCount   String?
   industry        String?
@@ -42,7 +42,6 @@ model User {
 
   accounts        Account[]
   sessions        Session[]
-  phoneAuthChallenges PhoneAuthChallenge[]
   clients         Client[]
   invoices        Invoice[]
   proposals       Proposal[]
@@ -171,35 +170,6 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
-}
-
-/// SMS OTP send/check bookkeeping. Codes themselves live in Twilio Verify when
-/// TWILIO_VERIFY_SERVICE_SID is set; Programmable SMS stores only a hash here.
-model PhoneAuthChallenge {
-  id          String   @id @default(cuid())
-  phone       String   @unique
-  codeHash    String?
-  expiresAt   DateTime
-  attempts    Int      @default(0)
-  sendCount   Int      @default(0)
-  lastSentAt  DateTime
-  windowStart DateTime
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  userId String?
-  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
-}
-
-/// Per-IP SMS send window. ipHash is HMAC/SHA-256 of the client IP, not raw.
-model PhoneAuthIpLimit {
-  id          String   @id @default(cuid())
-  ipHash      String   @unique
-  sendCount   Int      @default(0)
-  lastSentAt  DateTime
-  windowStart DateTime
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
 }
 
 model Client {

@@ -77,27 +77,6 @@ export function resendEnabled() {
   return Boolean(readAuthSecret("AUTH_RESEND_KEY") || readAuthSecret("RESEND_API_KEY"));
 }
 
-export function twilioAccountSid() {
-  return readAuthSecret("TWILIO_ACCOUNT_SID");
-}
-
-export function twilioAuthToken() {
-  return readAuthSecret("TWILIO_AUTH_TOKEN");
-}
-
-export function twilioVerifyServiceSid() {
-  return readAuthSecret("TWILIO_VERIFY_SERVICE_SID");
-}
-
-export function twilioFromNumber() {
-  return firstAuthSecret("TWILIO_FROM_NUMBER", "TWILIO_PHONE_NUMBER");
-}
-
-/** Twilio Verify (preferred) or Programmable SMS with a From number. */
-export function smsAuthEnabled() {
-  return Boolean(twilioAccountSid() && twilioAuthToken() && (twilioVerifyServiceSid() || twilioFromNumber()));
-}
-
 function writeProcessEnv(name: string, value: string) {
   if (!value) return;
   process.env[name] = value;

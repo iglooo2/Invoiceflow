@@ -21,13 +21,6 @@ AUTH_DEV_MODE="false"
 # GOOGLE_CLIENT_ID=""
 # GOOGLE_CLIENT_SECRET=""
 
-# Optional phone SMS (Worker runtime secrets). Verify for the OTP; From number for
-# the new-account confirmation SMS (and as OTP fallback if Verify is unset).
-# TWILIO_ACCOUNT_SID=""
-# TWILIO_AUTH_TOKEN=""
-# TWILIO_VERIFY_SERVICE_SID=""
-# TWILIO_FROM_NUMBER=""
-
 # Stripe (optional). Production must use encrypted Worker Secrets — not plaintext
 # dashboard Variables. wrangler.jsonc keep_vars keeps dashboard text vars on
 # `wrangler deploy`; Secrets survive every Git / preview deploy either way.
