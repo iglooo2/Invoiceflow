@@ -225,6 +225,12 @@ test("OAuth enablement reads Cloudflare runtime secrets, not a NEXT_PUBLIC flag"
     googleButtonAt > 0 && googleButtonAt < emailFieldAt,
     "Google must render above email/password on login and register",
   );
+  assert.match(actions, /await import\("bcryptjs"\)/);
+  assert.doesNotMatch(actions, /import bcrypt from "bcryptjs"/);
+  assert.doesNotMatch(actions, /throw error/);
+  assert.match(actions, /loginWithGithub/);
+  assert.match(actions, /githubAuthEnabled/);
+  assert.match(forms, /await loginWithGithub\(\)/);
   assert.match(actions, /from "@\/lib\/auth-env"/);
   assert.match(actions, /ensureAuthRuntimeEnv/);
   assert.match(actions, /redirectDigestErrorCode/);
