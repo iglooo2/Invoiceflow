@@ -16,7 +16,7 @@ import {
   shouldSkipLocale,
   splitLocalePath,
 } from "./i18n";
-import { proxy } from "../proxy";
+import { isRegisterAlias, proxy } from "../proxy";
 
 test("formatMessage fills dashboard copy templates", () => {
   assert.equal(
@@ -82,6 +82,55 @@ test("every locale dictionary has the same keys as English", () => {
   for (const locale of LOCALES) {
     assert.deepEqual(flatten(getDictionary(locale)), english, locale);
   }
+});
+
+test("register and signup aliases redirect to the localized login form", () => {
+  assert.equal(isRegisterAlias("/register"), true);
+  assert.equal(isRegisterAlias("/signup"), true);
+  assert.equal(isRegisterAlias("/en/register"), true);
+  assert.equal(isRegisterAlias("/pt/signup/"), true);
+  assert.equal(isRegisterAlias("/login"), false);
+  assert.equal(isRegisterAlias("/en/login"), false);
+  assert.equal(isRegisterAlias("/billing"), false);
+  assert.equal(isRegisterAlias("/en/subscription"), false);
+
+  const cases = [
+    { path: "/register", locale: "en" },
+    { path: "/signup", locale: "en" },
+    { path: "/register/", locale: "en" },
+    { path: "/en/register", locale: "en" },
+    { path: "/es/signup", locale: "es" },
+    { path: "/fr/register/", locale: "fr" },
+    { path: "/de/signup", locale: "de" },
+    { path: "/pt/register", locale: "pt" },
+  ];
+  for (const item of cases) {
+    const request = new NextRequest(`http://localhost:3000${item.path}?ref=studio`);
+    const response = proxy(request);
+    const location = new URL(response.headers.get("location") ?? "", "http://localhost:3000");
+    assert.equal(location.pathname, `/${item.locale}/login`, item.path);
+    assert.equal(location.searchParams.get("mode"), "register", item.path);
+    assert.equal(location.searchParams.get("ref"), "studio", item.path);
+    assert.equal(response.status, 307, item.path);
+  }
+
+  const spanish = new NextRequest("http://localhost:3000/signup", {
+    headers: { cookie: `${LOCALE_COOKIE}=es`, "accept-language": "fr" },
+  });
+  const spanishLocation = new URL(proxy(spanish).headers.get("location") ?? "", "http://localhost:3000");
+  assert.equal(spanishLocation.pathname, "/es/login");
+  assert.equal(spanishLocation.searchParams.get("mode"), "register");
+
+  const french = new NextRequest("http://localhost:3000/register", {
+    headers: { "accept-language": "fr-FR,fr;q=0.9" },
+  });
+  const frenchLocation = new URL(proxy(french).headers.get("location") ?? "", "http://localhost:3000");
+  assert.equal(frenchLocation.pathname, "/fr/login");
+
+  const nextConfig = readFileSync(path.join(import.meta.dirname, "../next.config.ts"), "utf8");
+  assert.match(nextConfig, /source: "\/register"/);
+  assert.match(nextConfig, /source: "\/signup"/);
+  assert.match(nextConfig, /\/:locale\/login\?mode=register/);
 });
 
 test("unprefixed login keeps Auth.js error codes after locale redirect", () => {
