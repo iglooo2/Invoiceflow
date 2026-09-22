@@ -2,6 +2,25 @@ import type { NextConfig } from "next";
 import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    // Backup for the proxy aliases. OpenNext runs `proxy.ts` on Workers; these
+    // cover a host that applies next.config redirects before or without it.
+    const locales = "en|es|fr|de|pt";
+    return [
+      { source: "/register", destination: "/login?mode=register", permanent: false },
+      { source: "/signup", destination: "/login?mode=register", permanent: false },
+      {
+        source: `/:locale(${locales})/register`,
+        destination: "/:locale/login?mode=register",
+        permanent: false,
+      },
+      {
+        source: `/:locale(${locales})/signup`,
+        destination: "/:locale/login?mode=register",
+        permanent: false,
+      },
+    ];
+  },
   serverExternalPackages: [
     "@prisma/client",
     ".prisma/client",

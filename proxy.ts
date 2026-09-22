@@ -7,6 +7,7 @@ import {
   negotiateLocale,
   shouldSkipLocale,
   splitLocalePath,
+  type Locale,
 } from "@/lib/i18n";
 
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
@@ -26,8 +27,36 @@ function nextWithLocale(request: NextRequest, locale: string) {
   return applyLocale(NextResponse.next({ request: { headers } }), locale);
 }
 
+/** Old signup URLs. The account form lives on the localized login page. */
+const REGISTER_ALIAS_PATHS = new Set(["/register", "/signup"]);
+
+export function isRegisterAlias(pathname: string) {
+  const { path } = splitLocalePath(pathname);
+  const normalized = path.length > 1 ? path.replace(/\/+$/, "") : path;
+  return REGISTER_ALIAS_PATHS.has(normalized);
+}
+
+function redirectToRegister(request: NextRequest, locale: Locale) {
+  // Use the standard URL parser. NextURL keeps a trailing slash from the
+  // request when the Location header is serialized (`/en/login/?mode=`).
+  const url = new URL(request.url);
+  url.pathname = localizedPath(locale, "/login");
+  url.searchParams.set("mode", "register");
+  return applyLocale(NextResponse.redirect(url), locale);
+}
+
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  if (isRegisterAlias(pathname)) {
+    const pathLocale = splitLocalePath(pathname).locale;
+    const locale =
+      pathLocale ??
+      negotiateLocale(
+        request.headers.get("accept-language"),
+        request.cookies.get(LOCALE_COOKIE)?.value,
+      );
+    return redirectToRegister(request, locale);
+  }
 
   if (pathname.startsWith("/dashboard")) {
     const locale = negotiateLocale(
