@@ -161,6 +161,8 @@ test("login and dashboard common errors exist in every locale", () => {
     assert.ok(dict.app.jobList.emptyTitle.length > 0, locale);
     assert.ok(dict.app.jobForm.addClient.length > 0, locale);
     assert.ok(dict.app.errors.clientEmailRequired.length > 0, locale);
+    assert.match(dict.app.errors.emailNotConfigured, /AUTH_RESEND_KEY/, locale);
+    assert.match(dict.app.errors.emailDeliveryFailed, /EMAIL_FROM/, locale);
     assert.ok(dict.nav.estimates.length > 0, locale);
     assert.ok(dict.estimatesPage.headline.length > 0, locale);
     assert.ok(dict.app.status.approved.length > 0, locale);

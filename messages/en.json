@@ -532,6 +532,8 @@
       "invoiceNotFound": "Invoice not found.",
       "proposalNotFound": "Proposal not found.",
       "clientEmailRequired": "Add a client email before sending the share link.",
+      "emailNotConfigured": "Couldn’t send that email, so this wasn’t marked as sent. Set AUTH_RESEND_KEY (or RESEND_API_KEY) and EMAIL_FROM as Cloudflare Worker runtime secrets. EMAIL_FROM must use a domain verified in Resend.",
+      "emailDeliveryFailed": "The email service rejected that message, so this wasn’t marked as sent. Confirm EMAIL_FROM uses a domain verified in Resend.",
       "estimateNotFound": "Estimate not found.",
       "jobNotFound": "Job not found."
     },
