@@ -532,6 +532,8 @@
       "invoiceNotFound": "Fatura não encontrada.",
       "proposalNotFound": "Proposta não encontrada.",
       "clientEmailRequired": "Adicione o e-mail do cliente antes de enviar o link.",
+      "emailNotConfigured": "Não foi possível enviar o e-mail, então isto não foi marcado como enviado. Defina AUTH_RESEND_KEY (ou RESEND_API_KEY) e EMAIL_FROM como segredos de runtime do Worker. EMAIL_FROM deve usar um domínio verificado na Resend.",
+      "emailDeliveryFailed": "O serviço de e-mail rejeitou a mensagem, então isto não foi marcado como enviado. Confirme que EMAIL_FROM usa um domínio verificado na Resend.",
       "estimateNotFound": "Orçamento não encontrado.",
       "jobNotFound": "Trabalho não encontrado."
     },

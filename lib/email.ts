@@ -42,19 +42,23 @@ export async function sendMagicLinkEmail(identifier: string, url: string) {
   }
 }
 
+export type DocumentEmailResult =
+  | { sent: true }
+  | { sent: false; reason: ContactSendReason };
+
 export async function sendDocumentEmail(options: {
   to: string;
   subject: string;
   heading: string;
   body: string;
   link: string;
-}) {
+}): Promise<DocumentEmailResult> {
   const { apiKey, from } = await resendRuntime();
   if (!apiKey) {
     console.info(
       `[InvoiceFlow] Email skipped (no Resend key). Would send to ${options.to}: ${options.subject} ${options.link}`,
     );
-    return { sent: false as const };
+    return { sent: false, reason: "not_configured" };
   }
   const result = await postResendEmail({
     apiKey,
@@ -64,10 +68,11 @@ export async function sendDocumentEmail(options: {
     html: `<p>${options.heading}</p><p>${options.body}</p><p><a href="${options.link}">Open document</a></p>`,
   });
   if (!result.sent) {
-    console.error("sendDocumentEmail failed", result.error);
-    return { sent: false as const };
+    const reason = classifyResendFailure(result.error);
+    console.error("sendDocumentEmail failed", result.error, { reason });
+    return { sent: false, reason };
   }
-  return { sent: true as const };
+  return { sent: true };
 }
 
 export async function sendContactRequest(options: {

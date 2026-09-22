@@ -532,6 +532,8 @@
       "invoiceNotFound": "Facture introuvable.",
       "proposalNotFound": "Proposition introuvable.",
       "clientEmailRequired": "Ajoutez l’e-mail du client avant d’envoyer le lien.",
+      "emailNotConfigured": "L’e-mail n’a pas pu être envoyé, donc ceci n’a pas été marqué comme envoyé. Définis AUTH_RESEND_KEY (ou RESEND_API_KEY) et EMAIL_FROM comme secrets runtime du Worker. EMAIL_FROM doit utiliser un domaine vérifié dans Resend.",
+      "emailDeliveryFailed": "Le service e-mail a rejeté le message, donc ceci n’a pas été marqué comme envoyé. Vérifie que EMAIL_FROM utilise un domaine vérifié dans Resend.",
       "estimateNotFound": "Devis introuvable.",
       "jobNotFound": "Chantier introuvable."
     },
