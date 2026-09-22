@@ -62,7 +62,13 @@ export function AuthForms({
           icon={<GoogleMark />}
         />
         {githubEnabled ? (
-          <form action={loginWithGithub}>
+          <form
+            action={async () => {
+              setError(null);
+              const result = await loginWithGithub();
+              if (result?.error) setError(result.error);
+            }}
+          >
             <Button type="submit" variant="secondary" className="w-full">
               {copy.github}
             </Button>
