@@ -1,5 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { CONTACT_EMAIL } from "./site";
 import { classifyResendFailure, extractEmailAddress, resolveContactMailbox } from "./contact-delivery";
 
@@ -25,4 +27,18 @@ test("classifyResendFailure treats bad/missing API keys as not configured", () =
     "send_failed",
   );
   assert.equal(classifyResendFailure("Resend request timed out"), "send_failed");
+});
+
+test("invoice and estimate email actions do not mark sent when delivery fails", () => {
+  for (const file of ["app/actions/invoices.ts", "app/actions/proposals.ts"]) {
+    const source = readFileSync(path.join(import.meta.dirname, "..", file), "utf8");
+    const blocked = source.indexOf("if (!delivery.sent)");
+    const marked = source.indexOf('data: { status: "sent" }');
+    assert.ok(blocked > 0 && marked > blocked, file);
+    assert.match(source, /dict\.app\.errors\.emailNotConfigured/);
+    assert.match(source, /dict\.app\.errors\.emailDeliveryFailed/);
+  }
+  const email = readFileSync(path.join(import.meta.dirname, "email.ts"), "utf8");
+  assert.match(email, /reason: "not_configured"/);
+  assert.match(email, /classifyResendFailure\(result\.error\)/);
 });

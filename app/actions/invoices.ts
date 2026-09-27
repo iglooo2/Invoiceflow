@@ -223,13 +223,24 @@ export async function emailInvoice(formData: FormData) {
       const { dict } = await appCopy();
       redirect(errorRedirect(detailPath, dict.app.errors.clientEmailRequired));
     }
-    await sendDocumentEmail({
+    const delivery = await sendDocumentEmail({
       to: invoice.clientEmail,
       subject: `Invoice ${invoice.number} from ${user.businessName || user.name || "your freelancer"}`,
       heading: `Invoice ${invoice.number}`,
       body: (await loadStudioSettings(user.id)).settings.emailInvoiceMessage,
       link: publicInvoiceUrl(invoice.publicToken),
     });
+    if (!delivery.sent) {
+      const { dict } = await appCopy();
+      redirect(
+        errorRedirect(
+          detailPath,
+          delivery.reason === "not_configured"
+            ? dict.app.errors.emailNotConfigured
+            : dict.app.errors.emailDeliveryFailed,
+        ),
+      );
+    }
     if (invoice.status === "draft") {
       await prisma.invoice.update({ where: { id: invoice.id }, data: { status: "sent" } });
     }

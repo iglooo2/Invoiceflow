@@ -243,13 +243,24 @@ export async function emailProposal(formData: FormData) {
       const { dict } = await appCopy();
       redirect(errorRedirect(detailPath, dict.app.errors.clientEmailRequired));
     }
-    await sendDocumentEmail({
+    const delivery = await sendDocumentEmail({
       to: proposal.clientEmail,
       subject: `${proposal.title} — estimate from ${user.businessName || user.name || "your freelancer"}`,
       heading: proposal.title,
       body: (await loadStudioSettings(user.id)).settings.emailEstimateMessage,
       link: publicProposalUrl(proposal.publicToken),
     });
+    if (!delivery.sent) {
+      const { dict } = await appCopy();
+      redirect(
+        errorRedirect(
+          detailPath,
+          delivery.reason === "not_configured"
+            ? dict.app.errors.emailNotConfigured
+            : dict.app.errors.emailDeliveryFailed,
+        ),
+      );
+    }
     if (proposal.status === "draft") {
       await prisma.proposal.update({ where: { id: proposal.id }, data: { status: "sent" } });
     }
