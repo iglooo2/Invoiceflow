@@ -12,7 +12,13 @@
     "estimatesDescription": "Precifique serviços com orçamentos do InvoiceFlow Studio — itens, markup, imposto, aprovação online e QuickBooks Online quando você estiver pronto.",
     "referralTermsTitle": "Termos do programa de indicação",
     "advertiseTitle": "Anuncie",
-    "advertiseDescription": "Patrocine o InvoiceFlow Studio. Alcance freelancers e empreiteiros que emitem faturas — um espaço Partner identificado na página inicial."
+    "advertiseDescription": "Patrocine o InvoiceFlow Studio. Alcance freelancers e empreiteiros que emitem faturas — um espaço Partner identificado na página inicial.",
+    "productsTitle": "Produtos",
+    "productsDescription": "Veja como o InvoiceFlow Studio ajuda empreiteiros a orçar, faturar, agendar trabalhos e manter clientes — e o que ainda está a caminho.",
+    "industriesTitle": "Setores",
+    "industriesDescription": "InvoiceFlow Studio para empreiteiros gerais, carpintaria, encanamento, elétrica, HVAC, pintura, telhados e os outros ofícios.",
+    "templatesPageTitle": "Central de recursos para empreiteiros",
+    "templatesPageDescription": "Explore ferramentas, modelos e guias grátis para precificar trabalhos, manter a organização e fazer o negócio crescer."
   },
   "nav": {
     "how": "Como funciona",
@@ -26,6 +32,8 @@
     "privacy": "Privacidade",
     "language": "Idioma",
     "estimates": "Orçamentos",
+    "products": "Produtos",
+    "industries": "Setores",
     "advertise": "Anuncie"
   },
   "home": {
@@ -106,6 +114,122 @@
     "contactTitle": "Comece a conversa",
     "contactBody": "Conte sobre sua marca, o público que você quer e um mês preferido para começar. Use Fale conosco e escolha Partnership — respondemos por lá.",
     "contactCta": "Fale conosco sobre uma parceria"
+  },
+  "products": {
+    "lede": "Orçamentos, faturas, trabalhos e clientes em um só fluxo — e uma visão clara do que ainda está a caminho.",
+    "comingSoon": "Em breve",
+    "allFeatures": "Todos os recursos",
+    "earnRewards": "Ganhe recompensas",
+    "columns": [
+      {
+        "title": "Receba",
+        "body": "Leve os trabalhos do orçamento ao pagamento em um fluxo simples feito para empreiteiros.",
+        "items": [
+          "Crie orçamentos precisos",
+          "Envie faturas profissionais",
+          "Receba pagamentos online"
+        ]
+      },
+      {
+        "title": "Administre seu negócio",
+        "body": "Gerencie trabalhos, clientes e novos leads em um só lugar, para você sempre saber o que vem a seguir.",
+        "items": [
+          "Agende e gerencie trabalhos",
+          "Gerencie cadastros de clientes",
+          "Automatize com recepcionista de IA"
+        ]
+      },
+      {
+        "title": "Mantenha a organização",
+        "body": "Acompanhe despesas, revise relatórios e mantenha as finanças do negócio em ordem.",
+        "items": [
+          "Acompanhe despesas do trabalho",
+          "Receba relatórios em tempo real",
+          "Sincronize com o QuickBooks"
+        ]
+      },
+      {
+        "title": "Ganhe mais trabalho",
+        "body": "Ganhe trabalhos maiores, construa sua reputação e abra oportunidades para o seu negócio.",
+        "items": [
+          "Impulsione avaliações online",
+          "Ofereça financiamento para proprietários",
+          "Acesse crédito para o negócio"
+        ]
+      }
+    ]
+  },
+  "industries": {
+    "lede": "Feito para empreiteiros. Escolha o seu ofício e conduza orçamentos, faturas e trabalhos no InvoiceFlow Studio.",
+    "all": "Todos os setores",
+    "seeProducts": "Ver produtos",
+    "items": [
+      {
+        "title": "Empreiteiro geral",
+        "body": "Orce o trabalho, fature quando terminar e mantenha cada cliente em um só fluxo do InvoiceFlow Studio."
+      },
+      {
+        "title": "Carpintaria",
+        "body": "Precifique acabamentos, armários e carpintaria, e envie a fatura do mesmo lugar."
+      },
+      {
+        "title": "Faz-tudo",
+        "body": "Acompanhe trabalhos pequenos e clientes sem um escritório pesado — e comece grátis quando quiser faturar."
+      },
+      {
+        "title": "Paisagismo",
+        "body": "Orce o trabalho da estação, organize a equipe e veja o que já foi pago."
+      },
+      {
+        "title": "Encanamento",
+        "body": "Envie um orçamento claro para um reparo ou instalação, e depois a fatura que o cliente pode abrir."
+      },
+      {
+        "title": "Construção residencial",
+        "body": "Leve um projeto residencial do orçamento à fatura sem perder os dados do trabalho."
+      },
+      {
+        "title": "Elétrica",
+        "body": "Orce chamados e instalações maiores, e mantenha o cadastro do cliente ao lado da fatura."
+      },
+      {
+        "title": "HVAC",
+        "body": "Precifique instalações e manutenções, e fature no mesmo fluxo para empreiteiros."
+      },
+      {
+        "title": "Pintura",
+        "body": "Transforme cômodos e demãos em um orçamento, e envie a fatura quando o trabalho acabar."
+      },
+      {
+        "title": "Telhados",
+        "body": "Orce reparos e trocas de telhado, e feche o trabalho com uma fatura profissional."
+      }
+    ]
+  },
+  "resources": {
+    "title": "Central de recursos para empreiteiros",
+    "lede": "Explore ferramentas, modelos e guias grátis para precificar trabalhos, manter a organização e fazer o negócio crescer.",
+    "seeProducts": "Ver produtos",
+    "openEstimates": "Abrir orçamentos",
+    "studioTemplates": "Modelos do estúdio",
+    "items": [
+      {
+        "title": "Oficina InvoiceFlow",
+        "body": "Guias curtos para precificar trabalhos e manter o estúdio organizado. Comece grátis no InvoiceFlow Studio ou veja Produtos para o fluxo completo."
+      },
+      {
+        "title": "Calculadoras grátis",
+        "body": "As calculadoras de preço ainda não estão no produto. Enquanto isso, crie um orçamento no InvoiceFlow Studio."
+      },
+      {
+        "title": "Modelos de orçamento grátis",
+        "body": "Precifique um trabalho com itens, markup e um link para o cliente. Abra Orçamentos ou crie uma conta grátis."
+      },
+      {
+        "title": "Modelos de fatura grátis",
+        "body": "Envie uma fatura clara a partir de um modelo de estúdio. Crie uma conta grátis ou veja como Produtos leva o trabalho do orçamento ao pagamento."
+      }
+    ]
   },
   "plans": {
     "free": {

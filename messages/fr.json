@@ -12,7 +12,13 @@
     "estimatesDescription": "Chiffrez vos chantiers avec des devis InvoiceFlow Studio — lignes, marge, taxe, approbation en ligne et QuickBooks Online quand vous serez prêts.",
     "referralTermsTitle": "Conditions du programme de parrainage",
     "advertiseTitle": "Annoncez",
-    "advertiseDescription": "Devenez partenaire d’InvoiceFlow Studio. Touchez des freelances et des entrepreneurs qui facturent — un emplacement Partner étiqueté sur la page d’accueil."
+    "advertiseDescription": "Devenez partenaire d’InvoiceFlow Studio. Touchez des freelances et des entrepreneurs qui facturent — un emplacement Partner étiqueté sur la page d’accueil.",
+    "productsTitle": "Produits",
+    "productsDescription": "Découvrez comment InvoiceFlow Studio aide les entrepreneurs à chiffrer, facturer, planifier les chantiers et suivre les clients — et ce qui arrive encore.",
+    "industriesTitle": "Métiers",
+    "industriesDescription": "InvoiceFlow Studio pour les entrepreneurs généraux, la menuiserie, la plomberie, l’électricité, le CVC, la peinture, la toiture et les autres métiers.",
+    "templatesPageTitle": "Centre de ressources pour entrepreneurs",
+    "templatesPageDescription": "Parcourez des outils, des modèles et des guides gratuits pour chiffrer vos chantiers, rester organisé et développer votre activité."
   },
   "nav": {
     "how": "Comment ça marche",
@@ -26,6 +32,8 @@
     "privacy": "Confidentialité",
     "language": "Langue",
     "estimates": "Devis",
+    "products": "Produits",
+    "industries": "Métiers",
     "advertise": "Annoncez"
   },
   "home": {
@@ -106,6 +114,122 @@
     "contactTitle": "Engagez la conversation",
     "contactBody": "Parlez-nous de votre marque, du public visé et d’un mois de début. Utilisez Écrivez-nous et choisissez Partnership — nous répondrons de là.",
     "contactCta": "Écrivez-nous au sujet d’un partenariat"
+  },
+  "products": {
+    "lede": "Devis, factures, chantiers et clients dans un seul flux — et un aperçu clair de ce qui arrive encore.",
+    "comingSoon": "Bientôt",
+    "allFeatures": "Toutes les fonctions",
+    "earnRewards": "Gagnez des récompenses",
+    "columns": [
+      {
+        "title": "Encaissez",
+        "body": "Passez du devis au paiement dans un flux simple conçu pour les entrepreneurs.",
+        "items": [
+          "Créez des devis précis",
+          "Envoyez des factures professionnelles",
+          "Encaissez des paiements en ligne"
+        ]
+      },
+      {
+        "title": "Gérez votre activité",
+        "body": "Gérez les chantiers, les clients et les nouvelles pistes au même endroit, pour toujours savoir la suite.",
+        "items": [
+          "Planifiez et gérez les chantiers",
+          "Gérez les fiches clients",
+          "Automatisez avec une réceptionniste IA"
+        ]
+      },
+      {
+        "title": "Restez organisé",
+        "body": "Suivez les dépenses, consultez les rapports et gardez les finances de votre activité en ordre.",
+        "items": [
+          "Suivez les dépenses de chantier",
+          "Obtenez des rapports en temps réel",
+          "Synchronisez avec QuickBooks"
+        ]
+      },
+      {
+        "title": "Gagnez plus de chantiers",
+        "body": "Décrochez de plus gros chantiers, construisez votre réputation et ouvrez des opportunités pour votre activité.",
+        "items": [
+          "Boostez les avis en ligne",
+          "Proposez un financement aux propriétaires",
+          "Accédez au crédit professionnel"
+        ]
+      }
+    ]
+  },
+  "industries": {
+    "lede": "Conçu pour les entrepreneurs. Choisissez votre métier, puis gérez devis, factures et chantiers dans InvoiceFlow Studio.",
+    "all": "Tous les métiers",
+    "seeProducts": "Voir les produits",
+    "items": [
+      {
+        "title": "Entrepreneur général",
+        "body": "Chiffrez le chantier, facturez quand il est terminé et gardez chaque client dans un seul flux InvoiceFlow Studio."
+      },
+      {
+        "title": "Menuiserie",
+        "body": "Chiffrez moulures, armoires et menuiserie de finition, puis envoyez la facture depuis le même endroit."
+      },
+      {
+        "title": "Homme à tout faire",
+        "body": "Suivez les petits chantiers et les clients sans un lourd back-office — et commencez gratuitement quand vous voulez facturer."
+      },
+      {
+        "title": "Aménagement paysager",
+        "body": "Chiffrez le travail de saison, organisez l’équipe et voyez ce qui est payé."
+      },
+      {
+        "title": "Plomberie",
+        "body": "Envoyez un devis clair pour une réparation ou une installation, puis la facture que votre client peut ouvrir."
+      },
+      {
+        "title": "Construction résidentielle",
+        "body": "Faites passer un projet résidentiel du devis à la facture sans perdre le détail du chantier."
+      },
+      {
+        "title": "Électricité",
+        "body": "Chiffrez les dépannages et les installations plus grandes, et gardez la fiche client à côté de la facture."
+      },
+      {
+        "title": "CVC",
+        "body": "Chiffrez les installations et l’entretien, puis facturez dans le même flux pour entrepreneurs."
+      },
+      {
+        "title": "Peinture",
+        "body": "Transformez pièces et couches en devis, et envoyez la facture quand le chantier est fini."
+      },
+      {
+        "title": "Toiture",
+        "body": "Chiffrez réparations et remplacements, puis clôturez avec une facture professionnelle."
+      }
+    ]
+  },
+  "resources": {
+    "title": "Centre de ressources pour entrepreneurs",
+    "lede": "Parcourez des outils, des modèles et des guides gratuits pour chiffrer vos chantiers, rester organisé et développer votre activité.",
+    "seeProducts": "Voir les produits",
+    "openEstimates": "Ouvrir les devis",
+    "studioTemplates": "Modèles du studio",
+    "items": [
+      {
+        "title": "Atelier InvoiceFlow",
+        "body": "Des guides courts pour chiffrer les chantiers et garder un studio organisé. Commencez gratuitement dans InvoiceFlow Studio, ou voyez Produits pour le flux complet."
+      },
+      {
+        "title": "Calculatrices gratuites",
+        "body": "Les calculatrices de prix ne sont pas encore dans le produit. En attendant, créez un devis dans InvoiceFlow Studio."
+      },
+      {
+        "title": "Modèles de devis gratuits",
+        "body": "Chiffrez un chantier avec des lignes, une marge et un lien client. Ouvrez Devis, ou créez un compte gratuit."
+      },
+      {
+        "title": "Modèles de facture gratuits",
+        "body": "Envoyez une facture claire depuis un modèle studio. Créez un compte gratuit, ou voyez comment Produits mène le chantier du devis au paiement."
+      }
+    ]
   },
   "plans": {
     "free": {

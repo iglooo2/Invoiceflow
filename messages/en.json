@@ -12,7 +12,13 @@
     "estimatesDescription": "Price jobs with branded InvoiceFlow Studio estimates — line items, markup, tax, online approval, and QuickBooks Online when you are ready.",
     "referralTermsTitle": "Referral Program Terms",
     "advertiseTitle": "Advertise",
-    "advertiseDescription": "Sponsor InvoiceFlow Studio. Reach freelancers and contractors who invoice — a labeled Partner slot on the homepage."
+    "advertiseDescription": "Sponsor InvoiceFlow Studio. Reach freelancers and contractors who invoice — a labeled Partner slot on the homepage.",
+    "productsTitle": "Products",
+    "productsDescription": "See how InvoiceFlow Studio helps contractors estimate, invoice, schedule jobs, and keep client records — and what’s still on the way.",
+    "industriesTitle": "Industries",
+    "industriesDescription": "InvoiceFlow Studio for general contractors, carpentry, plumbing, electrical, HVAC, painting, roofing, and the rest of the trades.",
+    "templatesPageTitle": "Contractor Resource Center",
+    "templatesPageDescription": "Browse free tools, templates, and guides to help you price jobs, stay organized, and grow your business."
   },
   "nav": {
     "how": "How it works",
@@ -26,6 +32,8 @@
     "privacy": "Privacy",
     "language": "Language",
     "estimates": "Estimates",
+    "products": "Products",
+    "industries": "Industries",
     "advertise": "Advertise"
   },
   "home": {
@@ -106,6 +114,122 @@
     "contactTitle": "Start a conversation",
     "contactBody": "Tell us about your brand, the audience you want, and a preferred month to start. Use Message us and pick Partnership — we will reply from there.",
     "contactCta": "Message us about a partnership"
+  },
+  "products": {
+    "lede": "Estimates, invoices, jobs, and clients in one workflow — and a clear look at what’s still on the way.",
+    "comingSoon": "Coming soon",
+    "allFeatures": "All Features",
+    "earnRewards": "Earn Rewards",
+    "columns": [
+      {
+        "title": "Get Paid",
+        "body": "Move jobs from estimate to payment in one simple workflow built for contractors.",
+        "items": [
+          "Create Accurate Estimates",
+          "Send Professional Invoices",
+          "Collect Payments Online"
+        ]
+      },
+      {
+        "title": "Run Your Business",
+        "body": "Manage jobs, clients, and new leads in one place, so you always know what’s next.",
+        "items": [
+          "Schedule & Manage Jobs",
+          "Manage Client Records",
+          "Automate with AI Receptionist"
+        ]
+      },
+      {
+        "title": "Stay Organized",
+        "body": "Track expenses, review reports, and keep your business finances organized.",
+        "items": [
+          "Track Job Expenses",
+          "Get Real-time Reports",
+          "Sync with QuickBooks"
+        ]
+      },
+      {
+        "title": "Win More Work",
+        "body": "Win bigger jobs, build your reputation, and unlock opportunities for your business.",
+        "items": [
+          "Boost Online Reviews",
+          "Offer Homeowner Financing",
+          "Access Business Lending"
+        ]
+      }
+    ]
+  },
+  "industries": {
+    "lede": "Built for contractors. Choose your trade, then run estimates, invoices, and jobs in InvoiceFlow Studio.",
+    "all": "All Industries",
+    "seeProducts": "See products",
+    "items": [
+      {
+        "title": "General Contractor",
+        "body": "Estimate the job, invoice when it’s done, and keep every client on one InvoiceFlow Studio workflow."
+      },
+      {
+        "title": "Carpentry",
+        "body": "Price trim, cabinets, and finish carpentry, then send a professional invoice from the same place."
+      },
+      {
+        "title": "Handyman",
+        "body": "Track small jobs and clients without a heavy back office — then start free when you’re ready to invoice."
+      },
+      {
+        "title": "Landscaping",
+        "body": "Quote seasonal work, schedule the crew, and see what’s been paid."
+      },
+      {
+        "title": "Plumbing",
+        "body": "Send a clear estimate for a repair or install, then follow it with an invoice your customer can open."
+      },
+      {
+        "title": "Residential Construction",
+        "body": "Move a home project from estimate to invoice without losing the job details."
+      },
+      {
+        "title": "Electrical",
+        "body": "Estimate service calls and larger installs, and keep the client record next to the invoice."
+      },
+      {
+        "title": "HVAC",
+        "body": "Price installs and maintenance visits, then invoice from the same contractor workflow."
+      },
+      {
+        "title": "Painting",
+        "body": "Turn rooms and coats into an estimate, and send the invoice when the job is finished."
+      },
+      {
+        "title": "Roofing",
+        "body": "Bid repairs and replacements, then close the job with a professional invoice."
+      }
+    ]
+  },
+  "resources": {
+    "title": "Contractor Resource Center",
+    "lede": "Browse free tools, templates, and guides to help you price jobs, stay organized, and grow your business.",
+    "seeProducts": "See products",
+    "openEstimates": "Open estimates",
+    "studioTemplates": "Studio templates",
+    "items": [
+      {
+        "title": "InvoiceFlow Workshop",
+        "body": "Short guides for pricing jobs and keeping a contractor studio organized. Start free in InvoiceFlow Studio, or see Products for the full workflow."
+      },
+      {
+        "title": "Free Calculators",
+        "body": "Job-pricing calculators are not in the product yet. Start with an InvoiceFlow Studio estimate while those tools are still being added."
+      },
+      {
+        "title": "Free Estimate Templates",
+        "body": "Price a job with line items, markup, and a client link. Open Estimates, or create a free account and send the first one."
+      },
+      {
+        "title": "Free Invoice Templates",
+        "body": "Send a clean invoice from a studio template. Create a free account, or see how Products moves a job from estimate to payment."
+      }
+    ]
   },
   "plans": {
     "free": {

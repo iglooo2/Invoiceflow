@@ -12,7 +12,13 @@
     "estimatesDescription": "Kalkuliere Aufträge mit gebrandeten InvoiceFlow-Studio-Voranschlägen — Positionen, Aufschlag, Steuer, Online-Genehmigung und QuickBooks Online, wenn du soweit bist.",
     "referralTermsTitle": "Bedingungen des Empfehlungsprogramms",
     "advertiseTitle": "Werbung",
-    "advertiseDescription": "Werde Partner von InvoiceFlow Studio. Erreiche Freelancer und Auftragnehmer, die Rechnungen schreiben — ein gekennzeichneter Partner-Platz auf der Startseite."
+    "advertiseDescription": "Werde Partner von InvoiceFlow Studio. Erreiche Freelancer und Auftragnehmer, die Rechnungen schreiben — ein gekennzeichneter Partner-Platz auf der Startseite.",
+    "productsTitle": "Produkte",
+    "productsDescription": "Sieh, wie InvoiceFlow Studio Auftragnehmern hilft, zu kalkulieren, zu fakturieren, Aufträge zu planen und Kunden zu führen — und was noch kommt.",
+    "industriesTitle": "Branchen",
+    "industriesDescription": "InvoiceFlow Studio für Generalunternehmer, Zimmerei, Sanitär, Elektro, Heizung und Klima, Maler und Dachdecker.",
+    "templatesPageTitle": "Ressourcen für Auftragnehmer",
+    "templatesPageDescription": "Stöbere in kostenlosen Tools, Vorlagen und Anleitungen, um Aufträge zu kalkulieren, organisiert zu bleiben und dein Unternehmen wachsen zu lassen."
   },
   "nav": {
     "how": "So funktioniert’s",
@@ -26,6 +32,8 @@
     "privacy": "Datenschutz",
     "language": "Sprache",
     "estimates": "Voranschläge",
+    "products": "Produkte",
+    "industries": "Branchen",
     "advertise": "Werbung"
   },
   "home": {
@@ -106,6 +114,122 @@
     "contactTitle": "Gespräch starten",
     "contactBody": "Erzähl uns von deiner Marke, der gewünschten Zielgruppe und einem bevorzugten Startmonat. Nutze Schreib uns und wähle Partnership — wir antworten von dort.",
     "contactCta": "Schreib uns wegen einer Partnerschaft"
+  },
+  "products": {
+    "lede": "Voranschläge, Rechnungen, Aufträge und Kunden in einem Ablauf — und ein klarer Blick auf das, was noch kommt.",
+    "comingSoon": "Demnächst",
+    "allFeatures": "Alle Funktionen",
+    "earnRewards": "Prämien verdienen",
+    "columns": [
+      {
+        "title": "Werde bezahlt",
+        "body": "Führe Aufträge vom Voranschlag bis zur Zahlung in einem einfachen Ablauf für Auftragnehmer.",
+        "items": [
+          "Erstelle genaue Voranschläge",
+          "Sende professionelle Rechnungen",
+          "Ziehe Zahlungen online ein"
+        ]
+      },
+      {
+        "title": "Führe dein Unternehmen",
+        "body": "Verwalte Aufträge, Kunden und neue Anfragen an einem Ort, damit du immer weißt, was als Nächstes kommt.",
+        "items": [
+          "Aufträge planen und verwalten",
+          "Kundenakten verwalten",
+          "Mit KI-Rezeption automatisieren"
+        ]
+      },
+      {
+        "title": "Bleib organisiert",
+        "body": "Erfasse Ausgaben, prüfe Berichte und halte die Finanzen deines Unternehmens in Ordnung.",
+        "items": [
+          "Auftragsausgaben erfassen",
+          "Echtzeitberichte erhalten",
+          "Mit QuickBooks synchronisieren"
+        ]
+      },
+      {
+        "title": "Gewinne mehr Aufträge",
+        "body": "Gewinne größere Aufträge, baue deinen Ruf auf und erschließe Chancen für dein Unternehmen.",
+        "items": [
+          "Online-Bewertungen stärken",
+          "Finanzierung für Hausbesitzer anbieten",
+          "Zugang zu Unternehmenskrediten"
+        ]
+      }
+    ]
+  },
+  "industries": {
+    "lede": "Für Auftragnehmer gebaut. Wähle dein Gewerk und führe Voranschläge, Rechnungen und Aufträge in InvoiceFlow Studio.",
+    "all": "Alle Branchen",
+    "seeProducts": "Produkte ansehen",
+    "items": [
+      {
+        "title": "Generalunternehmer",
+        "body": "Kalkuliere den Auftrag, stelle die Rechnung, wenn er fertig ist, und behalte jeden Kunden in einem InvoiceFlow-Studio-Ablauf."
+      },
+      {
+        "title": "Zimmerei",
+        "body": "Kalkuliere Leisten, Schränke und Ausbau, und sende die Rechnung vom selben Ort."
+      },
+      {
+        "title": "Handwerker",
+        "body": "Behalte kleine Aufträge und Kunden ohne großes Büro — und starte kostenlos, wenn du rechnen willst."
+      },
+      {
+        "title": "Landschaftsbau",
+        "body": "Kalkuliere Saisonarbeit, plane das Team und sieh, was bezahlt ist."
+      },
+      {
+        "title": "Sanitär",
+        "body": "Sende einen klaren Voranschlag für Reparatur oder Einbau, danach die Rechnung, die dein Kunde öffnen kann."
+      },
+      {
+        "title": "Wohnungsbau",
+        "body": "Führe ein Wohnprojekt vom Voranschlag zur Rechnung, ohne die Auftragsdaten zu verlieren."
+      },
+      {
+        "title": "Elektro",
+        "body": "Kalkuliere Serviceeinsätze und größere Installationen, und halte die Kundenakte neben der Rechnung."
+      },
+      {
+        "title": "Heizung & Klima",
+        "body": "Kalkuliere Einbau und Wartung, und rechne im selben Ablauf für Auftragnehmer ab."
+      },
+      {
+        "title": "Malerarbeiten",
+        "body": "Mach aus Räumen und Anstrichen einen Voranschlag, und sende die Rechnung, wenn der Auftrag fertig ist."
+      },
+      {
+        "title": "Dachdeckerei",
+        "body": "Kalkuliere Reparaturen und Neueindeckungen, und schließe den Auftrag mit einer professionellen Rechnung."
+      }
+    ]
+  },
+  "resources": {
+    "title": "Ressourcen für Auftragnehmer",
+    "lede": "Stöbere in kostenlosen Tools, Vorlagen und Anleitungen, um Aufträge zu kalkulieren, organisiert zu bleiben und dein Unternehmen wachsen zu lassen.",
+    "seeProducts": "Produkte ansehen",
+    "openEstimates": "Voranschläge öffnen",
+    "studioTemplates": "Studio-Vorlagen",
+    "items": [
+      {
+        "title": "InvoiceFlow-Werkstatt",
+        "body": "Kurze Anleitungen, um Aufträge zu kalkulieren und das Studio geordnet zu halten. Starte kostenlos in InvoiceFlow Studio oder sieh dir Produkte für den ganzen Ablauf an."
+      },
+      {
+        "title": "Kostenlose Rechner",
+        "body": "Preisrechner sind noch nicht im Produkt. Erstelle inzwischen einen Voranschlag in InvoiceFlow Studio."
+      },
+      {
+        "title": "Kostenlose Voranschlagsvorlagen",
+        "body": "Kalkuliere einen Auftrag mit Positionen, Aufschlag und einem Kundenlink. Öffne Voranschläge oder erstelle ein kostenloses Konto."
+      },
+      {
+        "title": "Kostenlose Rechnungsvorlagen",
+        "body": "Sende eine klare Rechnung aus einer Studio-Vorlage. Erstelle ein kostenloses Konto oder sieh, wie Produkte vom Voranschlag zur Zahlung führt."
+      }
+    ]
   },
   "plans": {
     "free": {
