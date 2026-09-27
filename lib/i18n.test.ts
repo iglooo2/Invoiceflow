@@ -31,6 +31,7 @@ test("localizedPath prefixes marketing routes", () => {
   assert.equal(localizedPath("es", "/estimates"), "/es/estimates");
   assert.equal(localizedPath("de", "/contact"), "/de/contact");
   assert.equal(localizedPath("fr", "/advertise"), "/fr/advertise");
+  assert.equal(localizedPath("pt", "/products"), "/pt/products");
   assert.equal(localizedPath("pt", "login"), "/pt/login");
 });
 
@@ -52,6 +53,7 @@ test("shouldSkipLocale leaves app, API, and share routes alone", () => {
   assert.equal(shouldSkipLocale("/estimates"), false);
   assert.equal(shouldSkipLocale("/contact"), false);
   assert.equal(shouldSkipLocale("/advertise"), false);
+  assert.equal(shouldSkipLocale("/products"), false);
   assert.equal(shouldSkipLocale("/"), false);
   assert.equal(shouldSkipLocale("/es/login"), false);
 });
@@ -211,6 +213,26 @@ test("login and dashboard common errors exist in every locale", () => {
     assert.ok(dict.app.jobForm.addClient.length > 0, locale);
     assert.ok(dict.app.errors.clientEmailRequired.length > 0, locale);
     assert.ok(dict.nav.estimates.length > 0, locale);
+    assert.ok(dict.nav.products.length > 0, locale);
+    assert.equal(dict.products.columns.length, 4, locale);
+    assert.ok(dict.products.columns.every((column) => column.items.length === 3 && column.title.length > 0), locale);
+    assert.ok(dict.products.allFeatures.length > 0, locale);
+    assert.ok(dict.products.earnRewards.length > 0, locale);
+    assert.ok(dict.products.comingSoon.length > 0, locale);
+    assert.ok(dict.meta.productsTitle.length > 0, locale);
+    if (locale === "en") {
+      assert.deepEqual(
+        dict.products.columns.map((column) => column.title),
+        ["Get Paid", "Run Your Business", "Stay Organized", "Win More Work"],
+      );
+      assert.deepEqual(dict.products.columns[0].items, [
+        "Create Accurate Estimates",
+        "Send Professional Invoices",
+        "Collect Payments Online",
+      ]);
+      assert.equal(dict.products.allFeatures, "All Features");
+      assert.equal(dict.products.earnRewards, "Earn Rewards");
+    }
     assert.ok(dict.estimatesPage.headline.length > 0, locale);
     assert.ok(dict.app.status.approved.length > 0, locale);
     assert.ok(dict.app.status.pending.length > 0, locale);
@@ -262,6 +284,7 @@ test("localized landing keeps the studio gallery and register CTA", () => {
     "app/[locale]/pricing/page.tsx",
     "app/[locale]/contact/page.tsx",
     "app/[locale]/estimates/page.tsx",
+    "app/[locale]/products/page.tsx",
     "app/[locale]/privacy/page.tsx",
     "app/[locale]/terms/page.tsx",
     "app/[locale]/referral-terms/page.tsx",

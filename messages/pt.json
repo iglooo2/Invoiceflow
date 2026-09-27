@@ -12,7 +12,9 @@
     "estimatesDescription": "Precifique serviços com orçamentos do InvoiceFlow Studio — itens, markup, imposto, aprovação online e QuickBooks Online quando você estiver pronto.",
     "referralTermsTitle": "Termos do programa de indicação",
     "advertiseTitle": "Anuncie",
-    "advertiseDescription": "Patrocine o InvoiceFlow Studio. Alcance freelancers e empreiteiros que emitem faturas — um espaço Partner identificado na página inicial."
+    "advertiseDescription": "Patrocine o InvoiceFlow Studio. Alcance freelancers e empreiteiros que emitem faturas — um espaço Partner identificado na página inicial.",
+    "productsTitle": "Produtos",
+    "productsDescription": "Veja como o InvoiceFlow Studio ajuda empreiteiros a orçar, faturar, agendar trabalhos e manter clientes — e o que ainda está a caminho."
   },
   "nav": {
     "how": "Como funciona",
@@ -26,6 +28,7 @@
     "privacy": "Privacidade",
     "language": "Idioma",
     "estimates": "Orçamentos",
+    "products": "Produtos",
     "advertise": "Anuncie"
   },
   "home": {
@@ -106,6 +109,50 @@
     "contactTitle": "Comece a conversa",
     "contactBody": "Conte sobre sua marca, o público que você quer e um mês preferido para começar. Use Fale conosco e escolha Partnership — respondemos por lá.",
     "contactCta": "Fale conosco sobre uma parceria"
+  },
+  "products": {
+    "lede": "Orçamentos, faturas, trabalhos e clientes em um só fluxo — e uma visão clara do que ainda está a caminho.",
+    "comingSoon": "Em breve",
+    "allFeatures": "Todos os recursos",
+    "earnRewards": "Ganhe recompensas",
+    "columns": [
+      {
+        "title": "Receba",
+        "body": "Leve os trabalhos do orçamento ao pagamento em um fluxo simples feito para empreiteiros.",
+        "items": [
+          "Crie orçamentos precisos",
+          "Envie faturas profissionais",
+          "Receba pagamentos online"
+        ]
+      },
+      {
+        "title": "Administre seu negócio",
+        "body": "Gerencie trabalhos, clientes e novos leads em um só lugar, para você sempre saber o que vem a seguir.",
+        "items": [
+          "Agende e gerencie trabalhos",
+          "Gerencie cadastros de clientes",
+          "Automatize com recepcionista de IA"
+        ]
+      },
+      {
+        "title": "Mantenha a organização",
+        "body": "Acompanhe despesas, revise relatórios e mantenha as finanças do negócio em ordem.",
+        "items": [
+          "Acompanhe despesas do trabalho",
+          "Receba relatórios em tempo real",
+          "Sincronize com o QuickBooks"
+        ]
+      },
+      {
+        "title": "Ganhe mais trabalho",
+        "body": "Ganhe trabalhos maiores, construa sua reputação e abra oportunidades para o seu negócio.",
+        "items": [
+          "Impulsione avaliações online",
+          "Ofereça financiamento para proprietários",
+          "Acesse crédito para o negócio"
+        ]
+      }
+    ]
   },
   "plans": {
     "free": {

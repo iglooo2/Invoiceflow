@@ -12,7 +12,9 @@
     "estimatesDescription": "Kalkuliere Aufträge mit gebrandeten InvoiceFlow-Studio-Voranschlägen — Positionen, Aufschlag, Steuer, Online-Genehmigung und QuickBooks Online, wenn du soweit bist.",
     "referralTermsTitle": "Bedingungen des Empfehlungsprogramms",
     "advertiseTitle": "Werbung",
-    "advertiseDescription": "Werde Partner von InvoiceFlow Studio. Erreiche Freelancer und Auftragnehmer, die Rechnungen schreiben — ein gekennzeichneter Partner-Platz auf der Startseite."
+    "advertiseDescription": "Werde Partner von InvoiceFlow Studio. Erreiche Freelancer und Auftragnehmer, die Rechnungen schreiben — ein gekennzeichneter Partner-Platz auf der Startseite.",
+    "productsTitle": "Produkte",
+    "productsDescription": "Sieh, wie InvoiceFlow Studio Auftragnehmern hilft, zu kalkulieren, zu fakturieren, Aufträge zu planen und Kunden zu führen — und was noch kommt."
   },
   "nav": {
     "how": "So funktioniert’s",
@@ -26,6 +28,7 @@
     "privacy": "Datenschutz",
     "language": "Sprache",
     "estimates": "Voranschläge",
+    "products": "Produkte",
     "advertise": "Werbung"
   },
   "home": {
@@ -106,6 +109,50 @@
     "contactTitle": "Gespräch starten",
     "contactBody": "Erzähl uns von deiner Marke, der gewünschten Zielgruppe und einem bevorzugten Startmonat. Nutze Schreib uns und wähle Partnership — wir antworten von dort.",
     "contactCta": "Schreib uns wegen einer Partnerschaft"
+  },
+  "products": {
+    "lede": "Voranschläge, Rechnungen, Aufträge und Kunden in einem Ablauf — und ein klarer Blick auf das, was noch kommt.",
+    "comingSoon": "Demnächst",
+    "allFeatures": "Alle Funktionen",
+    "earnRewards": "Prämien verdienen",
+    "columns": [
+      {
+        "title": "Werde bezahlt",
+        "body": "Führe Aufträge vom Voranschlag bis zur Zahlung in einem einfachen Ablauf für Auftragnehmer.",
+        "items": [
+          "Erstelle genaue Voranschläge",
+          "Sende professionelle Rechnungen",
+          "Ziehe Zahlungen online ein"
+        ]
+      },
+      {
+        "title": "Führe dein Unternehmen",
+        "body": "Verwalte Aufträge, Kunden und neue Anfragen an einem Ort, damit du immer weißt, was als Nächstes kommt.",
+        "items": [
+          "Aufträge planen und verwalten",
+          "Kundenakten verwalten",
+          "Mit KI-Rezeption automatisieren"
+        ]
+      },
+      {
+        "title": "Bleib organisiert",
+        "body": "Erfasse Ausgaben, prüfe Berichte und halte die Finanzen deines Unternehmens in Ordnung.",
+        "items": [
+          "Auftragsausgaben erfassen",
+          "Echtzeitberichte erhalten",
+          "Mit QuickBooks synchronisieren"
+        ]
+      },
+      {
+        "title": "Gewinne mehr Aufträge",
+        "body": "Gewinne größere Aufträge, baue deinen Ruf auf und erschließe Chancen für dein Unternehmen.",
+        "items": [
+          "Online-Bewertungen stärken",
+          "Finanzierung für Hausbesitzer anbieten",
+          "Zugang zu Unternehmenskrediten"
+        ]
+      }
+    ]
   },
   "plans": {
     "free": {

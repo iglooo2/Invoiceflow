@@ -4,7 +4,7 @@ import { LanguageSwitcher } from "@/components/marketing/language-switcher";
 import { btnRowClass, Button } from "@/components/ui/button";
 import { PartnerSlot } from "@/components/marketing/partner-slot";
 import { getDictionary, type Dictionary } from "@/lib/dictionary";
-import { ADVERTISE_PATH, CONTACT_PATH, SITE_DOMAIN, SITE_STUDIO, startFreeHref } from "@/lib/site";
+import { ADVERTISE_PATH, CONTACT_PATH, PRODUCTS_PATH, SITE_DOMAIN, SITE_STUDIO, startFreeHref } from "@/lib/site";
 import { getSponsorPlacement } from "@/lib/sponsor";
 import { localizedPath, type Locale } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
@@ -26,6 +26,9 @@ export function MarketingHeader({
       <nav className="hidden items-center gap-5 text-sm text-muted-foreground lg:flex">
         <Link href={`${localizedPath(locale, "/")}#how`} className="hover:text-foreground">
           {copy.how}
+        </Link>
+        <Link href={localizedPath(locale, PRODUCTS_PATH)} className="hover:text-foreground">
+          {copy.products}
         </Link>
         <Link href={localizedPath(locale, "/estimates")} className="hover:text-foreground">
           {copy.estimates}
@@ -88,6 +91,7 @@ export function MarketingFooter({
         <p className="text-xs">{SITE_STUDIO} · {SITE_DOMAIN}</p>
         <div className="flex flex-col items-start gap-3 sm:items-end">
           <div className="flex flex-wrap gap-4">
+            <Link href={localizedPath(locale, PRODUCTS_PATH)}>{copy.products}</Link>
             <Link href={localizedPath(locale, "/estimates")}>{copy.estimates}</Link>
             <Link href={localizedPath(locale, "/pricing")}>{copy.pricing}</Link>
             <Link href={localizedPath(locale, ADVERTISE_PATH)}>{copy.advertise}</Link>

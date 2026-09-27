@@ -12,7 +12,9 @@
     "estimatesDescription": "Precia trabajos con presupuestos de InvoiceFlow Studio — partidas, margen, impuestos, aprobación en línea y QuickBooks Online cuando estés listo.",
     "referralTermsTitle": "Términos del programa de referidos",
     "advertiseTitle": "Publicidad",
-    "advertiseDescription": "Patrocina InvoiceFlow Studio. Llega a freelancers y contratistas que facturan — un espacio Partner etiquetado en la portada."
+    "advertiseDescription": "Patrocina InvoiceFlow Studio. Llega a freelancers y contratistas que facturan — un espacio Partner etiquetado en la portada.",
+    "productsTitle": "Productos",
+    "productsDescription": "Mira cómo InvoiceFlow Studio ayuda a los contratistas a presupuestar, facturar, programar trabajos y llevar clientes — y lo que todavía está en camino."
   },
   "nav": {
     "how": "Cómo funciona",
@@ -26,6 +28,7 @@
     "privacy": "Privacidad",
     "language": "Idioma",
     "estimates": "Presupuestos",
+    "products": "Productos",
     "advertise": "Publicidad"
   },
   "home": {
@@ -106,6 +109,50 @@
     "contactTitle": "Empieza la conversación",
     "contactBody": "Cuéntanos tu marca, el público que buscas y un mes preferido para empezar. Usa Escríbenos y elige Partnership — te responderemos desde ahí.",
     "contactCta": "Escríbenos sobre un partnership"
+  },
+  "products": {
+    "lede": "Presupuestos, facturas, trabajos y clientes en un solo flujo — y una mirada clara a lo que todavía está en camino.",
+    "comingSoon": "Próximamente",
+    "allFeatures": "Todas las funciones",
+    "earnRewards": "Gana recompensas",
+    "columns": [
+      {
+        "title": "Cobra",
+        "body": "Lleva los trabajos del presupuesto al pago en un flujo simple pensado para contratistas.",
+        "items": [
+          "Crea presupuestos precisos",
+          "Envía facturas profesionales",
+          "Cobra en línea"
+        ]
+      },
+      {
+        "title": "Dirige tu negocio",
+        "body": "Administra trabajos, clientes y nuevos prospectos en un solo lugar, para que siempre sepas qué sigue.",
+        "items": [
+          "Programa y gestiona trabajos",
+          "Administra fichas de clientes",
+          "Automatiza con recepcionista de IA"
+        ]
+      },
+      {
+        "title": "Mantente organizado",
+        "body": "Registra gastos, revisa informes y mantén ordenadas las finanzas de tu negocio.",
+        "items": [
+          "Registra gastos del trabajo",
+          "Obtén informes en tiempo real",
+          "Sincroniza con QuickBooks"
+        ]
+      },
+      {
+        "title": "Gana más trabajo",
+        "body": "Consigue trabajos más grandes, construye tu reputación y abre oportunidades para tu negocio.",
+        "items": [
+          "Impulsa las reseñas en línea",
+          "Ofrece financiamiento para propietarios",
+          "Accede a crédito para el negocio"
+        ]
+      }
+    ]
   },
   "plans": {
     "free": {

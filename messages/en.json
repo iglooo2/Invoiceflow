@@ -12,7 +12,9 @@
     "estimatesDescription": "Price jobs with branded InvoiceFlow Studio estimates — line items, markup, tax, online approval, and QuickBooks Online when you are ready.",
     "referralTermsTitle": "Referral Program Terms",
     "advertiseTitle": "Advertise",
-    "advertiseDescription": "Sponsor InvoiceFlow Studio. Reach freelancers and contractors who invoice — a labeled Partner slot on the homepage."
+    "advertiseDescription": "Sponsor InvoiceFlow Studio. Reach freelancers and contractors who invoice — a labeled Partner slot on the homepage.",
+    "productsTitle": "Products",
+    "productsDescription": "See how InvoiceFlow Studio helps contractors estimate, invoice, schedule jobs, and keep client records — and what’s still on the way."
   },
   "nav": {
     "how": "How it works",
@@ -26,6 +28,7 @@
     "privacy": "Privacy",
     "language": "Language",
     "estimates": "Estimates",
+    "products": "Products",
     "advertise": "Advertise"
   },
   "home": {
@@ -106,6 +109,50 @@
     "contactTitle": "Start a conversation",
     "contactBody": "Tell us about your brand, the audience you want, and a preferred month to start. Use Message us and pick Partnership — we will reply from there.",
     "contactCta": "Message us about a partnership"
+  },
+  "products": {
+    "lede": "Estimates, invoices, jobs, and clients in one workflow — and a clear look at what’s still on the way.",
+    "comingSoon": "Coming soon",
+    "allFeatures": "All Features",
+    "earnRewards": "Earn Rewards",
+    "columns": [
+      {
+        "title": "Get Paid",
+        "body": "Move jobs from estimate to payment in one simple workflow built for contractors.",
+        "items": [
+          "Create Accurate Estimates",
+          "Send Professional Invoices",
+          "Collect Payments Online"
+        ]
+      },
+      {
+        "title": "Run Your Business",
+        "body": "Manage jobs, clients, and new leads in one place, so you always know what’s next.",
+        "items": [
+          "Schedule & Manage Jobs",
+          "Manage Client Records",
+          "Automate with AI Receptionist"
+        ]
+      },
+      {
+        "title": "Stay Organized",
+        "body": "Track expenses, review reports, and keep your business finances organized.",
+        "items": [
+          "Track Job Expenses",
+          "Get Real-time Reports",
+          "Sync with QuickBooks"
+        ]
+      },
+      {
+        "title": "Win More Work",
+        "body": "Win bigger jobs, build your reputation, and unlock opportunities for your business.",
+        "items": [
+          "Boost Online Reviews",
+          "Offer Homeowner Financing",
+          "Access Business Lending"
+        ]
+      }
+    ]
   },
   "plans": {
     "free": {
