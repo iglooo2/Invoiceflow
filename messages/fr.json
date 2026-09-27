@@ -14,7 +14,9 @@
     "advertiseTitle": "Annoncez",
     "advertiseDescription": "Devenez partenaire d’InvoiceFlow Studio. Touchez des freelances et des entrepreneurs qui facturent — un emplacement Partner étiqueté sur la page d’accueil.",
     "productsTitle": "Produits",
-    "productsDescription": "Découvrez comment InvoiceFlow Studio aide les entrepreneurs à chiffrer, facturer, planifier les chantiers et suivre les clients — et ce qui arrive encore."
+    "productsDescription": "Découvrez comment InvoiceFlow Studio aide les entrepreneurs à chiffrer, facturer, planifier les chantiers et suivre les clients — et ce qui arrive encore.",
+    "industriesTitle": "Métiers",
+    "industriesDescription": "InvoiceFlow Studio pour les entrepreneurs généraux, la menuiserie, la plomberie, l’électricité, le CVC, la peinture, la toiture et les autres métiers."
   },
   "nav": {
     "how": "Comment ça marche",
@@ -29,6 +31,7 @@
     "language": "Langue",
     "estimates": "Devis",
     "products": "Produits",
+    "industries": "Métiers",
     "advertise": "Annoncez"
   },
   "home": {
@@ -151,6 +154,53 @@
           "Proposez un financement aux propriétaires",
           "Accédez au crédit professionnel"
         ]
+      }
+    ]
+  },
+  "industries": {
+    "lede": "Conçu pour les entrepreneurs. Choisissez votre métier, puis gérez devis, factures et chantiers dans InvoiceFlow Studio.",
+    "all": "Tous les métiers",
+    "seeProducts": "Voir les produits",
+    "items": [
+      {
+        "title": "Entrepreneur général",
+        "body": "Chiffrez le chantier, facturez quand il est terminé et gardez chaque client dans un seul flux InvoiceFlow Studio."
+      },
+      {
+        "title": "Menuiserie",
+        "body": "Chiffrez moulures, armoires et menuiserie de finition, puis envoyez la facture depuis le même endroit."
+      },
+      {
+        "title": "Homme à tout faire",
+        "body": "Suivez les petits chantiers et les clients sans un lourd back-office — et commencez gratuitement quand vous voulez facturer."
+      },
+      {
+        "title": "Aménagement paysager",
+        "body": "Chiffrez le travail de saison, organisez l’équipe et voyez ce qui est payé."
+      },
+      {
+        "title": "Plomberie",
+        "body": "Envoyez un devis clair pour une réparation ou une installation, puis la facture que votre client peut ouvrir."
+      },
+      {
+        "title": "Construction résidentielle",
+        "body": "Faites passer un projet résidentiel du devis à la facture sans perdre le détail du chantier."
+      },
+      {
+        "title": "Électricité",
+        "body": "Chiffrez les dépannages et les installations plus grandes, et gardez la fiche client à côté de la facture."
+      },
+      {
+        "title": "CVC",
+        "body": "Chiffrez les installations et l’entretien, puis facturez dans le même flux pour entrepreneurs."
+      },
+      {
+        "title": "Peinture",
+        "body": "Transformez pièces et couches en devis, et envoyez la facture quand le chantier est fini."
+      },
+      {
+        "title": "Toiture",
+        "body": "Chiffrez réparations et remplacements, puis clôturez avec une facture professionnelle."
       }
     ]
   },

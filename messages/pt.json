@@ -14,7 +14,9 @@
     "advertiseTitle": "Anuncie",
     "advertiseDescription": "Patrocine o InvoiceFlow Studio. Alcance freelancers e empreiteiros que emitem faturas — um espaço Partner identificado na página inicial.",
     "productsTitle": "Produtos",
-    "productsDescription": "Veja como o InvoiceFlow Studio ajuda empreiteiros a orçar, faturar, agendar trabalhos e manter clientes — e o que ainda está a caminho."
+    "productsDescription": "Veja como o InvoiceFlow Studio ajuda empreiteiros a orçar, faturar, agendar trabalhos e manter clientes — e o que ainda está a caminho.",
+    "industriesTitle": "Setores",
+    "industriesDescription": "InvoiceFlow Studio para empreiteiros gerais, carpintaria, encanamento, elétrica, HVAC, pintura, telhados e os outros ofícios."
   },
   "nav": {
     "how": "Como funciona",
@@ -29,6 +31,7 @@
     "language": "Idioma",
     "estimates": "Orçamentos",
     "products": "Produtos",
+    "industries": "Setores",
     "advertise": "Anuncie"
   },
   "home": {
@@ -151,6 +154,53 @@
           "Ofereça financiamento para proprietários",
           "Acesse crédito para o negócio"
         ]
+      }
+    ]
+  },
+  "industries": {
+    "lede": "Feito para empreiteiros. Escolha o seu ofício e conduza orçamentos, faturas e trabalhos no InvoiceFlow Studio.",
+    "all": "Todos os setores",
+    "seeProducts": "Ver produtos",
+    "items": [
+      {
+        "title": "Empreiteiro geral",
+        "body": "Orce o trabalho, fature quando terminar e mantenha cada cliente em um só fluxo do InvoiceFlow Studio."
+      },
+      {
+        "title": "Carpintaria",
+        "body": "Precifique acabamentos, armários e carpintaria, e envie a fatura do mesmo lugar."
+      },
+      {
+        "title": "Faz-tudo",
+        "body": "Acompanhe trabalhos pequenos e clientes sem um escritório pesado — e comece grátis quando quiser faturar."
+      },
+      {
+        "title": "Paisagismo",
+        "body": "Orce o trabalho da estação, organize a equipe e veja o que já foi pago."
+      },
+      {
+        "title": "Encanamento",
+        "body": "Envie um orçamento claro para um reparo ou instalação, e depois a fatura que o cliente pode abrir."
+      },
+      {
+        "title": "Construção residencial",
+        "body": "Leve um projeto residencial do orçamento à fatura sem perder os dados do trabalho."
+      },
+      {
+        "title": "Elétrica",
+        "body": "Orce chamados e instalações maiores, e mantenha o cadastro do cliente ao lado da fatura."
+      },
+      {
+        "title": "HVAC",
+        "body": "Precifique instalações e manutenções, e fature no mesmo fluxo para empreiteiros."
+      },
+      {
+        "title": "Pintura",
+        "body": "Transforme cômodos e demãos em um orçamento, e envie a fatura quando o trabalho acabar."
+      },
+      {
+        "title": "Telhados",
+        "body": "Orce reparos e trocas de telhado, e feche o trabalho com uma fatura profissional."
       }
     ]
   },

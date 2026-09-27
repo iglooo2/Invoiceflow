@@ -10,6 +10,7 @@ export const CONTACT_EMAIL = "galit.igor@yahoo.com";
 export const CONTACT_PATH = "/contact";
 export const ADVERTISE_PATH = "/advertise";
 export const PRODUCTS_PATH = "/products";
+export const INDUSTRIES_PATH = "/industries";
 export const CONTACT_MAILTO = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("InvoiceFlow Studio inquiry")}`;
 
 export function advertiseContactHref(locale?: Locale) {

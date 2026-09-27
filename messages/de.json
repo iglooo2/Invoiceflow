@@ -14,7 +14,9 @@
     "advertiseTitle": "Werbung",
     "advertiseDescription": "Werde Partner von InvoiceFlow Studio. Erreiche Freelancer und Auftragnehmer, die Rechnungen schreiben — ein gekennzeichneter Partner-Platz auf der Startseite.",
     "productsTitle": "Produkte",
-    "productsDescription": "Sieh, wie InvoiceFlow Studio Auftragnehmern hilft, zu kalkulieren, zu fakturieren, Aufträge zu planen und Kunden zu führen — und was noch kommt."
+    "productsDescription": "Sieh, wie InvoiceFlow Studio Auftragnehmern hilft, zu kalkulieren, zu fakturieren, Aufträge zu planen und Kunden zu führen — und was noch kommt.",
+    "industriesTitle": "Branchen",
+    "industriesDescription": "InvoiceFlow Studio für Generalunternehmer, Zimmerei, Sanitär, Elektro, Heizung und Klima, Maler und Dachdecker."
   },
   "nav": {
     "how": "So funktioniert’s",
@@ -29,6 +31,7 @@
     "language": "Sprache",
     "estimates": "Voranschläge",
     "products": "Produkte",
+    "industries": "Branchen",
     "advertise": "Werbung"
   },
   "home": {
@@ -151,6 +154,53 @@
           "Finanzierung für Hausbesitzer anbieten",
           "Zugang zu Unternehmenskrediten"
         ]
+      }
+    ]
+  },
+  "industries": {
+    "lede": "Für Auftragnehmer gebaut. Wähle dein Gewerk und führe Voranschläge, Rechnungen und Aufträge in InvoiceFlow Studio.",
+    "all": "Alle Branchen",
+    "seeProducts": "Produkte ansehen",
+    "items": [
+      {
+        "title": "Generalunternehmer",
+        "body": "Kalkuliere den Auftrag, stelle die Rechnung, wenn er fertig ist, und behalte jeden Kunden in einem InvoiceFlow-Studio-Ablauf."
+      },
+      {
+        "title": "Zimmerei",
+        "body": "Kalkuliere Leisten, Schränke und Ausbau, und sende die Rechnung vom selben Ort."
+      },
+      {
+        "title": "Handwerker",
+        "body": "Behalte kleine Aufträge und Kunden ohne großes Büro — und starte kostenlos, wenn du rechnen willst."
+      },
+      {
+        "title": "Landschaftsbau",
+        "body": "Kalkuliere Saisonarbeit, plane das Team und sieh, was bezahlt ist."
+      },
+      {
+        "title": "Sanitär",
+        "body": "Sende einen klaren Voranschlag für Reparatur oder Einbau, danach die Rechnung, die dein Kunde öffnen kann."
+      },
+      {
+        "title": "Wohnungsbau",
+        "body": "Führe ein Wohnprojekt vom Voranschlag zur Rechnung, ohne die Auftragsdaten zu verlieren."
+      },
+      {
+        "title": "Elektro",
+        "body": "Kalkuliere Serviceeinsätze und größere Installationen, und halte die Kundenakte neben der Rechnung."
+      },
+      {
+        "title": "Heizung & Klima",
+        "body": "Kalkuliere Einbau und Wartung, und rechne im selben Ablauf für Auftragnehmer ab."
+      },
+      {
+        "title": "Malerarbeiten",
+        "body": "Mach aus Räumen und Anstrichen einen Voranschlag, und sende die Rechnung, wenn der Auftrag fertig ist."
+      },
+      {
+        "title": "Dachdeckerei",
+        "body": "Kalkuliere Reparaturen und Neueindeckungen, und schließe den Auftrag mit einer professionellen Rechnung."
       }
     ]
   },

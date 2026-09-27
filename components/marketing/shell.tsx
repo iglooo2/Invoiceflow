@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { Wordmark } from "@/components/brand";
+import { IndustriesMenu, IndustriesMobile } from "@/components/marketing/industries-menu";
 import { LanguageSwitcher } from "@/components/marketing/language-switcher";
 import { btnRowClass, Button } from "@/components/ui/button";
 import { PartnerSlot } from "@/components/marketing/partner-slot";
 import { getDictionary, type Dictionary } from "@/lib/dictionary";
-import { ADVERTISE_PATH, CONTACT_PATH, PRODUCTS_PATH, SITE_DOMAIN, SITE_STUDIO, startFreeHref } from "@/lib/site";
+import { INDUSTRY_SLUGS } from "@/lib/industries";
+import { ADVERTISE_PATH, CONTACT_PATH, INDUSTRIES_PATH, PRODUCTS_PATH, SITE_DOMAIN, SITE_STUDIO, startFreeHref } from "@/lib/site";
 import { getSponsorPlacement } from "@/lib/sponsor";
 import { localizedPath, type Locale } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
@@ -20,16 +22,23 @@ export function MarketingHeader({
   path: string;
   copy: Dictionary["nav"];
 }) {
+  const industryCopy = getDictionary(locale).industries;
+  const industryItems = INDUSTRY_SLUGS.map((slug, index) => ({
+    slug,
+    title: industryCopy.items[index]?.title ?? "",
+  }));
+
   return (
     <header className="mx-auto flex w-full min-w-0 max-w-6xl flex-col gap-2 overflow-x-clip px-4 py-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-x-3 sm:gap-y-2">
       <Wordmark href={localizedPath(locale, "/")} />
-      <nav className="hidden items-center gap-5 text-sm text-muted-foreground lg:flex">
+      <nav className="hidden items-center gap-x-4 gap-y-1 text-sm text-muted-foreground lg:flex lg:flex-wrap">
         <Link href={`${localizedPath(locale, "/")}#how`} className="hover:text-foreground">
           {copy.how}
         </Link>
         <Link href={localizedPath(locale, PRODUCTS_PATH)} className="hover:text-foreground">
           {copy.products}
         </Link>
+        <IndustriesMenu locale={locale} label={copy.industries} allLabel={industryCopy.all} items={industryItems} />
         <Link href={localizedPath(locale, "/estimates")} className="hover:text-foreground">
           {copy.estimates}
         </Link>
@@ -59,6 +68,9 @@ export function MarketingHeader({
             </Button>
           </>
         )}
+      </div>
+      <div className="w-full lg:hidden">
+        <IndustriesMobile locale={locale} label={copy.industries} allLabel={industryCopy.all} items={industryItems} />
       </div>
     </header>
   );
@@ -92,6 +104,7 @@ export function MarketingFooter({
         <div className="flex flex-col items-start gap-3 sm:items-end">
           <div className="flex flex-wrap gap-4">
             <Link href={localizedPath(locale, PRODUCTS_PATH)}>{copy.products}</Link>
+            <Link href={localizedPath(locale, INDUSTRIES_PATH)}>{copy.industries}</Link>
             <Link href={localizedPath(locale, "/estimates")}>{copy.estimates}</Link>
             <Link href={localizedPath(locale, "/pricing")}>{copy.pricing}</Link>
             <Link href={localizedPath(locale, ADVERTISE_PATH)}>{copy.advertise}</Link>

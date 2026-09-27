@@ -14,7 +14,9 @@
     "advertiseTitle": "Publicidad",
     "advertiseDescription": "Patrocina InvoiceFlow Studio. Llega a freelancers y contratistas que facturan — un espacio Partner etiquetado en la portada.",
     "productsTitle": "Productos",
-    "productsDescription": "Mira cómo InvoiceFlow Studio ayuda a los contratistas a presupuestar, facturar, programar trabajos y llevar clientes — y lo que todavía está en camino."
+    "productsDescription": "Mira cómo InvoiceFlow Studio ayuda a los contratistas a presupuestar, facturar, programar trabajos y llevar clientes — y lo que todavía está en camino.",
+    "industriesTitle": "Industrias",
+    "industriesDescription": "InvoiceFlow Studio para contratistas generales, carpintería, plomería, electricidad, HVAC, pintura, techos y el resto de los oficios."
   },
   "nav": {
     "how": "Cómo funciona",
@@ -29,6 +31,7 @@
     "language": "Idioma",
     "estimates": "Presupuestos",
     "products": "Productos",
+    "industries": "Industrias",
     "advertise": "Publicidad"
   },
   "home": {
@@ -151,6 +154,53 @@
           "Ofrece financiamiento para propietarios",
           "Accede a crédito para el negocio"
         ]
+      }
+    ]
+  },
+  "industries": {
+    "lede": "Hecho para contratistas. Elige tu oficio y lleva presupuestos, facturas y trabajos en InvoiceFlow Studio.",
+    "all": "Todas las industrias",
+    "seeProducts": "Ver productos",
+    "items": [
+      {
+        "title": "Contratista general",
+        "body": "Estima el trabajo, factura cuando termine y guarda cada cliente en un solo flujo de InvoiceFlow Studio."
+      },
+      {
+        "title": "Carpintería",
+        "body": "Cotiza molduras, gabinetes y carpintería de acabado, y envía la factura desde el mismo lugar."
+      },
+      {
+        "title": "Manitas",
+        "body": "Lleva trabajos pequeños y clientes sin una oficina pesada — y empieza gratis cuando quieras facturar."
+      },
+      {
+        "title": "Paisajismo",
+        "body": "Cotiza el trabajo de temporada, organiza el equipo y mira qué ya se pagó."
+      },
+      {
+        "title": "Plomería",
+        "body": "Envía un presupuesto claro para una reparación o instalación, y luego la factura que tu cliente puede abrir."
+      },
+      {
+        "title": "Construcción residencial",
+        "body": "Lleva un proyecto de vivienda del presupuesto a la factura sin perder los datos del trabajo."
+      },
+      {
+        "title": "Electricidad",
+        "body": "Presupuesta visitas de servicio e instalaciones grandes, y deja el cliente junto a la factura."
+      },
+      {
+        "title": "HVAC",
+        "body": "Cotiza instalaciones y mantenimientos, y factura desde el mismo flujo para contratistas."
+      },
+      {
+        "title": "Pintura",
+        "body": "Convierte habitaciones y manos de pintura en un presupuesto, y envía la factura al terminar."
+      },
+      {
+        "title": "Techos",
+        "body": "Cotiza reparaciones y reemplazos, y cierra el trabajo con una factura profesional."
       }
     ]
   },
