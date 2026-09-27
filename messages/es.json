@@ -16,7 +16,9 @@
     "productsTitle": "Productos",
     "productsDescription": "Mira cómo InvoiceFlow Studio ayuda a los contratistas a presupuestar, facturar, programar trabajos y llevar clientes — y lo que todavía está en camino.",
     "industriesTitle": "Industrias",
-    "industriesDescription": "InvoiceFlow Studio para contratistas generales, carpintería, plomería, electricidad, HVAC, pintura, techos y el resto de los oficios."
+    "industriesDescription": "InvoiceFlow Studio para contratistas generales, carpintería, plomería, electricidad, HVAC, pintura, techos y el resto de los oficios.",
+    "templatesPageTitle": "Centro de recursos para contratistas",
+    "templatesPageDescription": "Explora herramientas, plantillas y guías gratis para cotizar trabajos, mantenerte organizado y hacer crecer tu negocio."
   },
   "nav": {
     "how": "Cómo funciona",
@@ -201,6 +203,31 @@
       {
         "title": "Techos",
         "body": "Cotiza reparaciones y reemplazos, y cierra el trabajo con una factura profesional."
+      }
+    ]
+  },
+  "resources": {
+    "title": "Centro de recursos para contratistas",
+    "lede": "Explora herramientas, plantillas y guías gratis para cotizar trabajos, mantenerte organizado y hacer crecer tu negocio.",
+    "seeProducts": "Ver productos",
+    "openEstimates": "Abrir presupuestos",
+    "studioTemplates": "Plantillas del estudio",
+    "items": [
+      {
+        "title": "Taller InvoiceFlow",
+        "body": "Guías breves para cotizar trabajos y mantener el orden. Empieza gratis en InvoiceFlow Studio o mira Productos para el flujo completo."
+      },
+      {
+        "title": "Calculadoras gratis",
+        "body": "Las calculadoras de precios todavía no están en el producto. Mientras tanto, crea un presupuesto en InvoiceFlow Studio."
+      },
+      {
+        "title": "Plantillas de presupuesto gratis",
+        "body": "Cotiza un trabajo con partidas, margen y un enlace para el cliente. Abre Presupuestos o crea una cuenta gratis."
+      },
+      {
+        "title": "Plantillas de factura gratis",
+        "body": "Envía una factura clara desde una plantilla de estudio. Crea una cuenta gratis o mira cómo Productos lleva el trabajo del presupuesto al pago."
       }
     ]
   },

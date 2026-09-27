@@ -33,6 +33,7 @@ test("localizedPath prefixes marketing routes", () => {
   assert.equal(localizedPath("fr", "/advertise"), "/fr/advertise");
   assert.equal(localizedPath("pt", "/products"), "/pt/products");
   assert.equal(localizedPath("de", "/industries"), "/de/industries");
+  assert.equal(localizedPath("fr", "/templates"), "/fr/templates");
   assert.equal(localizedPath("pt", "login"), "/pt/login");
 });
 
@@ -56,6 +57,7 @@ test("shouldSkipLocale leaves app, API, and share routes alone", () => {
   assert.equal(shouldSkipLocale("/advertise"), false);
   assert.equal(shouldSkipLocale("/products"), false);
   assert.equal(shouldSkipLocale("/industries"), false);
+  assert.equal(shouldSkipLocale("/templates"), false);
   assert.equal(shouldSkipLocale("/"), false);
   assert.equal(shouldSkipLocale("/es/login"), false);
 });
@@ -218,6 +220,9 @@ test("login and dashboard common errors exist in every locale", () => {
     assert.ok(dict.nav.products.length > 0, locale);
     assert.ok(dict.nav.industries.length > 0, locale);
     assert.equal(dict.industries.items.length, 10, locale);
+    assert.equal(dict.resources.items.length, 4, locale);
+    assert.ok(dict.resources.title.length > 0, locale);
+    assert.ok(dict.resources.lede.length > 0, locale);
     assert.ok(dict.industries.all.length > 0, locale);
     assert.ok(dict.industries.items.every((item) => item.title.length > 0 && item.body.length > 0), locale);
     assert.equal(dict.products.columns.length, 4, locale);
@@ -254,6 +259,15 @@ test("login and dashboard common errors exist in every locale", () => {
         ],
       );
       assert.equal(dict.industries.all, "All Industries");
+      assert.equal(dict.resources.title, "Contractor Resource Center");
+      assert.equal(
+        dict.resources.lede,
+        "Browse free tools, templates, and guides to help you price jobs, stay organized, and grow your business.",
+      );
+      assert.deepEqual(
+        dict.resources.items.map((item) => item.title),
+        ["InvoiceFlow Workshop", "Free Calculators", "Free Estimate Templates", "Free Invoice Templates"],
+      );
     }
     assert.ok(dict.estimatesPage.headline.length > 0, locale);
     assert.ok(dict.app.status.approved.length > 0, locale);
@@ -308,6 +322,7 @@ test("localized landing keeps the studio gallery and register CTA", () => {
     "app/[locale]/estimates/page.tsx",
     "app/[locale]/products/page.tsx",
     "app/[locale]/industries/page.tsx",
+    "app/[locale]/templates/page.tsx",
     "app/[locale]/privacy/page.tsx",
     "app/[locale]/terms/page.tsx",
     "app/[locale]/referral-terms/page.tsx",

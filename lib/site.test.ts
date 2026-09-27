@@ -2,8 +2,9 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { ADVERTISE_PATH, advertiseContactHref, CONTACT_EMAIL, CONTACT_PATH, INDUSTRIES_PATH, isNeonUrl, isPostgresUrl, PRODUCTS_PATH, startFreeHref } from "./site";
+import { ADVERTISE_PATH, advertiseContactHref, CONTACT_EMAIL, CONTACT_PATH, INDUSTRIES_PATH, isNeonUrl, isPostgresUrl, PRODUCTS_PATH, TEMPLATES_PATH, startFreeHref } from "./site";
 import { INDUSTRY_SLUGS } from "./industries";
+import { RESOURCE_SLUGS } from "./resources";
 import { PRODUCT_COLUMNS, REWARDS_LINK, productHref } from "./products";
 
 test("detects postgres urls", () => {
@@ -31,6 +32,8 @@ test("Message us links to the contact page and never prints the inbox address", 
   assert.equal(PRODUCTS_PATH, "/products");
   assert.equal(INDUSTRIES_PATH, "/industries");
   assert.equal(INDUSTRY_SLUGS.length, 10);
+  assert.equal(TEMPLATES_PATH, "/templates");
+  assert.deepEqual(RESOURCE_SLUGS, ["workshop", "calculators", "estimate-templates", "invoice-templates"]);
   assert.equal(advertiseContactHref("en"), "/en/contact?topic=partnership");
   assert.equal(advertiseContactHref(), "/contact?topic=partnership");
 
@@ -44,6 +47,10 @@ test("Message us links to the contact page and never prints the inbox address", 
   assert.match(footer, /copy\.industries/);
   assert.match(footer, /IndustriesMenu/);
   assert.match(footer, /IndustriesMobile/);
+  assert.match(footer, /ResourcesMenu/);
+  assert.match(footer, /ResourcesMobile/);
+  assert.match(footer, /localizedPath\(locale, TEMPLATES_PATH\)/);
+  assert.equal(footer.includes("#templates"), false);
   assert.match(footer, /PartnerSlot/);
   assert.equal(footer.includes("mailto:"), false);
   assert.equal(footer.includes(CONTACT_EMAIL), false);

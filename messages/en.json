@@ -16,7 +16,9 @@
     "productsTitle": "Products",
     "productsDescription": "See how InvoiceFlow Studio helps contractors estimate, invoice, schedule jobs, and keep client records — and what’s still on the way.",
     "industriesTitle": "Industries",
-    "industriesDescription": "InvoiceFlow Studio for general contractors, carpentry, plumbing, electrical, HVAC, painting, roofing, and the rest of the trades."
+    "industriesDescription": "InvoiceFlow Studio for general contractors, carpentry, plumbing, electrical, HVAC, painting, roofing, and the rest of the trades.",
+    "templatesPageTitle": "Contractor Resource Center",
+    "templatesPageDescription": "Browse free tools, templates, and guides to help you price jobs, stay organized, and grow your business."
   },
   "nav": {
     "how": "How it works",
@@ -201,6 +203,31 @@
       {
         "title": "Roofing",
         "body": "Bid repairs and replacements, then close the job with a professional invoice."
+      }
+    ]
+  },
+  "resources": {
+    "title": "Contractor Resource Center",
+    "lede": "Browse free tools, templates, and guides to help you price jobs, stay organized, and grow your business.",
+    "seeProducts": "See products",
+    "openEstimates": "Open estimates",
+    "studioTemplates": "Studio templates",
+    "items": [
+      {
+        "title": "InvoiceFlow Workshop",
+        "body": "Short guides for pricing jobs and keeping a contractor studio organized. Start free in InvoiceFlow Studio, or see Products for the full workflow."
+      },
+      {
+        "title": "Free Calculators",
+        "body": "Job-pricing calculators are not in the product yet. Start with an InvoiceFlow Studio estimate while those tools are still being added."
+      },
+      {
+        "title": "Free Estimate Templates",
+        "body": "Price a job with line items, markup, and a client link. Open Estimates, or create a free account and send the first one."
+      },
+      {
+        "title": "Free Invoice Templates",
+        "body": "Send a clean invoice from a studio template. Create a free account, or see how Products moves a job from estimate to payment."
       }
     ]
   },

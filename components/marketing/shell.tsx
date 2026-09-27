@@ -1,12 +1,14 @@
 import Link from "next/link";
 import { Wordmark } from "@/components/brand";
 import { IndustriesMenu, IndustriesMobile } from "@/components/marketing/industries-menu";
+import { ResourcesMenu, ResourcesMobile } from "@/components/marketing/resources-menu";
 import { LanguageSwitcher } from "@/components/marketing/language-switcher";
 import { btnRowClass, Button } from "@/components/ui/button";
 import { PartnerSlot } from "@/components/marketing/partner-slot";
 import { getDictionary, type Dictionary } from "@/lib/dictionary";
 import { INDUSTRY_SLUGS } from "@/lib/industries";
-import { ADVERTISE_PATH, CONTACT_PATH, INDUSTRIES_PATH, PRODUCTS_PATH, SITE_DOMAIN, SITE_STUDIO, startFreeHref } from "@/lib/site";
+import { RESOURCE_SLUGS } from "@/lib/resources";
+import { ADVERTISE_PATH, CONTACT_PATH, INDUSTRIES_PATH, PRODUCTS_PATH, SITE_DOMAIN, SITE_STUDIO, TEMPLATES_PATH, startFreeHref } from "@/lib/site";
 import { getSponsorPlacement } from "@/lib/sponsor";
 import { localizedPath, type Locale } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
@@ -22,10 +24,16 @@ export function MarketingHeader({
   path: string;
   copy: Dictionary["nav"];
 }) {
-  const industryCopy = getDictionary(locale).industries;
+  const dictionary = getDictionary(locale);
+  const industryCopy = dictionary.industries;
   const industryItems = INDUSTRY_SLUGS.map((slug, index) => ({
     slug,
     title: industryCopy.items[index]?.title ?? "",
+  }));
+  const resourceCopy = dictionary.resources;
+  const resourceItems = RESOURCE_SLUGS.map((slug, index) => ({
+    slug,
+    title: resourceCopy.items[index]?.title ?? "",
   }));
 
   return (
@@ -45,9 +53,13 @@ export function MarketingHeader({
         <Link href={localizedPath(locale, "/pricing")} className="hover:text-foreground">
           {copy.pricing}
         </Link>
-        <Link href={`${localizedPath(locale, "/")}#templates`} className="hover:text-foreground">
-          {copy.templates}
-        </Link>
+        <ResourcesMenu
+          locale={locale}
+          label={copy.templates}
+          title={resourceCopy.title}
+          lede={resourceCopy.lede}
+          items={resourceItems}
+        />
         <Link href={localizedPath(locale, CONTACT_PATH)} className="hover:text-foreground">
           {copy.messageUs}
         </Link>
@@ -69,8 +81,15 @@ export function MarketingHeader({
           </>
         )}
       </div>
-      <div className="w-full lg:hidden">
+      <div className="grid w-full gap-2 lg:hidden">
         <IndustriesMobile locale={locale} label={copy.industries} allLabel={industryCopy.all} items={industryItems} />
+        <ResourcesMobile
+          locale={locale}
+          label={copy.templates}
+          title={resourceCopy.title}
+          lede={resourceCopy.lede}
+          items={resourceItems}
+        />
       </div>
     </header>
   );
@@ -105,6 +124,7 @@ export function MarketingFooter({
           <div className="flex flex-wrap gap-4">
             <Link href={localizedPath(locale, PRODUCTS_PATH)}>{copy.products}</Link>
             <Link href={localizedPath(locale, INDUSTRIES_PATH)}>{copy.industries}</Link>
+            <Link href={localizedPath(locale, TEMPLATES_PATH)}>{copy.templates}</Link>
             <Link href={localizedPath(locale, "/estimates")}>{copy.estimates}</Link>
             <Link href={localizedPath(locale, "/pricing")}>{copy.pricing}</Link>
             <Link href={localizedPath(locale, ADVERTISE_PATH)}>{copy.advertise}</Link>

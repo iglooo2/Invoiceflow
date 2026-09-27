@@ -16,7 +16,9 @@
     "productsTitle": "Produits",
     "productsDescription": "Découvrez comment InvoiceFlow Studio aide les entrepreneurs à chiffrer, facturer, planifier les chantiers et suivre les clients — et ce qui arrive encore.",
     "industriesTitle": "Métiers",
-    "industriesDescription": "InvoiceFlow Studio pour les entrepreneurs généraux, la menuiserie, la plomberie, l’électricité, le CVC, la peinture, la toiture et les autres métiers."
+    "industriesDescription": "InvoiceFlow Studio pour les entrepreneurs généraux, la menuiserie, la plomberie, l’électricité, le CVC, la peinture, la toiture et les autres métiers.",
+    "templatesPageTitle": "Centre de ressources pour entrepreneurs",
+    "templatesPageDescription": "Parcourez des outils, des modèles et des guides gratuits pour chiffrer vos chantiers, rester organisé et développer votre activité."
   },
   "nav": {
     "how": "Comment ça marche",
@@ -201,6 +203,31 @@
       {
         "title": "Toiture",
         "body": "Chiffrez réparations et remplacements, puis clôturez avec une facture professionnelle."
+      }
+    ]
+  },
+  "resources": {
+    "title": "Centre de ressources pour entrepreneurs",
+    "lede": "Parcourez des outils, des modèles et des guides gratuits pour chiffrer vos chantiers, rester organisé et développer votre activité.",
+    "seeProducts": "Voir les produits",
+    "openEstimates": "Ouvrir les devis",
+    "studioTemplates": "Modèles du studio",
+    "items": [
+      {
+        "title": "Atelier InvoiceFlow",
+        "body": "Des guides courts pour chiffrer les chantiers et garder un studio organisé. Commencez gratuitement dans InvoiceFlow Studio, ou voyez Produits pour le flux complet."
+      },
+      {
+        "title": "Calculatrices gratuites",
+        "body": "Les calculatrices de prix ne sont pas encore dans le produit. En attendant, créez un devis dans InvoiceFlow Studio."
+      },
+      {
+        "title": "Modèles de devis gratuits",
+        "body": "Chiffrez un chantier avec des lignes, une marge et un lien client. Ouvrez Devis, ou créez un compte gratuit."
+      },
+      {
+        "title": "Modèles de facture gratuits",
+        "body": "Envoyez une facture claire depuis un modèle studio. Créez un compte gratuit, ou voyez comment Produits mène le chantier du devis au paiement."
       }
     ]
   },
