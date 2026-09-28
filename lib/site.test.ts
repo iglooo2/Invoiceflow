@@ -71,22 +71,22 @@ test("Message us links to the contact page and never prints the inbox address", 
 
 test("products grid links live routes and leaves unbuilt items unlinked", () => {
   assert.equal(PRODUCT_COLUMNS.length, 4);
-  assert.equal(productHref(PRODUCT_COLUMNS[0].items[0], false, "es"), "/es/estimates");
-  assert.equal(productHref(PRODUCT_COLUMNS[0].items[2], false, "en"), null);
+  assert.equal(productHref(PRODUCT_COLUMNS[0].items[0], true, "en"), "/dashboard/jobs");
+  assert.equal(productHref(PRODUCT_COLUMNS[0].items[1], true, "en"), "/dashboard/clients");
+  assert.equal(productHref(PRODUCT_COLUMNS[0].items[2], false, "de"), null);
+  assert.equal(productHref(PRODUCT_COLUMNS[1].items[0], false, "es"), "/es/estimates");
+  assert.equal(productHref(PRODUCT_COLUMNS[1].items[2], false, "en"), null);
   assert.equal(
-    productHref(PRODUCT_COLUMNS[0].items[1], false, "fr"),
+    productHref(PRODUCT_COLUMNS[1].items[1], false, "fr"),
     "/fr/login?callbackUrl=%2Fdashboard%2Finvoices&mode=register",
   );
-  assert.equal(productHref(PRODUCT_COLUMNS[0].items[1], true, "fr"), "/dashboard/invoices");
-  assert.equal(productHref(PRODUCT_COLUMNS[1].items[0], true, "en"), "/dashboard/jobs");
-  assert.equal(productHref(PRODUCT_COLUMNS[1].items[1], true, "en"), "/dashboard/clients");
-  assert.equal(productHref(PRODUCT_COLUMNS[1].items[2], false, "de"), null);
+  assert.equal(productHref(PRODUCT_COLUMNS[1].items[1], true, "fr"), "/dashboard/invoices");
+  assert.equal(productHref(PRODUCT_COLUMNS[2].heading, false, "en"), "/en/contact");
+  assert.ok(PRODUCT_COLUMNS[2].items.every((item) => productHref(item, false, "en") === null));
   assert.equal(
-    productHref(PRODUCT_COLUMNS[2].items[2], false, "pt"),
+    productHref(PRODUCT_COLUMNS[3].items[2], false, "pt"),
     "/pt/login?callbackUrl=%2Fdashboard%2Fsettings%2Fquickbooks",
   );
-  assert.equal(productHref(PRODUCT_COLUMNS[3].heading, false, "en"), "/en/contact");
-  assert.ok(PRODUCT_COLUMNS[3].items.every((item) => productHref(item, false, "en") === null));
   assert.equal(
     productHref(REWARDS_LINK, false, "en"),
     "/en/login?callbackUrl=%2Fdashboard%2Fsettings%2Frefer",
@@ -98,4 +98,9 @@ test("products grid links live routes and leaves unbuilt items unlinked", () => 
   assert.match(grid, /copy\.allFeatures/);
   assert.match(grid, /copy\.earnRewards/);
   assert.match(grid, /copy\.comingSoon/);
+  assert.match(grid, /#7eb526/);
+  assert.match(grid, /#3e45d7/);
+
+  const home = readFileSync(path.join(import.meta.dirname, "../app/[locale]/page.tsx"), "utf8");
+  assert.match(home, /ProductsGrid/);
 });

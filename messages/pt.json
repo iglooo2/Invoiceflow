@@ -122,15 +122,6 @@
     "earnRewards": "Ganhe recompensas",
     "columns": [
       {
-        "title": "Receba",
-        "body": "Leve os trabalhos do orçamento ao pagamento em um fluxo simples feito para empreiteiros.",
-        "items": [
-          "Crie orçamentos precisos",
-          "Envie faturas profissionais",
-          "Receba pagamentos online"
-        ]
-      },
-      {
         "title": "Administre seu negócio",
         "body": "Gerencie trabalhos, clientes e novos leads em um só lugar, para você sempre saber o que vem a seguir.",
         "items": [
@@ -140,12 +131,12 @@
         ]
       },
       {
-        "title": "Mantenha a organização",
-        "body": "Acompanhe despesas, revise relatórios e mantenha as finanças do negócio em ordem.",
+        "title": "Receba",
+        "body": "Leve os trabalhos do orçamento ao pagamento em um fluxo simples feito para empreiteiros.",
         "items": [
-          "Acompanhe despesas do trabalho",
-          "Receba relatórios em tempo real",
-          "Sincronize com o QuickBooks"
+          "Crie orçamentos precisos",
+          "Envie faturas profissionais",
+          "Receba pagamentos online"
         ]
       },
       {
@@ -155,6 +146,15 @@
           "Impulsione avaliações online",
           "Ofereça financiamento para proprietários",
           "Acesse crédito para o negócio"
+        ]
+      },
+      {
+        "title": "Mantenha a organização",
+        "body": "Acompanhe despesas, revise relatórios e mantenha as finanças do negócio em ordem.",
+        "items": [
+          "Acompanhe despesas do trabalho",
+          "Receba relatórios em tempo real",
+          "Sincronize com o QuickBooks"
         ]
       }
     ]

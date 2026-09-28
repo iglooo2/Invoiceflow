@@ -122,15 +122,6 @@
     "earnRewards": "Earn Rewards",
     "columns": [
       {
-        "title": "Get Paid",
-        "body": "Move jobs from estimate to payment in one simple workflow built for contractors.",
-        "items": [
-          "Create Accurate Estimates",
-          "Send Professional Invoices",
-          "Collect Payments Online"
-        ]
-      },
-      {
         "title": "Run Your Business",
         "body": "Manage jobs, clients, and new leads in one place, so you always know what’s next.",
         "items": [
@@ -140,12 +131,12 @@
         ]
       },
       {
-        "title": "Stay Organized",
-        "body": "Track expenses, review reports, and keep your business finances organized.",
+        "title": "Get Paid",
+        "body": "Move jobs from estimate to payment in one simple workflow built for contractors.",
         "items": [
-          "Track Job Expenses",
-          "Get Real-time Reports",
-          "Sync with QuickBooks"
+          "Create Accurate Estimates",
+          "Send Professional Invoices",
+          "Collect Payments Online"
         ]
       },
       {
@@ -155,6 +146,15 @@
           "Boost Online Reviews",
           "Offer Homeowner Financing",
           "Access Business Lending"
+        ]
+      },
+      {
+        "title": "Stay Organized",
+        "body": "Track expenses, review reports, and keep your business finances organized.",
+        "items": [
+          "Track Job Expenses",
+          "Get Real-time Reports",
+          "Sync with QuickBooks"
         ]
       }
     ]

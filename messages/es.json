@@ -122,15 +122,6 @@
     "earnRewards": "Gana recompensas",
     "columns": [
       {
-        "title": "Cobra",
-        "body": "Lleva los trabajos del presupuesto al pago en un flujo simple pensado para contratistas.",
-        "items": [
-          "Crea presupuestos precisos",
-          "Envía facturas profesionales",
-          "Cobra en línea"
-        ]
-      },
-      {
         "title": "Dirige tu negocio",
         "body": "Administra trabajos, clientes y nuevos prospectos en un solo lugar, para que siempre sepas qué sigue.",
         "items": [
@@ -140,12 +131,12 @@
         ]
       },
       {
-        "title": "Mantente organizado",
-        "body": "Registra gastos, revisa informes y mantén ordenadas las finanzas de tu negocio.",
+        "title": "Cobra",
+        "body": "Lleva los trabajos del presupuesto al pago en un flujo simple pensado para contratistas.",
         "items": [
-          "Registra gastos del trabajo",
-          "Obtén informes en tiempo real",
-          "Sincroniza con QuickBooks"
+          "Crea presupuestos precisos",
+          "Envía facturas profesionales",
+          "Cobra en línea"
         ]
       },
       {
@@ -155,6 +146,15 @@
           "Impulsa las reseñas en línea",
           "Ofrece financiamiento para propietarios",
           "Accede a crédito para el negocio"
+        ]
+      },
+      {
+        "title": "Mantente organizado",
+        "body": "Registra gastos, revisa informes y mantén ordenadas las finanzas de tu negocio.",
+        "items": [
+          "Registra gastos del trabajo",
+          "Obtén informes en tiempo real",
+          "Sincroniza con QuickBooks"
         ]
       }
     ]

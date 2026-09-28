@@ -122,15 +122,6 @@
     "earnRewards": "Prämien verdienen",
     "columns": [
       {
-        "title": "Werde bezahlt",
-        "body": "Führe Aufträge vom Voranschlag bis zur Zahlung in einem einfachen Ablauf für Auftragnehmer.",
-        "items": [
-          "Erstelle genaue Voranschläge",
-          "Sende professionelle Rechnungen",
-          "Ziehe Zahlungen online ein"
-        ]
-      },
-      {
         "title": "Führe dein Unternehmen",
         "body": "Verwalte Aufträge, Kunden und neue Anfragen an einem Ort, damit du immer weißt, was als Nächstes kommt.",
         "items": [
@@ -140,12 +131,12 @@
         ]
       },
       {
-        "title": "Bleib organisiert",
-        "body": "Erfasse Ausgaben, prüfe Berichte und halte die Finanzen deines Unternehmens in Ordnung.",
+        "title": "Werde bezahlt",
+        "body": "Führe Aufträge vom Voranschlag bis zur Zahlung in einem einfachen Ablauf für Auftragnehmer.",
         "items": [
-          "Auftragsausgaben erfassen",
-          "Echtzeitberichte erhalten",
-          "Mit QuickBooks synchronisieren"
+          "Erstelle genaue Voranschläge",
+          "Sende professionelle Rechnungen",
+          "Ziehe Zahlungen online ein"
         ]
       },
       {
@@ -155,6 +146,15 @@
           "Online-Bewertungen stärken",
           "Finanzierung für Hausbesitzer anbieten",
           "Zugang zu Unternehmenskrediten"
+        ]
+      },
+      {
+        "title": "Bleib organisiert",
+        "body": "Erfasse Ausgaben, prüfe Berichte und halte die Finanzen deines Unternehmens in Ordnung.",
+        "items": [
+          "Auftragsausgaben erfassen",
+          "Echtzeitberichte erhalten",
+          "Mit QuickBooks synchronisieren"
         ]
       }
     ]

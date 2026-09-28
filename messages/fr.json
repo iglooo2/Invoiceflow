@@ -122,15 +122,6 @@
     "earnRewards": "Gagnez des récompenses",
     "columns": [
       {
-        "title": "Encaissez",
-        "body": "Passez du devis au paiement dans un flux simple conçu pour les entrepreneurs.",
-        "items": [
-          "Créez des devis précis",
-          "Envoyez des factures professionnelles",
-          "Encaissez des paiements en ligne"
-        ]
-      },
-      {
         "title": "Gérez votre activité",
         "body": "Gérez les chantiers, les clients et les nouvelles pistes au même endroit, pour toujours savoir la suite.",
         "items": [
@@ -140,12 +131,12 @@
         ]
       },
       {
-        "title": "Restez organisé",
-        "body": "Suivez les dépenses, consultez les rapports et gardez les finances de votre activité en ordre.",
+        "title": "Encaissez",
+        "body": "Passez du devis au paiement dans un flux simple conçu pour les entrepreneurs.",
         "items": [
-          "Suivez les dépenses de chantier",
-          "Obtenez des rapports en temps réel",
-          "Synchronisez avec QuickBooks"
+          "Créez des devis précis",
+          "Envoyez des factures professionnelles",
+          "Encaissez des paiements en ligne"
         ]
       },
       {
@@ -155,6 +146,15 @@
           "Boostez les avis en ligne",
           "Proposez un financement aux propriétaires",
           "Accédez au crédit professionnel"
+        ]
+      },
+      {
+        "title": "Restez organisé",
+        "body": "Suivez les dépenses, consultez les rapports et gardez les finances de votre activité en ordre.",
+        "items": [
+          "Suivez les dépenses de chantier",
+          "Obtenez des rapports en temps réel",
+          "Synchronisez avec QuickBooks"
         ]
       }
     ]

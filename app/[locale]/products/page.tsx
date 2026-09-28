@@ -32,9 +32,11 @@ export default async function ProductsPage({ params }: PageProps<"/[locale]/prod
   return (
     <div className="landing-canvas">
       <MarketingHeader signedIn={signedIn} locale={locale} path={PRODUCTS_PATH} copy={dict.nav} />
-      <main className="mx-auto w-full max-w-6xl px-4 pb-4 pt-8 sm:pt-12">
-        <h1 className="font-display text-4xl tracking-tight sm:text-5xl">{dict.meta.productsTitle}</h1>
-        <p className="mt-4 max-w-2xl text-lg leading-8 text-muted-foreground">{dict.products.lede}</p>
+      <main className="pb-4 pt-8 sm:pt-12">
+        <div className="mx-auto w-full max-w-6xl px-4">
+          <h1 className="font-display text-4xl tracking-tight sm:text-5xl">{dict.meta.productsTitle}</h1>
+          <p className="mt-4 max-w-2xl text-lg leading-8 text-muted-foreground">{dict.products.lede}</p>
+        </div>
         <div className="mt-10">
           <ProductsGrid signedIn={signedIn} locale={locale} copy={dict.products} />
         </div>

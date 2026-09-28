@@ -11,15 +11,8 @@ export type ProductLink =
   | { kind: "app"; path: string; intent: "register" | "signin" }
   | { kind: "soon" };
 
+/** Column order matches the landing grid: Run Your Business, Get Paid, Win More Work, Stay Organized. */
 export const PRODUCT_COLUMNS: { heading: ProductLink; items: readonly ProductLink[] }[] = [
-  {
-    heading: { kind: "locale", path: ESTIMATE_MARKETING_PATH },
-    items: [
-      { kind: "locale", path: ESTIMATE_MARKETING_PATH },
-      { kind: "app", path: "/dashboard/invoices", intent: "register" },
-      { kind: "soon" },
-    ],
-  },
   {
     heading: { kind: "app", path: "/dashboard/jobs", intent: "register" },
     items: [
@@ -29,16 +22,24 @@ export const PRODUCT_COLUMNS: { heading: ProductLink; items: readonly ProductLin
     ],
   },
   {
+    heading: { kind: "locale", path: ESTIMATE_MARKETING_PATH },
+    items: [
+      { kind: "locale", path: ESTIMATE_MARKETING_PATH },
+      { kind: "app", path: "/dashboard/invoices", intent: "register" },
+      { kind: "soon" },
+    ],
+  },
+  {
+    heading: { kind: "locale", path: CONTACT_PATH },
+    items: [{ kind: "soon" }, { kind: "soon" }, { kind: "soon" }],
+  },
+  {
     heading: { kind: "app", path: "/dashboard/settings/quickbooks", intent: "signin" },
     items: [
       { kind: "soon" },
       { kind: "soon" },
       { kind: "app", path: "/dashboard/settings/quickbooks", intent: "signin" },
     ],
-  },
-  {
-    heading: { kind: "locale", path: CONTACT_PATH },
-    items: [{ kind: "soon" }, { kind: "soon" }, { kind: "soon" }],
   },
 ];
 

@@ -6,6 +6,7 @@ import { startFreeHref } from "@/lib/site";
 import { Button } from "@/components/ui/button";
 import { MarketingFooter, MarketingHeader } from "@/components/marketing/shell";
 import { PartnerSlot } from "@/components/marketing/partner-slot";
+import { ProductsGrid } from "@/components/marketing/products-grid";
 import { StudioProduct } from "@/components/marketing/studio-product";
 import { getSponsorPlacement } from "@/lib/sponsor";
 import { marketingCopy } from "@/lib/i18n-request";
@@ -58,6 +59,8 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             </Button>
           </div>
         </section>
+
+        <ProductsGrid signedIn={signedIn} locale={locale} copy={dict.products} />
 
         <div className="mx-auto w-full max-w-6xl px-4">
           <section id="partner" className="scroll-mt-24 py-6">

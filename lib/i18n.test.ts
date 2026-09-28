@@ -234,9 +234,14 @@ test("login and dashboard common errors exist in every locale", () => {
     if (locale === "en") {
       assert.deepEqual(
         dict.products.columns.map((column) => column.title),
-        ["Get Paid", "Run Your Business", "Stay Organized", "Win More Work"],
+        ["Run Your Business", "Get Paid", "Win More Work", "Stay Organized"],
       );
       assert.deepEqual(dict.products.columns[0].items, [
+        "Schedule & Manage Jobs",
+        "Manage Client Records",
+        "Automate with AI Receptionist",
+      ]);
+      assert.deepEqual(dict.products.columns[1].items, [
         "Create Accurate Estimates",
         "Send Professional Invoices",
         "Collect Payments Online",
