@@ -1,7 +1,6 @@
 "use server";
 
 import { AuthError } from "next-auth";
-import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { unstable_rethrow } from "next/navigation";
 import { signIn, signOut } from "@/lib/auth";
@@ -19,7 +18,7 @@ import {
 } from "@/lib/db-errors";
 import { localizedPath } from "@/lib/i18n";
 import { appCopy } from "@/lib/i18n-request";
-import { ensureAuthRuntimeEnv, googleAuthEnabled } from "@/lib/auth-env";
+import { ensureAuthRuntimeEnv, githubAuthEnabled, googleAuthEnabled } from "@/lib/auth-env";
 
 const credentialsSchema = z.object({
   email: z.string().email(),
@@ -56,7 +55,8 @@ export async function loginWithPassword(formData: FormData) {
     if (error instanceof AuthError) {
       return { error: credentialsActionErrorMessage(authErrorType(error), dict.login.errors, "login") };
     }
-    throw error;
+    console.error("loginWithPassword", safeErrorLog(error), databaseRuntimeStatus());
+    return { error: dict.login.errors.signInIncomplete };
   }
 }
 
@@ -77,6 +77,7 @@ export async function registerWithPassword(formData: FormData) {
   }
   let passwordHash: string;
   try {
+    const { default: bcrypt } = await import("bcryptjs");
     passwordHash = await bcrypt.hash(parsed.data.password, 10);
   } catch (error) {
     console.error("registerWithPassword hash failed", safeErrorLog(error));
@@ -128,7 +129,22 @@ export async function registerWithPassword(formData: FormData) {
 }
 
 export async function loginWithGithub() {
-  await signIn("github", { redirectTo: "/dashboard" });
+  await ensureAuthRuntimeEnv();
+  const { dict } = await appCopy();
+  if (!githubAuthEnabled()) {
+    return { error: dict.login.errors.oauthNotConfigured };
+  }
+  try {
+    await signIn("github", { redirectTo: "/dashboard" });
+  } catch (error) {
+    const redirectCode = redirectDigestErrorCode(error);
+    if (redirectCode) {
+      return { error: dict.login.errors.signInIncomplete };
+    }
+    unstable_rethrow(error);
+    console.error("loginWithGithub", safeErrorLog(error));
+    return { error: dict.login.errors.signInIncomplete };
+  }
 }
 
 export async function loginWithGoogle() {
@@ -176,7 +192,8 @@ export async function loginWithMagicLink(formData: FormData) {
     if (error instanceof AuthError) {
       return { error: dict.login.errors.magicFailed };
     }
-    throw error;
+    console.error("loginWithMagicLink", safeErrorLog(error));
+    return { error: dict.login.errors.magicFailed };
   }
 }
 
